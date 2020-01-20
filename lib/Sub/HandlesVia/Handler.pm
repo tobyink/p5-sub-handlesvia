@@ -53,15 +53,12 @@ sub curry {
 		die "too many arguments to curry";
 	}
 	ref($self)->new(
+		%$self,
 		name         => sprintf('%s[curried]', $self->name),
 		max_args     => $self->has_max_args ? $self->max_args - @curried : undef,
 		min_args     => $self->has_min_args ? $self->min_args - @curried : undef,
 		signature    => $self->signature ? do { my @sig = @{$self->{signature}}; splice(@sig,0,scalar(@curried)); \@sig } : undef,
-		curried      => \@curried,
-		is_mutator   => $self->is_mutator,
-		template     => $self->template,
-		lvalue_template => $self->lvalue_template,
-		additional_validation => $self->additional_validation,
+		curried      => \@curried,		
 	);
 }
 
@@ -102,28 +99,40 @@ sub lookup {
 	my ($method, $traits) = map { ref($_) eq 'ARRAY' ? $_ : [$_] } @_;
 	my ($method_name, @curry) = @$method;
 	
-	my $make_chainable = 0;
-	if ($method_name =~ /\-\>$/) {
-		$method_name =~ s/\-\>$//;
-		++$make_chainable;
-	}
-	
-	my $make_loose = 0;
-	if ($method_name =~ /^\~/) {
-		$method_name =~ s/^\~//;
-		++$make_loose;
-	}
-	
 	my $handler;
-	SEARCH: for my $trait (@$traits) {
-		my $class = "Sub::HandlesVia::HandlerLibrary::$trait";
-		eval "require $class";
-		if ($class->isa('Sub::HandlesVia::HandlerLibrary') and $class->can($method_name)) {
-			$handler = $class->$method_name;
+	my $make_chainable = 0;
+	my $make_loose = 0;
+	
+	if (ref $method_name eq 'CODE') {
+		$handler = Sub::HandlesVia::Handler::CodeRef->new(
+			name              => '__ANON__',
+			delegated_coderef => $method_name,
+		);
+	}
+	else {
+		if ($method_name =~ /\-\>$/) {
+			$method_name =~ s/\-\>$//;
+			++$make_chainable;
+		}	
+		if ($method_name =~ /^\~/) {
+			$method_name =~ s/^\~//;
+			++$make_loose;
 		}
 	}
 	
-	return unless $handler;
+	if (not $handler) {
+		SEARCH: for my $trait (@$traits) {
+			my $class = "Sub::HandlesVia::HandlerLibrary::$trait";
+			eval "require $class";
+			if ($class->isa('Sub::HandlesVia::HandlerLibrary') and $class->can($method_name)) {
+				$handler = $class->$method_name;
+			}
+		}
+	}
+	
+	if (not $handler) {
+		$handler = Sub::HandlesVia::Handler::Traditional->new(name => $method_name);
+	}
 	
 	$handler = $handler->curry(@curry)   if @curry;
 	$handler = $handler->loose           if $make_loose;
@@ -333,6 +342,78 @@ sub _generate_handler {
 	};
 }	
 
+package Sub::HandlesVia::Handler::Traditional;
 
+BEGIN { our @ISA = 'Sub::HandlesVia::Handler' };
+
+sub BUILD {
+	$_[1]{name} or die 'name required';
+}
+
+sub _coderef {
+	my ($self, %callbacks) = @_;
+	
+	my @code = 'sub {';
+	my $env = {};
+	
+	if (my $curried = $self->curried) {
+		if (grep ref, @$curried) {
+			$env->{'@curry'} = $curried;
+			push @code, $callbacks{curry}->('@curry');
+		} else {
+			require B;
+			push @code, $callbacks{curry}->(sprintf('(%s)', join ',', map { defined ? B::perlstring($_) : 'undef' } @$curried));
+		}
+	}
+	
+	require B;
+	my $q_name = B::perlstring($self->name);
+	push @code, $self->_process_template('($GET)->${\\ '.$q_name.'}(@ARG)', %callbacks);
+	
+	push @code, '}';
+		
+	return (
+		source      => \@code,
+		environment => $env,
+		description => sprintf("%s=%s", $callbacks{method_name}||'__ANON__', $self->name),
+	);
+}
+
+package Sub::HandlesVia::Handler::CodeRef;
+
+BEGIN { our @ISA = 'Sub::HandlesVia::Handler' };
+
+use Class::Tiny qw( delegated_coderef );
+
+sub BUILD {
+	$_[1]{delegated_coderef} or die 'delegated_coderef required';
+}
+
+sub _coderef {
+	my ($self, %callbacks) = @_;
+	
+	my @code = 'sub {';
+	my $env = { '$shv_callback' => \($self->delegated_coderef) };
+	
+	if (my $curried = $self->curried) {
+		if (grep ref, @$curried) {
+			$env->{'@curry'} = $curried;
+			push @code, $callbacks{curry}->('@curry');
+		} else {
+			require B;
+			push @code, $callbacks{curry}->(sprintf('(%s)', join ',', map { defined ? B::perlstring($_) : 'undef' } @$curried));
+		}
+	}
+	
+	push @code, $self->_process_template('$shv_callback->($GET, @ARG)', %callbacks);
+	
+	push @code, '}';
+	
+	return (
+		source      => \@code,
+		environment => $env,
+		description => sprintf("%s=%s", $callbacks{method_name}||'__ANON__', '__ANON__'),
+	);
+}
 
 1;
