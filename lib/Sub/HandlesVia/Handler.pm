@@ -110,15 +110,15 @@ sub lookup {
 		);
 	}
 	else {
-		if ($method_name =~ /\.\.\.$/) {
-			$method_name =~ s/\.\.\.$//;
+		if ($method_name =~ /\s*\.\.\.$/) {
+			$method_name =~ s/\s*\.\.\.$//;
 			++$make_chainable;
 		}	
-		if ($method_name =~ /^\~/) {
-			$method_name =~ s/^\~//;
+		if ($method_name =~ /^\~\s*/) {
+			$method_name =~ s/^\~\s*//;
 			++$make_loose;
 		}
-		if ($method_name =~ /^(.+)\-\>(.+)$/) {
+		if ($method_name =~ /^(.+?)\s*\-\>\s*(.+?)$/) {
 			$traits = [$1];
 			$method_name = $2;
 		}
@@ -300,7 +300,7 @@ sub _coderef {
 	
 	push @code, $body;
 	
-	push @code, $callbacks{self}->() if $self->is_chainable;
+	push @code, ';'.$callbacks{self}->() if $self->is_chainable;
 	push @code, "}";
 	
 	return (
@@ -378,7 +378,7 @@ sub _coderef {
 	my $q_name = B::perlstring($self->name);
 	push @code, $self->_process_template('($GET)->${\\ '.$q_name.'}(@ARG)', %callbacks);
 	
-	push @code, $callbacks{self}->() if $self->is_chainable;
+	push @code, ';'.$callbacks{self}->() if $self->is_chainable;
 	push @code, '}';
 		
 	return (
@@ -416,7 +416,7 @@ sub _coderef {
 	
 	push @code, $self->_process_template('$shv_callback->($GET, @ARG)', %callbacks);
 	
-	push @code, $callbacks{self}->() if $self->is_chainable;
+	push @code, ';'.$callbacks{self}->() if $self->is_chainable;
 	push @code, '}';
 	
 	return (

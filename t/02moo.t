@@ -17,18 +17,20 @@ note 'Local::Bleh';
 		is           => 'lazy',
 		isa          => ArrayRef[ Int->plus_coercions(Num, 'int($_)') ],
 		coerce       => 1,
-		builder      => sub { [] },
+		builder      => sub { [1..2] },
 		handles_via  => 'Array',
 		handles      => {
-			splice_nums => 'splice',
-			first_num   => [ 'get', 0 ],
+			splice_nums     => 'splice',
+			splice_nums_tap => 'splice...',
+			first_num       => [ 'get', 0 ],
 		},
 	);
 }
 
 my $bleh = Local::Bleh->new;
-$bleh->splice_nums(0, 0, 3..5);
+my @r = $bleh->splice_nums(0, 2, 3..5);
 is_deeply($bleh->nums, [3..5], 'delegated method worked');
+is_deeply(\@r, [1..2], '... and returned correct value');
 is($bleh->first_num, 3, 'curried delegated method worked');
 
 my $e = exception {
@@ -47,6 +49,11 @@ is("$ref", "$ref2", '... without needing to build a new arrayref')
 		require B::Deparse;
 		diag( B::Deparse->new->coderef2text(\&Local::Bleh::splice_nums) );
 	};
+
+$bleh = Local::Bleh->new;
+@r = $bleh->splice_nums_tap(0, 2, 3..5);
+is_deeply($bleh->nums, [3..5], 'delegated method with chaining worked');
+is_deeply(\@r, [$bleh], '... and returned correct value');
 
 note 'Local::Bleh2';
 {
