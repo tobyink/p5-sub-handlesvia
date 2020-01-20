@@ -10,7 +10,7 @@ our @ISA = 'Sub::HandlesVia::HandlerLibrary';
 use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( Num Any Item Defined );
 
-our @METHODS = qw( add sub mul div mod abs );
+our @METHODS = qw( set get add sub mul div mod abs );
 
 sub _type_inspector {
 	my ($me, $type) = @_;

@@ -10,7 +10,7 @@ our @ISA = 'Sub::HandlesVia::HandlerLibrary';
 use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( Optional Int Any Item Defined Num );
 
-our @METHODS = qw( set inc dec );
+our @METHODS = qw( set inc dec reset );
 
 sub _type_inspector {
 	my ($me, $type) = @_;

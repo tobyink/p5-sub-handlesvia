@@ -8,7 +8,7 @@ use Sub::HandlesVia::HandlerLibrary;
 our @ISA = 'Sub::HandlesVia::HandlerLibrary';
 
 use Sub::HandlesVia::Handler qw( handler );
-our @METHODS = qw( set unset toggle not );
+our @METHODS = qw( set unset toggle not reset );
 
 sub set {
 	handler

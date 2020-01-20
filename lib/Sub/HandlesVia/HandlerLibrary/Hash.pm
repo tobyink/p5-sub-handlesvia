@@ -10,8 +10,8 @@ our @ISA = 'Sub::HandlesVia::HandlerLibrary';
 use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( HashRef ArrayRef Optional Str CodeRef Item Any Ref Defined );
 
-our @METHODS = qw( accessor clear count defined delete elements exists get
-	is_empty keys kv set shallow_clone values );
+our @METHODS = qw( all accessor clear count defined delete elements exists get
+	is_empty keys kv set shallow_clone values sorted_keys );
 
 sub _type_inspector {
 	my ($me, $type) = @_;
@@ -89,6 +89,13 @@ sub keys {
 		name      => 'Hash:keys',
 		args      => 0,
 		template  => 'keys %{$GET}',
+}
+
+sub sorted_keys {
+	handler
+		name      => 'Hash:sorted_keys',
+		args      => 0,
+		template  => 'sort(keys %{$GET})',
 }
 
 sub values {

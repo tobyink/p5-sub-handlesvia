@@ -10,7 +10,7 @@ our @ISA = 'Sub::HandlesVia::HandlerLibrary';
 use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( Optional Str CodeRef RegexpRef Int Any Item Defined );
 
-our @METHODS = qw( inc append prepend replace match chop chomp clear length substr );
+our @METHODS = qw( set get inc append prepend replace match chop chomp clear reset length substr replace_globally );
 
 sub _type_inspector {
 	my ($me, $type) = @_;
@@ -76,6 +76,22 @@ sub replace {
 		),
 		lvalue_template => sprintf(
 			'if (%s) { my $shv_callback = $ARG[2]; $GET =~ s/$ARG[1]/$shv_callback->()/e } else { $GET =~ s/$ARG[1]/$ARG[2]/ } $GET',
+			CodeRef->inline_check('$ARG[2]'),
+		),
+}
+
+sub replace_globally {
+	handler
+		name      => 'String:replace_globally',
+		args      => 2,
+		signature => [ Str|RegexpRef, Str|CodeRef ],
+		usage     => '$regexp, $replacement',
+		template  => sprintf(
+			'my $shv_tmp = $GET; if (%s) { my $shv_callback = $ARG[2]; $shv_tmp =~ s/$ARG[1]/$shv_callback->()/eg } else { $shv_tmp =~ s/$ARG[1]/$ARG[2]/g } «$shv_tmp»',
+			CodeRef->inline_check('$ARG[2]'),
+		),
+		lvalue_template => sprintf(
+			'if (%s) { my $shv_callback = $ARG[2]; $GET =~ s/$ARG[1]/$shv_callback->()/eg } else { $GET =~ s/$ARG[1]/$ARG[2]/g } $GET',
 			CodeRef->inline_check('$ARG[2]'),
 		),
 }
