@@ -10,17 +10,32 @@ our $VERSION   = '0.001';
 sub import {
 	my $me     = shift;
 	my $target = caller;
-	if ($INC{'Moo/Role.pm'} && Moo::Role->is_role($target)) {
+	
+	if ($INC{'Moo/Role.pm'}
+	and Moo::Role->is_role($target)) {
 		require Sub::HandlesVia::Toolkit::Moo;
-		Sub::HandlesVia::Toolkit::Moo->install_has_wrapper($target);
+		Sub::HandlesVia::Toolkit::Moo->setup_for($target);
 	}
-	elsif ($Moo::MAKERS{$target} && $Moo::MAKERS{$target}{is_class}) {
+	
+	elsif ($INC{'Moo.pm'}
+	and $Moo::MAKERS{$target}
+	and $Moo::MAKERS{$target}{is_class}) {
 		require Sub::HandlesVia::Toolkit::Moo;
-		Sub::HandlesVia::Toolkit::Moo->install_has_wrapper($target);
+		Sub::HandlesVia::Toolkit::Moo->setup_for($target);
 	}
-	else {
-		require Carp;
-		Carp::croak("$target does not seem to be a Moo class or role");
+	
+	elsif ($INC{'Mouse.pm'}
+	and $target->can('meta')
+	and $target->meta->isa('Mouse::Meta::Role')) {
+		require Sub::HandlesVia::Toolkit::Mouse;
+		Sub::HandlesVia::Toolkit::Mouse->setup_for($target);
+	}
+	
+	elsif ($INC{'Mouse.pm'}
+	and $target->can('meta')
+	and $target->meta->isa('Mouse::Meta::Class')) {
+		require Sub::HandlesVia::Toolkit::Mouse;
+		Sub::HandlesVia::Toolkit::Mouse->setup_for($target);
 	}
 }
 

@@ -8,6 +8,12 @@ use Data::Dumper;
 use Types::Standard qw( is_ArrayRef is_Str assert_HashRef is_CodeRef is_Undef );
 use Types::Standard qw( ArrayRef HashRef Str Num Int CodeRef Bool );
 
+sub setup_for {
+	my $me = shift;
+	my ($target) = @_;
+	$me->install_has_wrapper($target);
+}
+
 sub install_has_wrapper {
 	my $me = shift;
 	my ($target) = @_;
@@ -78,7 +84,7 @@ sub process_spec {
 		push @handles_via, @{ $spec->{traits} };
 	}
 	return unless @handles_via;
-		
+	
 	my $joined = join('|', @handles_via);
 	return if $joined =~ /^Enum(?:eration)?$/i;
 	
@@ -155,6 +161,9 @@ sub get_callbacks_for_attribute {
 			$code;
 		});
 	
+	# force $captures to be updated
+	$set->('$dummy') if !$is_simple_set;
+	
 	my $default;
 	if (exists $spec->{default}) {
 		$default = [ default => $spec->{default} ];
@@ -162,9 +171,6 @@ sub get_callbacks_for_attribute {
 	elsif (exists $spec->{builder}) {
 		$default = [ builder => $spec->{builder} ];
 	}
-	
-	# force $captures to be updated
-	$set->('$dummy') if !$is_simple_set;
 	
 	if (is_CodeRef $default->[1]) {
 		$captures->{'$shv_default_for_reset'} = \$default->[1];
