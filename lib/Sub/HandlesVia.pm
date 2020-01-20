@@ -26,7 +26,21 @@ sub import {
 		Sub::HandlesVia::Toolkit::Moo->setup_for($target);
 	}
 	
-	elsif ($INC{'Mouse.pm'}
+	elsif ($INC{'Moose/Role.pm'}
+	and $target->can('meta')
+	and $target->meta->isa('Moose::Meta::Role')) {
+		require Sub::HandlesVia::Toolkit::Moose;
+		Sub::HandlesVia::Toolkit::Moose->setup_for($target);
+	}
+	
+	elsif ($INC{'Moose.pm'}
+	and $target->can('meta')
+	and $target->meta->isa('Moose::Meta::Class')) {
+		require Sub::HandlesVia::Toolkit::Moose;
+		Sub::HandlesVia::Toolkit::Moose->setup_for($target);
+	}
+
+	elsif ($INC{'Mouse/Role.pm'}
 	and $target->can('meta')
 	and $target->meta->isa('Mouse::Meta::Role')) {
 		require Sub::HandlesVia::Toolkit::Mouse;
