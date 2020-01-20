@@ -110,8 +110,8 @@ sub lookup {
 		);
 	}
 	else {
-		if ($method_name =~ /\~$/) {
-			$method_name =~ s/\~$//;
+		if ($method_name =~ /\.\.\.$/) {
+			$method_name =~ s/\.\.\.$//;
 			++$make_chainable;
 		}	
 		if ($method_name =~ /^\~/) {
@@ -299,6 +299,8 @@ sub _coderef {
 	$body =~ s/\"?____VALIDATION_HERE____\"?/$add_later/ if defined $add_later;
 	
 	push @code, $body;
+	
+	push @code, $callbacks{self}->() if $self->is_chainable;
 	push @code, "}";
 	
 	return (
@@ -376,6 +378,7 @@ sub _coderef {
 	my $q_name = B::perlstring($self->name);
 	push @code, $self->_process_template('($GET)->${\\ '.$q_name.'}(@ARG)', %callbacks);
 	
+	push @code, $callbacks{self}->() if $self->is_chainable;
 	push @code, '}';
 		
 	return (
@@ -413,6 +416,7 @@ sub _coderef {
 	
 	push @code, $self->_process_template('$shv_callback->($GET, @ARG)', %callbacks);
 	
+	push @code, $callbacks{self}->() if $self->is_chainable;
 	push @code, '}';
 	
 	return (
