@@ -110,20 +110,26 @@ sub lookup {
 		);
 	}
 	else {
-		if ($method_name =~ /\-\>$/) {
-			$method_name =~ s/\-\>$//;
+		if ($method_name =~ /\~$/) {
+			$method_name =~ s/\~$//;
 			++$make_chainable;
 		}	
 		if ($method_name =~ /^\~/) {
 			$method_name =~ s/^\~//;
 			++$make_loose;
 		}
+		if ($method_name =~ /^(.+)\-\>(.+)$/) {
+			$traits = [$1];
+			$method_name = $2;
+		}
 	}
 	
 	if (not $handler) {
 		SEARCH: for my $trait (@$traits) {
-			my $class = "Sub::HandlesVia::HandlerLibrary::$trait";
-			eval "require $class";
+			my $class = $trait =~ /:/
+				? $trait
+				: "Sub::HandlesVia::HandlerLibrary::$trait";
+			eval "require $class" unless $class eq $trait;
 			if ($class->isa('Sub::HandlesVia::HandlerLibrary') and $class->can($method_name)) {
 				$handler = $class->$method_name;
 			}

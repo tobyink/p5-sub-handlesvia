@@ -26,6 +26,7 @@ use Test::Fatal;
 			spin         => 'spin',
 			wheel_ref    => [ sub { join '|', map ref, @_ }, [] ],
 			wheel_colour => [ get => 'colour' ],
+			hack         => 'Code->execute',
 		},
 		default   => sub { Local::Wheel->new },
 	);
@@ -56,5 +57,12 @@ is(
 	$unicycle->wheel_colour,
 	'black',
 );
+
+$unicycle->{wheel} = sub { 'yay' };
+is(
+	$unicycle->hack,
+	'yay',
+);
+
 
 done_testing;
