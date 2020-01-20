@@ -102,7 +102,7 @@ sub lookup {
 	my $handler;
 	my $make_chainable = 0;
 	my $make_loose = 0;
-	
+
 	if (ref $method_name eq 'CODE') {
 		$handler = Sub::HandlesVia::Handler::CodeRef->new(
 			name              => '__ANON__',
@@ -332,6 +332,11 @@ sub install_method {
 		no strict 'refs';
 		*{"$target\::$name"} = $coderef;
 	}
+	elsif ( eval { require Sub::Name }) {
+		$coderef = Sub::Name::subname("$target\::$name", $coderef);
+		no strict 'refs';
+		*{"$target\::$name"} = $coderef;
+	}
 	else {
 		eval qq{
 			package $target;
@@ -339,6 +344,24 @@ sub install_method {
 			1;
 		} or die($@);
 	}
+}
+
+sub code_as_string {
+	my ($self, %callbacks) = @_;
+	my %eval = $self->_coderef(%callbacks);
+	my $code = join "\n", @{$eval{source}};
+	if ($callbacks{method_name}) {
+		$code =~ s/sub/sub $callbacks{method_name}/xs;
+	}
+	if (eval { require Perl::Tidy }) {
+		my $tidy = '';
+		Perl::Tidy::perltidy(
+			source      => \$code,
+			destination => \$tidy,
+		);
+		$code = $tidy;
+	}
+	$code;
 }
 
 use Exporter::Shiny qw( handler );
