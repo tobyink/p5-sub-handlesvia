@@ -4,6 +4,8 @@ use warnings;
 
 package Sub::HandlesVia;
 
+use Exporter::Shiny qw( delegations );
+
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.001';
 
@@ -37,6 +39,23 @@ sub import {
 		require Sub::HandlesVia::Toolkit::Mouse;
 		Sub::HandlesVia::Toolkit::Mouse->setup_for($target);
 	}
+	
+	if (@_) {
+		unshift @_, $me;
+		goto \&Exporter::Tiny::import;
+	}
+}
+
+sub _generate_delegations {
+	my $me = shift;
+	my ($name, $args, $globals) = @_;
+	
+	my $target = $globals->{into};
+	!defined $target and die;
+	ref $target and die;
+	
+	require Sub::HandlesVia::Toolkit::Plain;
+	sub { Sub::HandlesVia::Toolkit::Plain->delegations(target => $target, @_) };
 }
 
 1;

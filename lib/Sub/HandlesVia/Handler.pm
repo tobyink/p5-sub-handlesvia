@@ -52,8 +52,10 @@ sub curry {
 	if ($self->has_max_args and @curried > $self->max_args) {
 		die "too many arguments to curry";
 	}
+	my %copy = %$self;
+	delete $copy{usage};
 	ref($self)->new(
-		%$self,
+		%copy,
 		name         => sprintf('%s[curried]', $self->name),
 		max_args     => $self->has_max_args ? $self->max_args - @curried : undef,
 		min_args     => $self->has_min_args ? $self->min_args - @curried : undef,
