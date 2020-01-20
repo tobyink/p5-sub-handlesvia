@@ -4,6 +4,9 @@ use warnings;
 
 package Sub::HandlesVia::HandlerLibrary::Counter;
 
+use Sub::HandlesVia::HandlerLibrary;
+our @ISA = 'Sub::HandlesVia::HandlerLibrary';
+
 use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( Optional Int Any Item Defined Num );
 
@@ -11,7 +14,7 @@ our @METHODS = qw( set inc dec );
 
 sub _type_inspector {
 	my ($me, $type) = @_;
-	if ($type == Any or $type == Item or $type == Defined ) {
+	if ($type == Defined) {
 		return {
 			trust_mutated => 'always',
 		};
@@ -22,9 +25,7 @@ sub _type_inspector {
 			value_type    => $type,
 		};
 	}
-	return {
-		trust_mutated => 'never',
-	};
+	return $me->SUPER::_type_inspector($type);
 }
 
 sub set {

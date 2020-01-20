@@ -118,7 +118,7 @@ sub lookup {
 	SEARCH: for my $trait (@$traits) {
 		my $class = "Sub::HandlesVia::HandlerLibrary::$trait";
 		eval "require $class";
-		if ($class->can($method_name)) {
+		if ($class->isa('Sub::HandlesVia::HandlerLibrary') and $class->can($method_name)) {
 			$handler = $class->$method_name;
 		}
 	}

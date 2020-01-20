@@ -4,6 +4,9 @@ use warnings;
 
 package Sub::HandlesVia::HandlerLibrary::Hash;
 
+use Sub::HandlesVia::HandlerLibrary;
+our @ISA = 'Sub::HandlesVia::HandlerLibrary';
+
 use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( HashRef ArrayRef Optional Str CodeRef Item Any Ref Defined );
 
@@ -12,7 +15,7 @@ our @METHODS = qw( accessor clear count defined delete elements exists get
 
 sub _type_inspector {
 	my ($me, $type) = @_;
-	if (!$type or $type == HashRef or $type == Any or $type == Item or $type == Defined or $type == Ref) {
+	if ($type == HashRef or $type == Ref or $type == Ref['HASH']) {
 		return {
 			trust_mutated => 'always',
 		};
@@ -31,9 +34,7 @@ sub _type_inspector {
 			key_type      => $type->parameters->[0],
 		};
 	}
-	return {
-		trust_mutated => 'never',
-	};
+	return $me->SUPER::_type_inspector($type);
 }
 
 my $additional_validation_for_set_and_insert = sub {

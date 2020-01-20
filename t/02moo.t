@@ -52,14 +52,14 @@ note 'Local::Bleh2';
 {
 	package Local::Bleh2;
 	use Moo;
-	use MooX::TypeTiny;
 	use Types::Standard -types;
 	use Sub::HandlesVia;
 
 	has nums => (
 		is           => 'lazy',
-		isa          => ArrayRef->of(Int->plus_coercions(Num, 'int($_)'))->where('1'),
+		isa          => ArrayRef->of(Int->plus_coercions(Num, 'int($_)'))->where('1', coercion=>1),
 		builder      => sub { [] },
+		coerce       => 1,
 		handles_via  => 'Array',
 		handles      => {
 			splice_nums => 'splice',
@@ -84,10 +84,10 @@ like($e, qr/type constraint/, 'delegated method has to do naive type check')
 	};
 is_deeply($bleh->nums, [3..5], '... and kept the value safe');
 
-#$ref = $bleh->nums;
-#$bleh->splice_nums(1, 0, '3.111');
-#is_deeply($bleh->nums, [3, 3, 4, 5], 'delegated coerced value');
-#$ref2 = $bleh->nums;
-#is("$ref", "$ref2", '... without needing to build a new arrayref');
+$ref = $bleh->nums;
+$bleh->splice_nums(1, 0, '3.111');
+is_deeply($bleh->nums, [3, 3, 4, 5], 'delegated coerced value');
+$ref2 = $bleh->nums;
+isnt("$ref", "$ref2", '... but sadly needed to build a new arrayref');
 
 done_testing;

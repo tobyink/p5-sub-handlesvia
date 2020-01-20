@@ -4,6 +4,9 @@ use warnings;
 
 package Sub::HandlesVia::HandlerLibrary::Array;
 
+use Sub::HandlesVia::HandlerLibrary;
+our @ISA = 'Sub::HandlesVia::HandlerLibrary';
+
 use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( ArrayRef Optional Str CodeRef Int Item Any Ref Defined FileHandle );
 
@@ -15,7 +18,7 @@ our @METHODS = qw( count is_empty all elements flatten get pop push shift
 
 sub _type_inspector {
 	my ($me, $type) = @_;
-	if (!$type or $type == ArrayRef or $type == Any or $type == Item or $type == Defined or $type == Ref) {
+	if ($type == ArrayRef or $type == Defined or $type == Ref) {
 		return {
 			trust_mutated => 'always',
 		};
@@ -29,9 +32,7 @@ sub _type_inspector {
 			value_type    => $type->type_parameter,
 		};
 	}
-	return {
-		trust_mutated => 'never',
-	};
+	return $me->SUPER::_type_inspector($type);
 }
 
 my $additional_validation_for_push_and_unshift = sub {

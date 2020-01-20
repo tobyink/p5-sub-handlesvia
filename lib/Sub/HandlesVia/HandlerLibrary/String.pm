@@ -4,6 +4,9 @@ use warnings;
 
 package Sub::HandlesVia::HandlerLibrary::String;
 
+use Sub::HandlesVia::HandlerLibrary;
+our @ISA = 'Sub::HandlesVia::HandlerLibrary';
+
 use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( Optional Str CodeRef RegexpRef Int Any Item Defined );
 
@@ -11,14 +14,12 @@ our @METHODS = qw( inc append prepend replace match chop chomp clear length subs
 
 sub _type_inspector {
 	my ($me, $type) = @_;
-	if (!$type or $type == Str or $type == Any or $type == Item or $type == Defined) {
+	if ($type == Str or $type == Defined) {
 		return {
 			trust_mutated => 'always',
 		};
 	}
-	return {
-		trust_mutated => 'never',
-	};
+	return $me->SUPER::_type_inspector($type);
 }
 
 sub set {

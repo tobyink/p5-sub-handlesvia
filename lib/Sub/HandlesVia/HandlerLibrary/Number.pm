@@ -4,6 +4,9 @@ use warnings;
 
 package Sub::HandlesVia::HandlerLibrary::Number;
 
+use Sub::HandlesVia::HandlerLibrary;
+our @ISA = 'Sub::HandlesVia::HandlerLibrary';
+
 use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( Num Any Item Defined );
 
@@ -11,20 +14,13 @@ our @METHODS = qw( add sub mul div mod abs );
 
 sub _type_inspector {
 	my ($me, $type) = @_;
-	if ($type == Any or $type == Item or $type == Defined ) {
-		return {
-			trust_mutated => 'always',
-		};
-	}
-	if ($type==Num) {
+	if ($type==Num or $type==Defined) {
 		return {
 			trust_mutated => 'maybe',
 			value_type    => $type,
 		};
 	}
-	return {
-		trust_mutated => 'never',
-	};
+	return $me->SUPER::_type_inspector($type);
 }
 
 sub set {
