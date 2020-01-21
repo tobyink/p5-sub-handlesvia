@@ -17,9 +17,7 @@ sub _generate_delegations {
 	ref $target and die;
 
 	my $toolkit = $me->detect_toolkit($target);
-	my $tkclass = "Sub::HandlesVia::Toolkit::$toolkit";
-	eval "require $tkclass" or Exporter::Tiny::_croak($@);
-	return sub { $tkclass->install_delegations(target => $target, @_) };
+	return sub { $toolkit->install_delegations(target => $target, @_) };
 }
 
 sub _exporter_validate_opts {
@@ -30,12 +28,20 @@ sub _exporter_validate_opts {
 	ref $target and die;
 
 	my $toolkit = $me->detect_toolkit($target);
-	my $tkclass = "Sub::HandlesVia::Toolkit::$toolkit";
-	eval "require $tkclass" or Exporter::Tiny::_croak($@);
-	$tkclass->setup_for($target) if $tkclass->can('setup_for');
+	$toolkit->setup_for($target) if $toolkit->can('setup_for');
 }
 
 sub detect_toolkit {
+	my $toolkit = sprintf(
+		'%s::Toolkit::%s',
+		__PACKAGE__,
+		shift->_detect_framework(@_),
+	);
+	eval "require $toolkit" or Exporter::Tiny::_croak($@);
+	return $toolkit;
+}
+
+sub _detect_framework {
 	my ($me, $target) = (shift, @_);
 	
 	if ($INC{'Moo/Role.pm'}
