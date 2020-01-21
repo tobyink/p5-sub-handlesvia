@@ -4,3 +4,11 @@
 	issued  2020-01-21;
 	label   "Initial release".
 
+`Sub-HandlesVia 0.002 cpan:TOBYINK`
+	issued  2020-01-21;
+	changeset [
+		item "Add missing dependency on Class::Tiny."^^Packaging;
+		item "Drop dependency on List::MoreUtils by including our own copies of `natatime` and `firstidx`."^^Change;
+		item "Fix some typos."^^Documentation;
+		item "Remove some outdated information."^^Documentation;
+	].
