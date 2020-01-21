@@ -3,7 +3,24 @@
 @prefix : <http://ontologi.es/doap-deps#>.
 
 `Sub-HandlesVia`
+	:runtime-requirement    [ :on "perl 5.008"^^:CpanId ];
+	:runtime-requirement    [ :on "Types::Standard"^^:CpanId ];
+	:runtime-requirement    [ :on "Eval::TypeTiny"^^:CpanId ];
+	:runtime-requirement    [ :on "Exporter::Shiny"^^:CpanId ];
+	:runtime-requirement    [ :on "Type::Params"^^:CpanId ];
+	:runtime-requirement    [ :on "Types::Standard"^^:CpanId ];
+	:runtime-requirement    [ :on "Role::Tiny"^^:CpanId ];
+	:runtime-requirement    [ :on "Class::Method::Modifiers"^^:CpanId ];
+	:runtime-requirement    [ :on "List::Util"^^:CpanId ];
+	:runtime-requirement    [ :on "List::MoreUtils"^^:CpanId ];
+	:runtime-recommendation [ :on "Sub::Util"^^:CpanId ];
+	:test-recommendation    [ :on "Moose"^^:CpanId ];
+	:test-recommendation    [ :on "Mouse"^^:CpanId ];
+	:test-recommendation    [ :on "Moo"^^:CpanId ];
+	:test-recommendation    [ :on "MooX::TypeTiny"^^:CpanId ];
+	:test-recommendation    [ :on "Class::Tiny"^^:CpanId ];
 	:test-requirement       [ :on "Test::More 0.96"^^:CpanId ];
+	:test-requirement       [ :on "Test::Fatal"^^:CpanId ];
 	:develop-recommendation [ :on "Dist::Inkt 0.001"^^:CpanId ];
 	.
 
