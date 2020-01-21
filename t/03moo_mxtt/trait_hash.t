@@ -239,13 +239,11 @@ note "Testing class $class";
             'keys returns expected keys'
         );
 
-if (0) { local $TODO = 'this causing issues on Travis???'; 
         is_deeply(
             [ sort $obj->values ],
             [ 'blah', 'flop' ],
             'values returns expected values'
         );
-}
 	  
         my @key_value = sort { $a->[0] cmp $b->[0] } $obj->key_value;
         is_deeply(
