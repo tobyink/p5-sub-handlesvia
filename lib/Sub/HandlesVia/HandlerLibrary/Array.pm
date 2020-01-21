@@ -215,13 +215,25 @@ sub first {
 }
 
 sub first_index {
-	require List::MoreUtils;
+	my $me = __PACKAGE__;
 	handler
 		name      => 'Array:first_index',
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => '&List::MoreUtils::first_index($ARG, @{$GET})',
+		template  => $me.'::_firstidx($ARG, @{$GET})',
+}
+
+# Implementation from List::MoreUtils::PP.
+# Removed original prototype.
+sub _firstidx {
+	my $f = CORE::shift;
+	foreach my $i (0 .. $#_)
+	{
+		local *_ = \$_[$i];
+		return $i if $f->();
+	}
+	return -1;
 }
 
 sub reduce {
@@ -295,14 +307,22 @@ sub accessor {
 }
 
 sub natatime {
-	require List::MoreUtils;
+	my $me = __PACKAGE__;
 	handler
 		name      => 'Array:natatime',
 		min_args  => 1,
 		max_args  => 2,
 		signature => [Int, Optional[CodeRef]],
 		usage     => '$n, $callback?',
-		template  => 'my $shv_iterator = &List::MoreUtils::natatime($ARG[1], @{$GET}); if ($ARG[2]) { while (my @shv_values = $shv_iterator->()) { $ARG[2]->(@shv_values) } } else { $shv_iterator }',
+		template  => 'my $shv_iterator = '.$me.'::_natatime($ARG[1], @{$GET}); if ($ARG[2]) { while (my @shv_values = $shv_iterator->()) { $ARG[2]->(@shv_values) } } else { $shv_iterator }',
+}
+
+# Implementation from List::MoreUtils::PP.
+# Removed original prototype.
+sub _natatime {
+	my $n    = CORE::shift;
+	my @list = @_;
+	return sub { CORE::splice @list, 0, $n }
 }
 
 sub shallow_clone {
