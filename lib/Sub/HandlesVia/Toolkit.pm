@@ -112,3 +112,57 @@ sub make_callbacks {
 }
 
 1;
+
+
+__END__
+
+=pod
+
+=encoding utf-8
+
+=head1 NAME
+
+Sub::HandlesVia::Toolkit - integration with OO frameworks for Sub::HandlesVia
+
+=head1 DESCRIPTION
+
+Detect what subclass of Sub::HandlesVia::Toolkit is suitable for a class:
+
+  my $toolkit = Sub::HandlesVia->detect_toolkit($class);
+
+Extract handles_via information from a C<has> attribute spec hash:
+
+  my $shvdata = $toolkit->clean_spec($class, $attrname, \%spec);
+
+This not only returns the data that Sub::HandlesVia needs, it also cleans
+C<< %spec >> so that it can be passed to a Moose-like C<has> function
+without it complaining about unrecognized options.
+
+  $toolkit->install_delegations($shvdata) if $shvdata;
+
+=head1 BUGS
+
+Please report any bugs to
+L<http://rt.cpan.org/Dist/Display.html?Queue=Sub-HandlesVia>.
+
+=head1 SEE ALSO
+
+L<Sub::HandlesVia>.
+
+=head1 AUTHOR
+
+Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
+
+=head1 COPYRIGHT AND LICENCE
+
+This software is copyright (c) 2020 by Toby Inkster.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=head1 DISCLAIMER OF WARRANTIES
+
+THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
