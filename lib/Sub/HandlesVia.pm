@@ -209,7 +209,65 @@ hygienic.)
 
 =head2 Using with Moose
 
-Not implemented yet, but you can probably guess.
+It works the same as Mouse basically.
+
+ package Kitchen {
+   use Moose;
+   use Sub::HandlesVia;
+   use Types::Standard qw( ArrayRef Str );
+   
+   has food => (
+     is          => 'ro',
+     isa         => ArrayRef[Str],
+     handles_via => 'Array',
+     default     => sub { [] },
+     handles     => {
+       'add_food'    => 'push',
+       'find_food'   => 'grep',
+     },
+   );
+ }
+
+You are not forced to use Types::Standard. Moose native types should
+work fine.
+
+ package Kitchen {
+   use Moose;
+   use Sub::HandlesVia;
+   
+   has food => (
+     is          => 'ro',
+     isa         => 'ArrayRef[Str]',
+     handles_via => 'Array',
+     default     => sub { [] },
+     handles     => {
+       'add_food'    => 'push',
+       'find_food'   => 'grep',
+     },
+   );
+ }
+
+Sub::HandlesVia will also recognize native-traits-style traits. It will
+jump in and handle them before Moose notices!
+
+ package Kitchen {
+   use Moose;
+   use Sub::HandlesVia;
+   
+   has food => (
+     is          => 'ro',
+     isa         => 'ArrayRef[Str]',
+     traits      => ['Array'],
+     default     => sub { [] },
+     handles     => {
+       'add_food'    => 'push',
+       'find_food'   => 'grep',
+     },
+   );
+ }
+
+(If you have a moose in your kitchen, that might be even worse than
+the mouse.)
 
 =head2 Using with Anything
 
@@ -520,6 +578,8 @@ But you can be specific:
 Please report any bugs to
 L<http://rt.cpan.org/Dist/Display.html?Queue=Sub-HandlesVia>.
 
+(There are known bugs for Moose native types that do coercion.)
+
 =head1 SEE ALSO
 
 L<Moose>, L<MouseX::NativeTraits>, L<Data::Perl>, L<MooX::HandlesVia>.
@@ -534,7 +594,6 @@ This software is copyright (c) 2020 by Toby Inkster.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
-
 
 =head1 DISCLAIMER OF WARRANTIES
 
