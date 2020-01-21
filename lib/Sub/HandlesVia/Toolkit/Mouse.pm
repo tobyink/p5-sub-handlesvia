@@ -4,6 +4,9 @@ use warnings;
 
 package Sub::HandlesVia::Toolkit::Mouse;
 
+our $AUTHORITY = 'cpan:TOBYINK';
+our $VERSION   = '0.001';
+
 sub setup_for {
 	my $me = shift;
 	my ($target) = @_;
@@ -18,6 +21,9 @@ sub package_trait {
 }
 
 package Sub::HandlesVia::Toolkit::Mouse::PackageTrait;
+
+our $AUTHORITY = 'cpan:TOBYINK';
+our $VERSION   = '0.001';
 
 use Role::Tiny;
 

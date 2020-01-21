@@ -4,6 +4,9 @@ use warnings;
 
 package Sub::HandlesVia::Handler;
 
+our $AUTHORITY = 'cpan:TOBYINK';
+our $VERSION   = '0.001';
+
 use Class::Tiny (
 	qw(
 		template
@@ -377,6 +380,9 @@ sub _generate_handler {
 
 package Sub::HandlesVia::Handler::Traditional;
 
+our $AUTHORITY = 'cpan:TOBYINK';
+our $VERSION   = '0.001';
+
 BEGIN { our @ISA = 'Sub::HandlesVia::Handler' };
 
 sub BUILD {
@@ -414,6 +420,9 @@ sub _coderef {
 }
 
 package Sub::HandlesVia::Handler::CodeRef;
+
+our $AUTHORITY = 'cpan:TOBYINK';
+our $VERSION   = '0.001';
 
 BEGIN { our @ISA = 'Sub::HandlesVia::Handler' };
 
