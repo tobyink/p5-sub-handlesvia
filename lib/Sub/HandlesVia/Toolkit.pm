@@ -95,7 +95,7 @@ sub clean_spec {
 	}
 	
 	$spec->{handles} = { map +($_ => $_), @{ $spec->{handles} } }
-		if is_ArrayRef $spec->{handles};	
+		if is_ArrayRef $spec->{handles};
 	assert_HashRef $spec->{handles};
 
 	return {

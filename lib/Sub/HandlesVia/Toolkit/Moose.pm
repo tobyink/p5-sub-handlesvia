@@ -69,7 +69,7 @@ sub make_callbacks {
 		$meta = Moose::Util::find_meta($target);
 	}
 
-	my $attr = $meta->get_attribute($attrname);	
+	my $attr = $meta->get_attribute($attrname);
 	my $spec = +{%$attr};
 
 	my $captures = {};
