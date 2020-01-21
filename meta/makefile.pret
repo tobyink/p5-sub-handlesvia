@@ -10,6 +10,7 @@
 	:runtime-requirement    [ :on "Type::Params"^^:CpanId ];
 	:runtime-requirement    [ :on "Types::Standard"^^:CpanId ];
 	:runtime-requirement    [ :on "Role::Tiny"^^:CpanId ];
+	:runtime-requirement    [ :on "Class::Tiny"^^:CpanId ];
 	:runtime-requirement    [ :on "Class::Method::Modifiers"^^:CpanId ];
 	:runtime-requirement    [ :on "List::Util 1.50"^^:CpanId ];
 	:runtime-recommendation [ :on "Sub::Util"^^:CpanId ];
