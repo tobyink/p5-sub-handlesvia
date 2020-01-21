@@ -7,6 +7,9 @@ package Sub::HandlesVia::Toolkit::Moo;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.002';
 
+use Sub::HandlesVia::Toolkit;
+our @ISA = 'Sub::HandlesVia::Toolkit';
+
 use Data::Dumper;
 use Types::Standard qw( is_ArrayRef is_Str assert_HashRef is_CodeRef is_Undef );
 use Types::Standard qw( ArrayRef HashRef Str Num Int CodeRef Bool );
@@ -41,79 +44,15 @@ sub install_has_wrapper {
 		}
 		my ($attrs, %spec) = @_;
 		return $orig->($attrs, %spec) unless $spec{handles}; # shortcut
-		
 		$attrs = [$attrs] unless ref $attrs;
 		for my $attr (@$attrs) {
-			$me->process_spec($target, $attr, \%spec);
+			my $shv = $me->clean_spec($target, $attr, \%spec);
 			$orig->($attr, %spec);
-			if (my $handles = delete $spec{'_sub_handlesvia_handles'}) {
-				my $canon_spec = Moo->_constructor_maker_for($target)->all_attribute_specs->{$attr};
-				my %callbacks = $me->get_callbacks_for_attribute($target, $attr, $canon_spec);
-				foreach my $method_name (sort keys %$handles) {
-					$handles->{$method_name}->install_method(
-						%callbacks,
-						target      => $target,
-						method_name => $method_name,
-					);
-				}
-			}
+			$me->install_delegations($shv) if $shv;
 		}
 		return;
 	});
 }
-
-my %default_type = (
-	Array     => ArrayRef,
-	Hash      => HashRef,
-	String    => Str,
-	Number    => Num,
-	Counter   => Int,
-	Code      => CodeRef,
-	Bool      => Bool,
-);
-
-sub process_spec {
-	my $me = shift;
-	
-	my ($target, $attr, $spec) = @_;
-	my @handles_via;
-	if (is_ArrayRef $spec->{handles_via}) {
-		push @handles_via, @{ $spec->{handles_via} };
-	}
-	elsif (is_Str $spec->{handles_via}) {
-		push @handles_via, $spec->{handles_via};
-	}
-	elsif (is_ArrayRef $spec->{traits}) {
-		push @handles_via, @{ $spec->{traits} };
-	}
-	return unless @handles_via;
-	
-	my $joined = join('|', @handles_via);
-	return if $joined =~ /^Enum(?:eration)?$/i;
-	
-	if ($default_type{$joined} and not exists $spec->{isa}) {
-		$spec->{isa}    =    $default_type{$joined};
-		$spec->{coerce} = !! $default_type{$joined}->has_coercion;
-	}
-	
-	$spec->{handles} = { map +($_ => $_), @{ $spec->{handles} } }
-		if is_ArrayRef $spec->{handles};
-	
-	assert_HashRef $spec->{handles};
-	require Sub::HandlesVia::Handler;
-
-	my @method_names = sort keys %{ $spec->{handles} };
-	for my $method_name (@method_names) {
-		my $target_method = $spec->{handles}{$method_name};
-		my $handler = Sub::HandlesVia::Handler->lookup($target_method, \@handles_via);
-		
-		if ($handler) {
-			($spec->{'_sub_handlesvia_handles'} ||= {})->{$method_name} = $handler;
-			($spec->{'_sub_handlesvia_orig_handles'} ||= {})->{$method_name}
-				= delete $spec->{handles}{$method_name};
-		}
-	}
-}		
 
 my %standard_callbacks = (
 	args => sub {
@@ -143,22 +82,28 @@ my %standard_callbacks = (
 	},
 );
 
-sub get_callbacks_for_attribute {
-	my $me = shift;
-	my ($target, $attr, $spec) = @_;
+sub make_callbacks {
+	my ($me, $target, $attrname) = (shift, @_);
 	
+	if (ref $attrname) {
+		@$attrname==1 or die;
+		($attrname) = @$attrname;
+	}
+	
+	my $spec = Moo->_constructor_maker_for($target)->all_attribute_specs->{$attrname};
+		
 	my $maker = $me->_accessor_maker_for($target);
-	my ($is_simple_get, $get, $captures) = $maker->is_simple_get($attr, $spec)
-		? (1, $maker->generate_simple_get('$_[0]', $attr, $spec))
-		: (0, $maker->_generate_get($attr, $spec), delete($maker->{captures})||{});
-	my ($is_simple_set, $set) = $maker->is_simple_set($attr, $spec)
+	my ($is_simple_get, $get, $captures) = $maker->is_simple_get($attrname, $spec)
+		? (1, $maker->generate_simple_get('$_[0]', $attrname, $spec))
+		: (0, $maker->_generate_get($attrname, $spec), delete($maker->{captures})||{});
+	my ($is_simple_set, $set) = $maker->is_simple_set($attrname, $spec)
 		? (1, sub {
 			my ($var) = @_;
-			$maker->_generate_simple_set('$_[0]', $attr, $spec, $var);
+			$maker->_generate_simple_set('$_[0]', $attrname, $spec, $var);
 		})
 		: (0, sub { # that allows us to avoid going down this yucky code path
 			my ($var) = @_;
-			my $code = $maker->_generate_set($attr, $spec);
+			my $code = $maker->_generate_set($attrname, $spec);
 			$captures = { %$captures, %{ delete($maker->{captures}) or {} } };  # merge environments
 			$code = "do { local \@_ = (\$_[0], $var); $code }";
 			$code;
@@ -179,7 +124,7 @@ sub get_callbacks_for_attribute {
 		$captures->{'$shv_default_for_reset'} = \$default->[1];
 	}
 	
-	my %callbacks = (
+	return {
 		%standard_callbacks,
 		is_method      => !!1,
 		get            => sub { $get },
@@ -212,9 +157,7 @@ sub get_callbacks_for_attribute {
 				die 'lolwut?';
 			}
 		},
-	);
-	
-	%callbacks;
+	};
 }
 
 sub _accessor_maker_for {
@@ -234,3 +177,5 @@ sub _accessor_maker_for {
 		Carp::croak("Cannot get accessor maker for $target");
 	}
 }
+
+1;

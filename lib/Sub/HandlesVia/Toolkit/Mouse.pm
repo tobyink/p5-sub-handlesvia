@@ -7,6 +7,9 @@ package Sub::HandlesVia::Toolkit::Mouse;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.002';
 
+use Sub::HandlesVia::Toolkit;
+our @ISA = 'Sub::HandlesVia::Toolkit';
+
 sub setup_for {
 	my $me = shift;
 	my ($target) = @_;
@@ -18,84 +21,6 @@ sub setup_for {
 
 sub package_trait {
 	__PACKAGE__ . "::PackageTrait";
-}
-
-package Sub::HandlesVia::Toolkit::Mouse::PackageTrait;
-
-our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.002';
-
-use Role::Tiny;
-
-around add_attribute => sub {
-	my ($next, $self, $name, @args) = (shift, shift, @_);
-	my $spec = (@args == 1) ? $args[0] : { @args };
-	$self->_shv_munge_spec($name, $spec);
-	my $attr = $self->$next($name, $spec);
-	if ($spec->{'provides'}{'_sub_handlesvia_handles'} and $self->isa('Mouse::Meta::Class')) {
-		$self->_shv_install_methods($name, $spec);
-	}
-	return $attr;
-};
-
-my %native = qw(
-	Array           1
-	Bool            1
-	Code            1
-	Counter         1
-	Hash            1
-	Number          1
-	String          1
-);
-
-sub _shv_munge_spec {
-	my ($self, $name, $spec) = @_;
-	
-	# Easier to do this here than in the test cases.
-	delete $spec->{no_inline};
-	
-	# Clean our stuff out of traits list...
-	if (ref $spec->{traits} and not $spec->{handles_via}) {
-		my @keep = grep !$native{$_}, @{$spec->{traits}};
-		my @cull = grep  $native{$_}, @{$spec->{traits}};
-		delete $spec->{traits};
-		if (@keep) {
-			$spec->{traits} = \@keep;
-		}
-		if (@cull) {
-			$spec->{handles_via} = \@cull;
-		}
-	}
-	
-	# We don't really need to do anything else differently from Moo...
-	require Sub::HandlesVia::Toolkit::Moo;
-	Sub::HandlesVia::Toolkit::Moo::process_spec(__PACKAGE__, $self->name, $name, $spec);
-	
-	# Mouse::Meta::Attribute complains about unknown options passed to
-	# constructor, so let's stash them somewhere safe!
-	$spec->{'provides'} = {
-		'handles_via'                  => delete($spec->{'handles_via'}),
-		'_sub_handlesvia_handles'      => delete($spec->{'_sub_handlesvia_handles'}),
-		'_sub_handlesvia_orig_handles' => delete($spec->{'_sub_handlesvia_orig_handles'}),
-	}
-		if $spec->{'handles_via'}
-		|| $spec->{'_sub_handlesvia_handles'}
-		|| $spec->{'_sub_handlesvia_orig_handles'};
-}
-
-sub _shv_install_methods {
-	my ($self, $name, $spec) = @_;
-	if (my $handles = $spec->{'provides'}{'_sub_handlesvia_handles'}) {
-		my %callbacks = $self->_shv_callbacks($name, $spec);
-		foreach my $method_name (sort keys %$handles) {
-			my $coderef = $handles->{$method_name}->coderef(
-				%callbacks,
-				target      => $self->name,
-				method_name => $method_name,
-			);
-			$self->add_method($method_name => $coderef);
-		}
-	}
 }
 
 my %standard_callbacks = (
@@ -126,9 +51,26 @@ my %standard_callbacks = (
 	},
 );
 
-sub _shv_callbacks {
-	my ($self, $name, $spec) = @_;
-	my $attr = $self->get_attribute($name);
+sub make_callbacks {
+	my ($me, $target, $attrname) = (shift, @_);
+
+	if (ref $attrname) {
+		@$attrname==1 or die;
+		($attrname) = @$attrname;
+	}
+	
+	my $meta;
+	if (ref $target) {
+		$meta   = $target;
+		$target = $meta->name;
+	}
+	else {
+		require Mouse::Util;
+		$meta = Mouse::Util::find_meta($target);
+	}
+	
+	my $attr = $meta->get_attribute($attrname);
+	my $spec = +{%$attr};
 	
 	my $captures = {};
 	
@@ -172,7 +114,7 @@ sub _shv_callbacks {
 		$captures->{'$shv_default_for_reset'} = \$default->[1];
 	}
 
-	return (
+	return {
 		%standard_callbacks,
 		is_method      => !!1,
 		get            => $get,
@@ -183,6 +125,7 @@ sub _shv_callbacks {
 		coerce         => !!$spec->{coerce},
 		env            => $captures,
 		be_strict      => !!0,
+		install_method => sub { $meta->add_method(@_) },
 		default_for_reset => sub {
 			my ($handler, $callbacks) = @_ or die;
 			if (!$default) {
@@ -205,7 +148,29 @@ sub _shv_callbacks {
 				die 'lolwut?';
 			}
 		},
-	);
+	};
 }
+
+package Sub::HandlesVia::Toolkit::Mouse::PackageTrait;
+
+our $AUTHORITY = 'cpan:TOBYINK';
+our $VERSION   = '0.002';
+
+use Role::Tiny;
+
+sub _shv_toolkit {
+	'Sub::HandlesVia::Toolkit::Mouse',
+}
+
+around add_attribute => sub {
+	my ($next, $self, $attrname, @args) = (shift, shift, @_);
+	my $spec = (@args == 1) ? $args[0] : { @args };
+	$spec->{provides}{shv} = $self->_shv_toolkit->clean_spec($self->name, $attrname, $spec);
+	my $attr = $self->$next($attrname, $spec);
+	if ($spec->{provides}{shv} and $self->isa('Mouse::Meta::Class')) {
+		$self->_shv_toolkit->install_delegations($spec->{provides}{shv});
+	}
+	return $attr;
+};
 
 1;

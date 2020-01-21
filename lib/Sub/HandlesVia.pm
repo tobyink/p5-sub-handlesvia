@@ -9,67 +9,71 @@ use Exporter::Shiny qw( delegations );
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.002';
 
-sub import {
-	my $me     = shift;
-	my $target = caller;
-	
-	if ($INC{'Moo/Role.pm'}
-	and Moo::Role->is_role($target)) {
-		require Sub::HandlesVia::Toolkit::Moo;
-		Sub::HandlesVia::Toolkit::Moo->setup_for($target);
-	}
-	
-	elsif ($INC{'Moo.pm'}
-	and $Moo::MAKERS{$target}
-	and $Moo::MAKERS{$target}{is_class}) {
-		require Sub::HandlesVia::Toolkit::Moo;
-		Sub::HandlesVia::Toolkit::Moo->setup_for($target);
-	}
-	
-	elsif ($INC{'Moose/Role.pm'}
-	and $target->can('meta')
-	and $target->meta->isa('Moose::Meta::Role')) {
-		require Sub::HandlesVia::Toolkit::Moose;
-		Sub::HandlesVia::Toolkit::Moose->setup_for($target);
-	}
-	
-	elsif ($INC{'Moose.pm'}
-	and $target->can('meta')
-	and $target->meta->isa('Moose::Meta::Class')) {
-		require Sub::HandlesVia::Toolkit::Moose;
-		Sub::HandlesVia::Toolkit::Moose->setup_for($target);
-	}
-
-	elsif ($INC{'Mouse/Role.pm'}
-	and $target->can('meta')
-	and $target->meta->isa('Mouse::Meta::Role')) {
-		require Sub::HandlesVia::Toolkit::Mouse;
-		Sub::HandlesVia::Toolkit::Mouse->setup_for($target);
-	}
-	
-	elsif ($INC{'Mouse.pm'}
-	and $target->can('meta')
-	and $target->meta->isa('Mouse::Meta::Class')) {
-		require Sub::HandlesVia::Toolkit::Mouse;
-		Sub::HandlesVia::Toolkit::Mouse->setup_for($target);
-	}
-	
-	if (@_) {
-		unshift @_, $me;
-		goto \&Exporter::Tiny::import;
-	}
-}
-
 sub _generate_delegations {
-	my $me = shift;
-	my ($name, $args, $globals) = @_;
+	my ($me, $name, $args, $globals) = (shift, @_);
 	
 	my $target = $globals->{into};
 	!defined $target and die;
 	ref $target and die;
+
+	my $toolkit = $me->detect_toolkit($target);
+	my $tkclass = "Sub::HandlesVia::Toolkit::$toolkit";
+	eval "require $tkclass" or Exporter::Tiny::_croak($@);
+	return sub { $tkclass->install_delegations(target => $target, @_) };
+}
+
+sub _exporter_validate_opts {
+	my ($me, $globals) = (shift, @_);
+
+	my $target = $globals->{into};
+	!defined $target and die;
+	ref $target and die;
+
+	my $toolkit = $me->detect_toolkit($target);
+	my $tkclass = "Sub::HandlesVia::Toolkit::$toolkit";
+	eval "require $tkclass" or Exporter::Tiny::_croak($@);
+	$tkclass->setup_for($target) if $tkclass->can('setup_for');
+}
+
+sub detect_toolkit {
+	my ($me, $target) = (shift, @_);
 	
-	require Sub::HandlesVia::Toolkit::Plain;
-	sub { Sub::HandlesVia::Toolkit::Plain->delegations(target => $target, @_) };
+	if ($INC{'Moo/Role.pm'}
+	and Moo::Role->is_role($target)) {
+		return 'Moo';
+	}
+	
+	if ($INC{'Moo.pm'}
+	and $Moo::MAKERS{$target}
+	and $Moo::MAKERS{$target}{is_class}) {
+		return 'Moo';
+	}
+	
+	if ($INC{'Moose/Role.pm'}
+	and $target->can('meta')
+	and $target->meta->isa('Moose::Meta::Role')) {
+		return 'Moose';
+	}
+	
+	if ($INC{'Moose.pm'}
+	and $target->can('meta')
+	and $target->meta->isa('Moose::Meta::Class')) {
+		return 'Moose';
+	}
+
+	if ($INC{'Mouse/Role.pm'}
+	and $target->can('meta')
+	and $target->meta->isa('Mouse::Meta::Role')) {
+		return 'Mouse';
+	}
+	
+	if ($INC{'Mouse.pm'}
+	and $target->can('meta')
+	and $target->meta->isa('Mouse::Meta::Class')) {
+		return 'Mouse';
+	}
+	
+	return 'Plain';
 }
 
 1;
@@ -325,6 +329,11 @@ the setter is also passed a value to set.
 
 Really, I don't think there's any object system that this won't work
 for!
+
+(The C<delegations> function can be imported into Moo/Mouse/Moose classes
+too, in which case the C<attribute> needs to be the same attribute name
+you passed to C<has>. You cannot use a arrayref, coderef, hash key, or
+array index.)
 
 =head2 What methods can be delegated to?
 

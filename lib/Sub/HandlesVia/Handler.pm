@@ -334,20 +334,20 @@ sub install_method {
 	
 	if ( eval { require Sub::Util }) {
 		$coderef = Sub::Util::set_subname("$target\::$name", $coderef);
-		no strict 'refs';
-		*{"$target\::$name"} = $coderef;
 	}
 	elsif ( eval { require Sub::Name }) {
 		$coderef = Sub::Name::subname("$target\::$name", $coderef);
-		no strict 'refs';
-		*{"$target\::$name"} = $coderef;
+	}
+	
+	if ($callbacks{install_method}) {
+		$callbacks{install_method}->($name, $coderef);
+	}
+	elsif ($callbacks{install_method_fq}) {
+		$callbacks{install_method}->("$target\::$name", $coderef);
 	}
 	else {
-		eval qq{
-			package $target;
-			sub $name { goto \$coderef };
-			1;
-		} or die($@);
+		no strict 'refs';
+		*{"$target\::$name"} = $coderef;
 	}
 }
 
