@@ -23,9 +23,10 @@ matrix:
       dist: trusty
     - perl: "5.8.9"
       dist: trusty
+    - perl: "5.8.1"
+      dist: trusty
     - perl: "blead"
   allow_failures:
-    - perl: "5.8.9"
     - perl: "blead"
 before_install:
   - export DIST_INKT_PROFILE="Dist::Inkt::Profile::TOBYINK"
