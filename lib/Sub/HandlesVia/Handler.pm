@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::Handler;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.002';
+our $VERSION   = '0.003';
 
 use Class::Tiny (
 	qw(
@@ -381,7 +381,7 @@ sub _generate_handler {
 package Sub::HandlesVia::Handler::Traditional;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.002';
+our $VERSION   = '0.003';
 
 BEGIN { our @ISA = 'Sub::HandlesVia::Handler' };
 
@@ -422,7 +422,7 @@ sub _coderef {
 package Sub::HandlesVia::Handler::CodeRef;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.002';
+our $VERSION   = '0.003';
 
 BEGIN { our @ISA = 'Sub::HandlesVia::Handler' };
 

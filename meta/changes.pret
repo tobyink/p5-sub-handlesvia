@@ -12,3 +12,10 @@
 		item "Fix some typos."^^Documentation;
 		item "Remove some outdated information."^^Documentation;
 	].
+
+`Sub-HandlesVia 0.003 cpan:TOBYINK`
+	issued  2020-01-21;
+	changeset [
+		item "A lot of refactoring, reducing duplication in Moo, Moose, and Mouse integration."^^Change;
+		item "Document API for how Sub::HandlesVia interacts with OO frameworks."^^Documentation;
+	].
