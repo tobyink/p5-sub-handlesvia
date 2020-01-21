@@ -73,7 +73,7 @@ use Mouse::Util::TypeConstraints;
     run_tests( build_class( trigger => sub { } ) );
     run_tests( build_class( no_inline => 1 ) );
 
-    type 'MyHash', as 'HashRef[Str]', where { 1 };
+    subtype 'MyHash', as 'HashRef[Str]', where { 1 };
     run_tests( build_class( isa => 'MyHash' ) );
 
     coerce 'MyHash', from 'HashRef', via { $_ };

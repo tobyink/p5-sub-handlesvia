@@ -402,7 +402,7 @@ sub splice {
 		min_args  => 1,
 		usage     => '$index, $length, @values',
 		template  => 'my @shv_tmp = @{$GET}; my ($shv_index, $shv_length, @shv_values) = @ARG;'.$checks.'defined($shv_index) or $shv_index=0; defined($shv_length) or $shv_length=0; my @shv_return = splice(@shv_tmp, $shv_index, $shv_length, @shv_values); «\\@shv_tmp»; wantarray ? @shv_return : $shv_return[-1]',
-		lvalue_template => 'my ($shv_index, $shv_length, @shv_values) = @ARG;'.$checks.'splice(@{$GET}, $shv_index, $shv_length, @shv_values)',
+		lvalue_template => 'my ($shv_index, $shv_length, @shv_values) = @ARG;'.$checks.';splice(@{$GET}, $shv_index, $shv_length, @shv_values)',
 		additional_validation => sub {
 			my $self = CORE::shift;
 			my ($sig_was_checked, $callbacks) = @_;

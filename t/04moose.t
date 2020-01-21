@@ -47,7 +47,7 @@ my $ref = $bleh->nums;
 $bleh->splice_nums(1, 0, '3.111');
 is_deeply($bleh->nums, [3, 3, 4, 5], 'delegated coerced value');
 my $ref2 = $bleh->nums;
-is("$ref", "$ref2", '... without needing to build a new arrayref')
+isnt("$ref", "$ref2", '... but needed to build a new array')
 	or do {
 		require B::Deparse;
 		diag( B::Deparse->new->coderef2text(\&Local::Bleh::splice_nums) );
@@ -78,12 +78,18 @@ note 'Local::Bleh2';
 		},
 	);
 	
-	sub _build_nums { [1..2] }
+	sub _build_nums { [] }
 }
 
 $bleh = Local::Bleh2->new;
 $bleh->splice_nums(0, 0, 3..5);
-is_deeply($bleh->nums, [3..5], 'delegated method worked');
+is_deeply($bleh->nums, [3..5], 'delegated method worked')
+	or do {
+		diag explain($bleh->nums);
+		require B::Deparse;
+		diag( B::Deparse->new->coderef2text(\&Local::Bleh::splice_nums) );
+	};
+
 is($bleh->first_num, 3, 'curried delegated method worked');
 
 $e = exception {

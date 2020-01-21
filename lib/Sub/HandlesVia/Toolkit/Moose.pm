@@ -150,15 +150,14 @@ sub _shv_callbacks {
 		$captures->{'$shv_read_method'} = \$read_method;
 		$get = sub { 'scalar($_[0]->$shv_read_method)' };
 	}
+	
 	if ($attr->has_write_method) {
 		my $write_method = $attr->get_write_method;
 		$set = sub { my $val = shift; "\$_[0]->$write_method\($val)" };
 		++$set_checks_isa;
 	}
 	else {
-		my $write_method = $attr->get_write_method_ref;
-		eval { $write_method = $write_method->{body} };  # Moose docs lie!
-		$captures->{'$shv_write_method'} = \$write_method;
+		$captures->{'$shv_write_method'} = \(sub { $attr->set_value(@_) });
 		$set = sub { my $val = shift; '$_[0]->$shv_write_method('.$val.')' };
 		++$set_checks_isa;
 	}
@@ -185,7 +184,7 @@ sub _shv_callbacks {
 		isa            => Types::TypeTiny::to_TypeTiny($attr->type_constraint),
 		coerce         => !!$spec->{coerce},
 		env            => $captures,
-		be_strict      => !!0,
+		be_strict      => !!1,
 		default_for_reset => sub {
 			my ($handler, $callbacks) = @_ or die;
 			if (!$default) {
