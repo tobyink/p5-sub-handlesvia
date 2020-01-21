@@ -509,7 +509,7 @@ encapsulation of course):
 
 And C<< $kitchen->find_healthiest_food >> does this:
 
-  C<< $kitchen->food->find_healthiest >>
+  $kitchen->food->find_healthiest
 
 Basically, because C<find_healthiest> isn't one of the methods offered
 by Sub::HandlesVia::HandlerList::Array, it assumes you want to call it
