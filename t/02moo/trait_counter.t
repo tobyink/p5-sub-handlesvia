@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 
+## skip Test::Tabs
+
 use lib 't/lib';
 
 { package Local::Dummy1; use Test::Requires 'Moo' };

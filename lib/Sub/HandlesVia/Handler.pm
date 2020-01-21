@@ -60,7 +60,7 @@ sub curry {
 		max_args     => $self->has_max_args ? $self->max_args - @curried : undef,
 		min_args     => $self->has_min_args ? $self->min_args - @curried : undef,
 		signature    => $self->signature ? do { my @sig = @{$self->{signature}}; splice(@sig,0,scalar(@curried)); \@sig } : undef,
-		curried      => \@curried,		
+		curried      => \@curried,
 	);
 }
 
@@ -115,7 +115,7 @@ sub lookup {
 		if ($method_name =~ /\s*\.\.\.$/) {
 			$method_name =~ s/\s*\.\.\.$//;
 			++$make_chainable;
-		}	
+		}
 		if ($method_name =~ /^\~\s*/) {
 			$method_name =~ s/^\~\s*//;
 			++$make_loose;
@@ -155,7 +155,7 @@ sub _process_template {
 	my $wrapper;
 	
 	my $getter = $callbacks{get}->();
-	if ($getter !~ /^ 
+	if ($getter !~ /^
 		\$                 # scalar access
 		[^\W0-9]\w*        # normal-looking variable name (including $_)
 		(?:                # then...
@@ -237,7 +237,7 @@ sub _coderef {
 	
 	if ($self->name =~ /^(Array|Hash):/) {
 		my $getter = $callbacks{get}->();
-		if ($getter !~ /^ 
+		if ($getter !~ /^
 			\$                 # scalar access
 			[^\W0-9]\w*        # normal-looking variable name (including $_)
 			(?:                # then...
@@ -373,7 +373,7 @@ sub _generate_handler {
 		my (%args) = @_%2 ? (template=>@_) : @_;
 		$me->new(%args);
 	};
-}	
+}
 
 package Sub::HandlesVia::Handler::Traditional;
 

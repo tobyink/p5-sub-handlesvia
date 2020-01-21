@@ -54,7 +54,7 @@ sub append {
 		signature => [Str],
 		template  => '« $GET . $ARG »',
 		lvalue_template => '$GET .= $ARG',
-}	
+}
 
 sub prepend {
 	handler
