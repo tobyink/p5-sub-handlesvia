@@ -118,7 +118,7 @@ before, you should have a fairly good idea what this does.
 
 Why re-invent the wheel? Well, this is an implementation that should work
 okay with Moo, Moose, Mouse, and any other OO toolkit you throw at it.
-One ring to rule them all, so to speak. (Moose support is a TODO though!)
+One ring to rule them all, so to speak.
 
 Also, unlike L<MooX::HandlesVia>, it honours type constraints, plus it
 doesn't have the limitation that it can't mutate non-reference values.
