@@ -225,7 +225,7 @@ sub _coderef {
 			push @code, $callbacks{curry}->('@curry');
 		} else {
 			require B;
-			push @code, $callbacks{curry}->(sprintf('(%s)', join ',', map { defined ? B::perlstring($_) : 'undef' } @$curried));
+			push @code, $callbacks{curry}->(sprintf('(%s)', join ',', map { defined($_) ? B::perlstring($_) : 'undef' } @$curried));
 		}
 	}
 	
