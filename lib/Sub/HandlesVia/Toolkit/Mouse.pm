@@ -17,10 +17,15 @@ sub setup_for {
 	require Mouse::Util;
 	my $meta = Mouse::Util::find_meta($target);
 	Role::Tiny->apply_roles_to_object($meta, $me->package_trait);
+	Role::Tiny->apply_roles_to_object($meta, $me->role_trait) if $meta->isa('Mouse::Meta::Role');
 }
 
 sub package_trait {
 	__PACKAGE__ . "::PackageTrait";
+}
+
+sub role_trait {
+	__PACKAGE__ . "::RoleTrait";
 }
 
 my %standard_callbacks = (
@@ -77,7 +82,7 @@ sub make_callbacks {
 	my ($get, $set, $get_is_lvalue, $set_checks_isa);
 	if (!$spec->{lazy} and !$spec->{traits} and !$spec->{auto_deref}) {
 		require B;
-		my $slot = B::perlstring($attr->name);
+		my $slot = B::perlstring($attrname);
 		$get = sub { "\$_[0]{$slot}" };
 		++$get_is_lvalue;
 	}
@@ -163,14 +168,57 @@ sub _shv_toolkit {
 }
 
 around add_attribute => sub {
-	my ($next, $self, $attrname, @args) = (shift, shift, @_);
-	my $spec = (@args == 1) ? $args[0] : { @args };
-	$spec->{provides}{shv} = $self->_shv_toolkit->clean_spec($self->name, $attrname, $spec);
-	my $attr = $self->$next($attrname, $spec);
+	my ($next, $self, @args) = (shift, shift, @_);
+	my ($spec, $attrobj, $attrname);
+	if (@args == 1) {
+		$spec = $attrobj = $_[0];
+		$attrname = $attrobj->name;
+	}
+	elsif (@args == 2) {
+		($attrname, $spec) = @args;
+	}
+	else {
+		my %spec;
+		($attrname, %spec) = @args;
+		$spec = \%spec;
+	}
+	$spec->{provides}{shv} = $self->_shv_toolkit->clean_spec($self->name, $attrname, $spec)
+		unless $spec->{provides}{shv};
+	my $attr = $self->$next($attrobj ? $attrobj : ($attrname, %$spec));
 	if ($spec->{provides}{shv} and $self->isa('Mouse::Meta::Class')) {
-		$self->_shv_toolkit->install_delegations($spec->{provides}{shv});
+		$self->_shv_toolkit->install_delegations(+{
+			%{ $spec->{provides}{shv} },
+			target => $self->name,
+		});
 	}
 	return $attr;
+};
+
+package Sub::HandlesVia::Toolkit::Mouse::RoleTrait;
+
+our $AUTHORITY = 'cpan:TOBYINK';
+our $VERSION   = '0.003';
+
+use Role::Tiny;
+
+around apply => sub {
+	my ($next, $self, $other, %args) = (shift, shift, @_);
+	
+	if ($other->isa('Mouse::Meta::Role')) {
+		Role::Tiny->apply_roles_to_object(
+			$other,
+			$self->_shv_toolkit->package_trait,
+			$self->_shv_toolkit->role_trait,
+		);
+	}
+	else {
+		Role::Tiny->apply_roles_to_object(
+			$other,
+			$self->_shv_toolkit->package_trait,
+		);
+	}
+	
+	$self->$next(@_);
 };
 
 1;
