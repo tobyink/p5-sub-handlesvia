@@ -242,7 +242,7 @@ sub _make_callbacks_role {
 		}
 		else {
 			++$default_literal;
-		}		
+		}
 		my $dammit_i_need_to_build_a_reader = sub {
 			my $instance = shift;
 			exists($instance->{$attrname}) or do {
