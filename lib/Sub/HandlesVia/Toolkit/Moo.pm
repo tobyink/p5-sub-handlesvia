@@ -90,9 +90,22 @@ sub make_callbacks {
 		($attrname) = @$attrname;
 	}
 	
-	my $spec = Moo->_constructor_maker_for($target)->all_attribute_specs->{$attrname};
-		
-	my $maker = $me->_accessor_maker_for($target);
+	my $ctor_maker = Moo->_constructor_maker_for($target);
+	
+	if (!$ctor_maker) {
+		return $me->_make_callbacks_role($target, $attrname);
+	}
+	
+	my $spec = $ctor_maker->all_attribute_specs->{$attrname};
+	my $maker = Moo->_accessor_maker_for($target);
+
+	my $type = $spec->{isa} ? Types::TypeTiny::to_TypeTiny($spec->{isa}) : undef;
+	my $coerce = $spec->{coerce};
+	if ((ref($coerce)||'') eq 'CODE') {
+		$type   = $type->plus_coercions(Types::Standard::Any(), $coerce);
+		$coerce = 1;
+	}
+	
 	my ($is_simple_get, $get, $captures) = $maker->is_simple_get($attrname, $spec)
 		? (1, $maker->generate_simple_get('$_[0]', $attrname, $spec))
 		: (0, $maker->_generate_get($attrname, $spec), delete($maker->{captures})||{});
@@ -131,8 +144,8 @@ sub make_callbacks {
 		get_is_lvalue  => $is_simple_get,
 		set            => $set,
 		set_checks_isa => !$is_simple_set,
-		isa            => Types::TypeTiny::to_TypeTiny($spec->{isa}),
-		coerce         => !!$spec->{coerce},
+		isa            => $type,
+		coerce         => !!$coerce,
 		env            => $captures,
 		be_strict      => $spec->{weak_ref}||$spec->{trigger},
 		default_for_reset => sub {
@@ -160,22 +173,165 @@ sub make_callbacks {
 	};
 }
 
-sub _accessor_maker_for {
-	my $me = shift;
-	my ($target) = @_;
-	if ($INC{'Moo/Role.pm'} && Moo::Role->is_role($target)) {
-		my $dummy = 'MooX::Enumeration::____DummyClass____';
-		eval('package ' # hide from CPAN indexer
-		. "$dummy; use Moo");
-		return Moo->_accessor_maker_for($dummy);
+sub _make_callbacks_role {
+	my ($me, $target, $attrname) = (shift, @_);
+	
+	if (ref $attrname) {
+		@$attrname==1 or die;
+		($attrname) = @$attrname;
 	}
-	elsif ($Moo::MAKERS{$target} && $Moo::MAKERS{$target}{is_class}) {
-		return Moo->_accessor_maker_for($target);
+	
+	require B;
+	
+	my %all_specs = @{ $Moo::Role::INFO{$target}{attributes} };
+	my $spec      = $all_specs{$attrname};
+
+	my ($reader_name, $writer_name);
+	
+	if ($spec->{is} eq 'ro') {
+		$reader_name = $attrname;
+	}
+	elsif ($spec->{is} eq 'rw') {
+		$reader_name = $attrname;
+		$writer_name = $attrname;
+	}
+	elsif ($spec->{is} eq 'rwp') {
+		$reader_name = $attrname;
+		$writer_name = "_set_$attrname";
+	}
+	if (exists $spec->{reader}) {
+		$reader_name = $spec->{reader};
+	}
+	if (exists $spec->{writer}) {
+		$writer_name = $spec->{reader};
+	}
+	if (exists $spec->{accessor}) {
+		$reader_name = $spec->{accessor} unless defined $reader_name;
+		$writer_name = $spec->{accessor} unless defined $writer_name;
+	}
+	
+	my $type = $spec->{isa} ? Types::TypeTiny::to_TypeTiny($spec->{isa}) : undef;
+	my $coerce = $spec->{coerce};
+	if ((ref($coerce)||'') eq 'CODE') {
+		$type   = $type->plus_coercions(Types::Standard::Any(), $coerce);
+		$coerce = 1;
+	}
+	
+	my $captures = {};
+	my ($get, $set);
+	
+	if (defined $reader_name) {
+		$get = ($reader_name =~ /^[\W0-9]\w*$/s)
+			? sub { sprintf "\$_[0]->%s", $reader_name }
+			: sub { sprintf "\$_[0]->\${\\ %s }", B::perlstring($reader_name) };
 	}
 	else {
-		require Carp;
-		Carp::croak("Cannot get accessor maker for $target");
+		my ($default, $default_literal) = (undef, 0);
+		if (is_Coderef $spec->{default}) {
+			$default = $spec->{default};
+		}
+		elsif (exists $spec->{default}) {
+			++$default_literal;
+			$default = $spec->{default};
+		}
+		elsif (is_CodeRef $spec->{builder} or (($spec->{builder}||0) eq 1)) {
+			$default = '_build_'.$attrname;
+		}
+		elsif ($spec->{builder}) {
+			$default = $spec->{builder};
+		}
+		else {
+			++$default_literal;
+		}		
+		my $dammit_i_need_to_build_a_reader = sub {
+			my $instance = shift;
+			exists($instance->{$attrname}) or do {
+				$instance->{$attrname} ||= $default_literal ? $default : $instance->$default;
+			};
+			$instance->{$attrname};
+		};
+		$captures->{'$shv_reader'} = \$dammit_i_need_to_build_a_reader;
+		$get = sub { '$_[0]->$shv_reader()' };
 	}
+	
+	
+	if (defined $writer_name) {
+		$set = $writer_name =~ /^[\W0-9]\w*$/s
+			? sub { my $val = shift; sprintf "\$_[0]->%s(%s)", $writer_name, $val }
+			: sub { my $val = shift; sprintf "\$_[0]->\${\\ %s }(%s)", B::perlstring($writer_name), $val };
+	}
+	else {
+		my $trigger;
+		if (($spec->{trigger}||0) eq 1) {
+			$trigger = "_trigger_$attrname";
+		}
+		my $weaken = $spec->{weak_ref} || 0;
+		my $dammit_i_need_to_build_a_writer = sub {
+			my ($instance, $new_value) = (shift, @_);
+			if ($type) {
+				($type->has_coercion && $coerce)
+					? ($new_value = $type->assert_coerce($new_value))
+					: $type->assert_valid($new_value);
+			}
+			if ($trigger) {
+				$instance->$trigger($new_value, exists($instance->{$attrname}) ? $instance->{$attrname} : ())
+			}
+			$instance->{$attrname} = $new_value;
+			if ($weaken and ref $new_value) {
+				Scalar::Util::weaken($instance->{$attrname});
+			}
+			$instance->{$attrname};
+		};
+		$captures->{'$shv_writer'} = \$dammit_i_need_to_build_a_writer;
+		$set = sub { my $val = shift; "\$_[0]->\$shv_writer($val)" };
+	}
+
+	my $default;
+	if (exists $spec->{default}) {
+		$default = [ default => $spec->{default} ];
+	}
+	elsif (exists $spec->{builder}) {
+		$default = [ builder => $spec->{builder} ];
+	}
+	
+	if (is_CodeRef $default->[1]) {
+		$captures->{'$shv_default_for_reset'} = \$default->[1];
+	}
+
+	return {
+		%standard_callbacks,
+		is_method      => !!1,
+		get            => $get,
+		get_is_lvalue  => !!0,
+		set            => $set,
+		set_checks_isa => !!1,
+		isa            => $type,
+		coerce         => !!$coerce,
+		env            => $captures,
+		be_strict      => !!0,
+		default_for_reset => sub {
+			my ($handler, $callbacks) = @_ or die;
+			if (!$default) {
+				return $handler->default_for_reset->();
+			}
+			elsif ($default->[0] eq 'builder') {
+				return sprintf('(%s)->%s', $callbacks->{self}->(), $default->[1]);
+			}
+			elsif ($default->[0] eq 'default' and is_CodeRef $default->[1]) {
+				return sprintf('(%s)->$shv_default_for_reset', $callbacks->{self}->());
+			}
+			elsif ($default->[0] eq 'default' and is_Undef $default->[1]) {
+				return 'undef';
+			}
+			elsif ($default->[0] eq 'default' and is_Str $default->[1]) {
+				require B;
+				return B::perlstring($default->[1]);
+			}
+			else {
+				die 'lolwut?';
+			}
+		},
+	};
 }
 
 1;
