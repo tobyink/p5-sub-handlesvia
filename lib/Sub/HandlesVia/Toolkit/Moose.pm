@@ -17,10 +17,15 @@ sub setup_for {
 	require Moose::Util;
 	my $meta = Moose::Util::find_meta($target);
 	Role::Tiny->apply_roles_to_object($meta, $me->package_trait);
+	Role::Tiny->apply_roles_to_object($meta, $me->role_trait) if $meta->isa('Moose::Meta::Role');
 }
 
 sub package_trait {
 	__PACKAGE__ . "::PackageTrait";
+}
+
+sub role_trait {
+	__PACKAGE__ . "::RoleTrait";
 }
 
 my %standard_callbacks = (
@@ -98,7 +103,11 @@ sub make_callbacks {
 		++$set_checks_isa;
 	}
 	else {
-		$captures->{'$shv_write_method'} = \(sub { $attr->set_value(@_) });
+		$captures->{'$shv_write_method'} = \(
+			$attr->can('set_value')
+				? sub { $attr->set_value(@_) }
+				: sub { my ($instance, $value) = @_; $instance->meta->get_attribute($attrname)->set_value($instance, $value) }
+		);
 		$set = sub { my $val = shift; '$_[0]->$shv_write_method('.$val.')' };
 		++$set_checks_isa;
 	}
@@ -164,14 +173,54 @@ sub _shv_toolkit {
 }
 
 around add_attribute => sub {
-	my ($next, $self, $attrname, @args) = (shift, shift, @_);
-	my $spec = (@args == 1) ? $args[0] : { @args };
-	$spec->{definition_context}{shv} = $self->_shv_toolkit->clean_spec($self->name, $attrname, $spec);
-	my $attr = $self->$next($attrname, $spec);
+	my ($next, $self, @args) = (shift, shift, @_);
+	my ($spec, $attrobj, $attrname);
+	if (@args == 1) {
+		$spec = $attrobj = $_[0];
+		$attrname = $attrobj->name;
+	}
+	elsif (@args == 2) {
+		($attrname, $spec) = @args;
+	}
+	else {
+		my %spec;
+		($attrname, %spec) = @args;
+		$spec = \%spec;
+	}
+	$spec->{definition_context}{shv} = $self->_shv_toolkit->clean_spec($self->name, $attrname, $spec)
+		unless $spec->{definition_context}{shv};
+	my $attr = $self->$next($attrobj ? $attrobj : ($attrname, %$spec));
 	if ($spec->{definition_context}{shv} and $self->isa('Moose::Meta::Class')) {
 		$self->_shv_toolkit->install_delegations($spec->{definition_context}{shv});
 	}
 	return $attr;
+};
+
+package Sub::HandlesVia::Toolkit::Moose::RoleTrait;
+
+our $AUTHORITY = 'cpan:TOBYINK';
+our $VERSION   = '0.003';
+
+use Role::Tiny;
+
+around apply => sub {
+	my ($next, $self, $other, %args) = (shift, shift, @_);
+	
+	if ($other->isa('Moose::Meta::Role')) {
+		Role::Tiny->apply_roles_to_object(
+			$other,
+			$self->_shv_toolkit->package_trait,
+			$self->_shv_toolkit->role_trait,
+		);
+	}
+	else {
+		Role::Tiny->apply_roles_to_object(
+			$other,
+			$self->_shv_toolkit->package_trait,
+		);
+	}
+	
+	$self->$next(@_);
 };
 
 1;
