@@ -7,7 +7,7 @@
 	:runtime-requirement    [ :on "Types::Standard"^^:CpanId ];
 	:runtime-requirement    [ :on "Eval::TypeTiny"^^:CpanId ];
 	:runtime-requirement    [ :on "Exporter::Shiny"^^:CpanId ];
-	:runtime-requirement    [ :on "Type::Params"^^:CpanId ];
+	:runtime-requirement    [ :on "Type::Params 1.004000"^^:CpanId ];
 	:runtime-requirement    [ :on "Types::Standard"^^:CpanId ];
 	:runtime-requirement    [ :on "Role::Tiny"^^:CpanId ];
 	:runtime-requirement    [ :on "Class::Tiny"^^:CpanId ];
