@@ -19,3 +19,9 @@
 		item "A lot of refactoring, reducing duplication in Moo, Moose, and Mouse integration."^^Change;
 		item "Document API for how Sub::HandlesVia interacts with OO frameworks."^^Documentation;
 	].
+
+`Sub-HandlesVia 0.004 cpan:TOBYINK`
+	issued  2020-01-22;
+	changeset [
+		item "Support for Moo::Role, Moose::Role, and Mouse::Role."^^Change;
+	].
