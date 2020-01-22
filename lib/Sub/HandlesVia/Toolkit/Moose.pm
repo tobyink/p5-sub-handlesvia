@@ -82,7 +82,7 @@ sub make_callbacks {
 	my ($get, $set, $get_is_lvalue, $set_checks_isa);
 	if (!$spec->{lazy} and !$spec->{traits} and !$spec->{auto_deref}) {
 		require B;
-		my $slot = B::perlstring($attr->name);
+		my $slot = B::perlstring($attrname);
 		$get = sub { "\$_[0]{$slot}" };
 		++$get_is_lvalue;
 	}
@@ -191,7 +191,10 @@ around add_attribute => sub {
 		unless $spec->{definition_context}{shv};
 	my $attr = $self->$next($attrobj ? $attrobj : ($attrname, %$spec));
 	if ($spec->{definition_context}{shv} and $self->isa('Moose::Meta::Class')) {
-		$self->_shv_toolkit->install_delegations($spec->{definition_context}{shv});
+		$self->_shv_toolkit->install_delegations(+{
+			%{ $spec->{definition_context}{shv} },
+			target => $self->name,
+		});
 	}
 	return $attr;
 };
