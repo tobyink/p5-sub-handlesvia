@@ -25,3 +25,11 @@
 	changeset [
 		item "Support for Moo::Role, Moose::Role, and Mouse::Role."^^Change;
 	].
+
+`Sub-HandlesVia 0.005 cpan:TOBYINK`
+	issued  2020-01-23;
+	changeset [
+		item "`head` method for Array."^^Addition;
+		item "`tail` method for Array."^^Addition;
+		item "Stop accidentally setting coerce=>'' for some Moo attributes. It confuses Moo."^^Bugifx;
+	].
