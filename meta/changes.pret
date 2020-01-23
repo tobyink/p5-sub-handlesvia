@@ -33,3 +33,9 @@
 		item "`tail` method for Array."^^Addition;
 		item "Stop accidentally setting coerce=>'' for some Moo attributes. It confuses Moo."^^Bugfix;
 	].
+
+`Sub-HandlesVia 0.006 cpan:TOBYINK`
+	issued  2020-01-23;
+	changeset [
+		item "Output some version numbers and environment variables in test suite."^^Tests;
+	].
