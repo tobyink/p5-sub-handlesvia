@@ -31,5 +31,5 @@
 	changeset [
 		item "`head` method for Array."^^Addition;
 		item "`tail` method for Array."^^Addition;
-		item "Stop accidentally setting coerce=>'' for some Moo attributes. It confuses Moo."^^Bugifx;
+		item "Stop accidentally setting coerce=>'' for some Moo attributes. It confuses Moo."^^Bugfix;
 	].
