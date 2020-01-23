@@ -99,8 +99,8 @@ sub make_callbacks {
 	my $spec = $ctor_maker->all_attribute_specs->{$attrname};
 	my $maker = Moo->_accessor_maker_for($target);
 
-	my $type = $spec->{isa} ? Types::TypeTiny::to_TypeTiny($spec->{isa}) : undef;
-	my $coerce = $spec->{coerce};
+	my $type   = $spec->{isa} ? Types::TypeTiny::to_TypeTiny($spec->{isa}) : undef;
+	my $coerce = exists($spec->{coerce}) ? $spec->{coerce} : 0;
 	if ((ref($coerce)||'') eq 'CODE') {
 		$type   = $type->plus_coercions(Types::Standard::Any(), $coerce);
 		$coerce = 1;

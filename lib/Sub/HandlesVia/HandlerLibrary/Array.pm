@@ -17,7 +17,7 @@ our @METHODS = qw( count is_empty all elements flatten get pop push shift
 	unshift clear first first_index reduce set accessor natatime
 	shallow_clone map grep sort reverse sort_in_place splice shuffle
 	shuffle_in_place uniq uniq_in_place delete insert flatten flatten_deep
-	join print );
+	join print head tail );
 
 sub _type_inspector {
 	my ($me, $type) = @_;
@@ -524,6 +524,24 @@ sub print {
 		signature => [Optional[FileHandle], Optional[Str]],
 		usage     => '$fh?, $with?',
 		template  => 'my $shv_param_with = (#ARG>1) ? $ARG[2] : q[,]; print {$ARG[1]||*STDOUT} join($shv_param_with, @{$GET})',
+}
+
+sub head {
+	handler
+		name      => 'Array:head',
+		args      => 1,
+		signature => [Int],
+		usage     => '$count',
+		template  => 'my $shv_count=$ARG; $shv_count=@{$GET} if $shv_count>@{$GET}; $shv_count=@{$GET}+$shv_count if $shv_count<0; (@{$GET})[0..($shv_count-1)]',
+}
+
+sub tail {
+	handler
+		name      => 'Array:tail',
+		args      => 1,
+		signature => [Int],
+		usage     => '$count',
+		template  => 'my $shv_count=$ARG; $shv_count=@{$GET} if $shv_count>@{$GET}; $shv_count=@{$GET}+$shv_count if $shv_count<0; my $shv_start = scalar(@{$GET})-$shv_count; my $shv_end = scalar(@{$GET})-1; (@{$GET})[$shv_start..$shv_end]',
 }
 
 1;

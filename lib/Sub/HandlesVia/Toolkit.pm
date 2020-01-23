@@ -90,8 +90,8 @@ sub clean_spec {
 	my $joined      = join('|', @handles_via);
 
 	if ($default_type{$joined} and not exists $spec->{isa}) {
-		$spec->{isa}    =    $default_type{$joined};
-		$spec->{coerce} = !! $default_type{$joined}->has_coercion;
+		$spec->{isa}    = $default_type{$joined};
+		$spec->{coerce} = 1 if $default_type{$joined}->has_coercion;
 	}
 	
 	$spec->{handles} = { map +($_ => $_), @{ $spec->{handles} } }

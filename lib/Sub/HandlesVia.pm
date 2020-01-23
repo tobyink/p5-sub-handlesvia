@@ -366,6 +366,7 @@ aliases for existing methods.
        for_each_pair :                      Mouse
                  get : SubHV  DataP  Moose  Mouse
                 grep : SubHV  DataP  Moose  Mouse
+                head : SubHV  DataP              
               insert : SubHV  DataP  Moose  Mouse
             is_empty : SubHV  DataP  Moose  Mouse
                 join : SubHV  DataP  Moose  Mouse
@@ -388,6 +389,7 @@ aliases for existing methods.
     sort_in_place_by :                      Mouse
               splice : SubHV  DataP  Moose  Mouse
                store :                      Mouse
+                tail : SubHV  DataP              
                 uniq : SubHV  DataP  Moose  Mouse
        uniq_in_place : SubHV                     
              unshift : SubHV  DataP  Moose  Mouse
