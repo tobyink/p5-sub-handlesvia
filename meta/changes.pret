@@ -39,3 +39,11 @@
 	changeset [
 		item "Output some version numbers and environment variables in test suite."^^Tests;
 	].
+
+`Sub-HandlesVia 0.007 cpan:TOBYINK`
+	label   "Bond... James Bond";
+	issued  2020-01-25;
+	changeset [
+		item "`scalar_ref` method for Scalar."^^Addition;
+		item "Better handling for non-hashref-based Moose instances."^^Bugfix;
+	].
