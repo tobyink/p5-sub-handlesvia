@@ -49,6 +49,7 @@ my %native = qw(
 	Counter         1
 	Hash            1
 	Number          1
+	Scalar          1
 	String          1
 );
 

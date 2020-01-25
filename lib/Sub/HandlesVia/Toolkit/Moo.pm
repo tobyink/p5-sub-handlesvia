@@ -106,6 +106,8 @@ sub make_callbacks {
 		$coerce = 1;
 	}
 	
+	my ($slot) = $maker->generate_simple_get('$_[0]', $attrname, $spec);
+	
 	my ($is_simple_get, $get, $captures) = $maker->is_simple_get($attrname, $spec)
 		? (1, $maker->generate_simple_get('$_[0]', $attrname, $spec))
 		: (0, $maker->_generate_get($attrname, $spec), delete($maker->{captures})||{});
@@ -140,6 +142,7 @@ sub make_callbacks {
 	return {
 		%standard_callbacks,
 		is_method      => !!1,
+		slot           => sub { $slot },
 		get            => sub { $get },
 		get_is_lvalue  => $is_simple_get,
 		set            => $set,
@@ -301,6 +304,7 @@ sub _make_callbacks_role {
 	return {
 		%standard_callbacks,
 		is_method      => !!1,
+		slot           => sub { '$_[0]{'.B::perlstring($attrname).'}' }, # icky
 		get            => $get,
 		get_is_lvalue  => !!0,
 		set            => $set,

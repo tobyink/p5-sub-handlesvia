@@ -181,6 +181,7 @@ sub _process_template {
 	$template =~ s/\$ARG\[([0-9]+)\]/$callbacks{arg}->($1)/eg;
 	$template =~ s/\$ARG/$callbacks{arg}->(1)/eg;
 	$template =~ s/\$SELF/$callbacks{self}->()/eg;
+	$template =~ s/\$SLOT/$callbacks{slot}->()/eg;
 	$template =~ s/\#ARG/$callbacks{argc}->()/eg;
 	$template =~ s/\@ARG/$callbacks{args}->()/eg;
 	$template =~ s/«(.+?)»/$callbacks{set}->($1)/eg;

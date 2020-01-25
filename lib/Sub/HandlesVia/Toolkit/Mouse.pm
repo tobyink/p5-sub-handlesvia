@@ -122,6 +122,7 @@ sub make_callbacks {
 	return {
 		%standard_callbacks,
 		is_method      => !!1,
+		slot           => sub { '$_[0]{'.B::perlstring($attrname).'}' }, # icky
 		get            => $get,
 		get_is_lvalue  => $get_is_lvalue,
 		set            => $set,

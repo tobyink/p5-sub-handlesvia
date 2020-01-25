@@ -444,6 +444,9 @@ aliases for existing methods.
                  set : SubHV         Moose       
                  sub : SubHV  DataP  Moose  Mouse
 
+  Scalar ==========================================
+    scalar_reference : SubHV                    
+
   String ==========================================
               append : SubHV  DataP  Moose  Mouse
                chomp : SubHV  DataP  Moose  Mouse

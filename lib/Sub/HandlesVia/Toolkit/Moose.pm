@@ -78,12 +78,12 @@ sub make_callbacks {
 	my $spec = +{%$attr};
 
 	my $captures = {};
-
+	
+	my $slot = $meta->get_meta_instance->inline_slot_access('$_[0]', $attrname);
+	
 	my ($get, $set, $get_is_lvalue, $set_checks_isa);
 	if (!$spec->{lazy} and !$spec->{traits} and !$spec->{auto_deref}) {
-		require B;
-		my $slot = B::perlstring($attrname);
-		$get = sub { "\$_[0]{$slot}" };
+		$get = sub { $slot };
 		++$get_is_lvalue;
 	}
 	elsif ($attr->has_read_method) {
@@ -127,6 +127,7 @@ sub make_callbacks {
 	return {
 		%standard_callbacks,
 		is_method      => !!1,
+		slot           => sub { $slot },
 		get            => $get,
 		get_is_lvalue  => $get_is_lvalue,
 		set            => $set,
