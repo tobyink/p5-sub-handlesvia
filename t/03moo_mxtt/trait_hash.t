@@ -88,12 +88,13 @@ sub run_tests {
     my ( $class, $handles ) = @_;
 
 note "Testing class $class";
-die;
+diag "can stuff";
     can_ok( $class, $_ ) for sort keys %{$handles};
-
+diag "done can stuff";
 #    with_immutable {
+diag "new";
         my $obj = $class->new( options => {} );
-
+diag "done new";
         ok( $obj->has_no_options, '... we have no options' );
         is( $obj->num_options, 0, '... we have no options' );
 
