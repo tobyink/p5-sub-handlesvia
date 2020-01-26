@@ -47,3 +47,10 @@
 		item "`scalar_ref` method for Scalar."^^Addition;
 		item "Better handling for non-hashref-based Moose instances."^^Bugfix;
 	].
+
+`Sub-HandlesVia 0.008_000 cpan:TOBYINK`
+	issued  2020-01-26;
+	changeset [
+		item "Spew some output in t/03moo_mxtt/trait_hash.t."^^Tests;
+		item "Require MooX::TypeTiny and Moo."^^Packaging;
+	].
