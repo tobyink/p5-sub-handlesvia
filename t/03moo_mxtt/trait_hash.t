@@ -245,6 +245,9 @@ note "Testing class $class";
             'keys returns expected keys'
         );
 
+require B::Deparse;
+diag( B::Deparse->new->coderef2text($obj->can('values')) );
+
         is_deeply(
             [ sort $obj->values ],
             [ 'blah', 'flop' ],
