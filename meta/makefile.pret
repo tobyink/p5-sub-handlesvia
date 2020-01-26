@@ -18,6 +18,7 @@
 	:test-recommendation    [ :on "Mouse"^^:CpanId ];
 	:test-requirement       [ :on "Moo"^^:CpanId ];
 	:test-requirement       [ :on "MooX::TypeTiny"^^:CpanId ];
+	:test-requirement       [ :on "Carp::Always"^^:CpanId ];
 	:test-recommendation    [ :on "Class::Tiny"^^:CpanId ];
 	:test-requirement       [ :on "Test::More 0.96"^^:CpanId ];
 	:test-requirement       [ :on "Test::Fatal"^^:CpanId ];

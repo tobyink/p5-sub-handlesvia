@@ -12,6 +12,7 @@ use lib 't/lib';
 #use NoInlineAttribute;
 use Test::More;
 use Test::Fatal;
+use Carp::Always;
 #use Test::Moose;
 
 BEGIN {
@@ -87,7 +88,7 @@ sub run_tests {
     my ( $class, $handles ) = @_;
 
 note "Testing class $class";
-
+die;
     can_ok( $class, $_ ) for sort keys %{$handles};
 
 #    with_immutable {

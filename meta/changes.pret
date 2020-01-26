@@ -54,3 +54,9 @@
 		item "Spew some output in t/03moo_mxtt/trait_hash.t."^^Tests;
 		item "Require MooX::TypeTiny and Moo."^^Packaging;
 	].
+
+`Sub-HandlesVia 0.008_001 cpan:TOBYINK`
+	issued  2020-01-26;
+	changeset [
+		item "Load Carp::Always for failing test case."^^Tests;
+	].
