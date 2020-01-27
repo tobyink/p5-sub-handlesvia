@@ -344,7 +344,7 @@ array index.)
 =head2 What methods can be delegated to?
 
 The following table compares Sub::HandlesVia with L<Data::Perl>, L<Moose>
-native traits, and L<MouseX::NativeTraits>. Mouse L<looks> like it's
+native traits, and L<MouseX::NativeTraits>. Mouse I<looks> like it's
 ahead of the rest, but quite a few of their extra methods are just
 aliases for existing methods.
 
