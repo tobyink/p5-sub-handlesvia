@@ -198,6 +198,8 @@ sub _coderef {
 	
 	my @code = ('sub {');
 	
+	push @code, sprintf('package %s::__SANDBOX__;', __PACKAGE__);
+	
 	my $sig_was_checked = 0;
 	if (@{ $self->signature || [] }) {
 		require Type::Params;
@@ -394,6 +396,8 @@ sub _coderef {
 	my ($self, %callbacks) = @_;
 	
 	my @code = 'sub {';
+	push @code, sprintf('package %s::__SANDBOX__;', __PACKAGE__);
+	
 	my $env = {};
 	
 	if (my $curried = $self->curried) {
@@ -437,6 +441,8 @@ sub _coderef {
 	my ($self, %callbacks) = @_;
 	
 	my @code = 'sub {';
+	push @code, sprintf('package %s::__SANDBOX__;', __PACKAGE__);
+	
 	my $env = { '$shv_callback' => \($self->delegated_coderef) };
 	
 	if (my $curried = $self->curried) {
