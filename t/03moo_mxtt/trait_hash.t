@@ -16,7 +16,9 @@ use Carp::Always;
 #use Test::Moose;
 
 BEGIN {
-	$ENV{TRAVIS} and plan skip_all => 'this test randomly fails on Travis?!';
+	require Type::Tiny;
+	Type::Tiny::_USE_XS()
+		or plan skip_all => 'https://rt.cpan.org/Ticket/Display.html?id=131576';
 };
 
 {
