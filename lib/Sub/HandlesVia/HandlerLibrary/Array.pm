@@ -17,7 +17,7 @@ our @METHODS = qw( count is_empty all elements flatten get pop push shift
 	unshift clear first first_index reduce set accessor natatime
 	shallow_clone map grep sort reverse sort_in_place splice shuffle
 	shuffle_in_place uniq uniq_in_place delete insert flatten flatten_deep
-	join print head tail );
+	join print head tail apply pick_random );
 
 sub _type_inspector {
 	my ($me, $type) = @_;
@@ -542,6 +542,26 @@ sub tail {
 		signature => [Int],
 		usage     => '$count',
 		template  => 'my $shv_count=$ARG; $shv_count=@{$GET} if $shv_count>@{$GET}; $shv_count=@{$GET}+$shv_count if $shv_count<0; my $shv_start = scalar(@{$GET})-$shv_count; my $shv_end = scalar(@{$GET})-1; (@{$GET})[$shv_start..$shv_end]',
+}
+
+sub apply {
+	handler
+		name      => 'Array:apply',
+		args      => 1,
+		signature => [CodeRef],
+		usage     => '$coderef',
+		template  => 'my @shv_tmp = @{$GET}; &{$ARG} foreach @shv_tmp; wantarray ? @shv_tmp : $shv_tmp[-1]',
+}
+
+sub pick_random {
+	require List::Util;
+	handler
+		name      => 'Array:pick_random',
+		min_args  => 0,
+		max_args  => 1,
+		signature => [Optional[Int]],
+		usage     => '$coderef',
+		template  => 'my @shv_tmp = List::Util::shuffle(@{$GET}); my $shv_count = $ARG; $shv_count=@{$GET} if $shv_count > @{$GET}; $shv_count=@{$GET}+$shv_count if $shv_count<0; if (wantarray and #ARG) { @shv_tmp[0..$shv_count-1] } elsif (#ARG) { [@shv_tmp[0..$shv_count-1]] } else { $shv_tmp[0] }',
 }
 
 1;

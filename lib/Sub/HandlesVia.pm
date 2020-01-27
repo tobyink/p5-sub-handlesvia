@@ -352,7 +352,7 @@ aliases for existing methods.
             accessor : SubHV  DataP  Moose  Mouse
                  all : SubHV  DataP              
                  any :                      Mouse
-               apply :                      Mouse
+               apply : SubHV                Mouse
                clear : SubHV  DataP  Moose  Mouse
                count : SubHV  DataP  Moose  Mouse
               delete : SubHV  DataP  Moose  Mouse
@@ -372,6 +372,7 @@ aliases for existing methods.
                 join : SubHV  DataP  Moose  Mouse
                  map : SubHV  DataP  Moose  Mouse
             natatime : SubHV  DataP  Moose       
+         pick_random : SubHV                     
                  pop : SubHV  DataP  Moose  Mouse
                print : SubHV  DataP              
                 push : SubHV  DataP  Moose  Mouse
