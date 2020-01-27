@@ -422,9 +422,9 @@ aliases for existing methods.
             elements : SubHV  DataP  Moose  Mouse
               exists : SubHV  DataP  Moose  Mouse
                fetch :                      Mouse
-        for_each_key :                      Mouse
-       for_each_pair :                      Mouse
-      for_each_value :                      Mouse
+        for_each_key : SubHV                Mouse
+       for_each_pair : SubHV                Mouse
+      for_each_value : SubHV                Mouse
                  get : SubHV  DataP  Moose  Mouse
             is_empty : SubHV  DataP  Moose  Mouse
                 keys : SubHV  DataP  Moose  Mouse

@@ -46,4 +46,59 @@ is_deeply(
 	[[1,2], [3,4], [5,6]],
 );
 
+{
+	package Local::Class2;
+	use Moo;
+	use Sub::HandlesVia;
+	has collection => (
+		is          => 'ro',
+		handles_via => 'Hash',
+		handles     => [qw/ for_each_pair for_each_key for_each_value /],
+	);
+}
+
+$collection = Local::Class2->new(collection => {foo => 1, bar => 2});
+
+@r = ();
+
+is_deeply(
+	$collection->for_each_pair(sub {
+		push @r, join "|", @_;
+	}),
+	$collection,
+);
+
+is_deeply(
+	[sort @r],
+	["bar|2", "foo|1"],
+);
+
+@r = ();
+
+is_deeply(
+	$collection->for_each_key(sub {
+		push @r, join "|", @_;
+	}),
+	$collection,
+);
+
+is_deeply(
+	[sort @r],
+	["bar", "foo"],
+);
+
+@r = ();
+
+is_deeply(
+	$collection->for_each_value(sub {
+		push @r, join "|", @_;
+	}),
+	$collection,
+);
+
+is_deeply(
+	[sort @r],
+	[1, 2],
+);
+
 done_testing;
