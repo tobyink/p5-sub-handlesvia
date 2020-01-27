@@ -344,125 +344,120 @@ array index.)
 =head2 What methods can be delegated to?
 
 The following table compares Sub::HandlesVia with L<Data::Perl>, L<Moose>
-native traits, and L<MouseX::NativeTraits>. Mouse I<looks> like it's
-ahead of the rest, but quite a few of their extra methods are just
-aliases for existing methods.
+native traits, and L<MouseX::NativeTraits>.
 
   Array ===========================================
-            accessor : SubHV  DataP  Moose  Mouse
-                 all : SubHV  DataP              
-                 any :                      Mouse
-               apply : SubHV                Mouse
-               clear : SubHV  DataP  Moose  Mouse
-               count : SubHV  DataP  Moose  Mouse
-              delete : SubHV  DataP  Moose  Mouse
-            elements : SubHV  DataP  Moose  Mouse
-               fetch :                      Mouse
-               first : SubHV  DataP  Moose  Mouse
-         first_index : SubHV  DataP  Moose       
-             flatten : SubHV  DataP              
-        flatten_deep : SubHV  DataP              
-            for_each : SubHV                Mouse
-       for_each_pair : SubHV                Mouse
-                 get : SubHV  DataP  Moose  Mouse
-                grep : SubHV  DataP  Moose  Mouse
-                head : SubHV  DataP              
-              insert : SubHV  DataP  Moose  Mouse
-            is_empty : SubHV  DataP  Moose  Mouse
-                join : SubHV  DataP  Moose  Mouse
-                 map : SubHV  DataP  Moose  Mouse
-            natatime : SubHV  DataP  Moose       
-         pick_random : SubHV                     
-                 pop : SubHV  DataP  Moose  Mouse
-               print : SubHV  DataP              
-                push : SubHV  DataP  Moose  Mouse
-              reduce : SubHV  DataP  Moose  Mouse
-              remove :                      Mouse
-             reverse : SubHV  DataP              
-                 set : SubHV  DataP  Moose  Mouse
-       shallow_clone : SubHV  DataP  Moose       
-               shift : SubHV  DataP  Moose  Mouse
-             shuffle : SubHV  DataP  Moose  Mouse
-    shuffle_in_place : SubHV                     
-                sort : SubHV  DataP  Moose  Mouse
-             sort_by :                      Mouse
-       sort_in_place : SubHV  DataP  Moose  Mouse
-    sort_in_place_by :                      Mouse
-              splice : SubHV  DataP  Moose  Mouse
-               store :                      Mouse
-                tail : SubHV  DataP              
-                uniq : SubHV  DataP  Moose  Mouse
-       uniq_in_place : SubHV                     
-             unshift : SubHV  DataP  Moose  Mouse
+            accessor : SubHV  DataP  Moose  Mouse  
+                 all : SubHV  DataP                
+                 any :                      Mouse  
+               apply : SubHV                Mouse  
+               clear : SubHV  DataP  Moose  Mouse  
+               count : SubHV  DataP  Moose  Mouse  
+              delete : SubHV  DataP  Moose  Mouse  
+            elements : SubHV  DataP  Moose  Mouse  
+               fetch :                      Mouse  (alias: get)
+               first : SubHV  DataP  Moose  Mouse  
+         first_index : SubHV  DataP  Moose         
+             flatten : SubHV  DataP                
+        flatten_deep : SubHV  DataP                
+            for_each : SubHV                Mouse  
+       for_each_pair : SubHV                Mouse  
+                 get : SubHV  DataP  Moose  Mouse  
+                grep : SubHV  DataP  Moose  Mouse  
+                head : SubHV  DataP                
+              insert : SubHV  DataP  Moose  Mouse  
+            is_empty : SubHV  DataP  Moose  Mouse  
+                join : SubHV  DataP  Moose  Mouse  
+                 map : SubHV  DataP  Moose  Mouse  
+            natatime : SubHV  DataP  Moose         
+         pick_random : SubHV                       
+                 pop : SubHV  DataP  Moose  Mouse  
+               print : SubHV  DataP                
+                push : SubHV  DataP  Moose  Mouse  
+              reduce : SubHV  DataP  Moose  Mouse  
+              remove :                      Mouse  (alias: delete)
+             reverse : SubHV  DataP                
+                 set : SubHV  DataP  Moose  Mouse  
+       shallow_clone : SubHV  DataP  Moose         
+               shift : SubHV  DataP  Moose  Mouse  
+             shuffle : SubHV  DataP  Moose  Mouse  
+    shuffle_in_place : SubHV                       
+                sort : SubHV  DataP  Moose  Mouse  
+             sort_by :                      Mouse  (sort)
+       sort_in_place : SubHV  DataP  Moose  Mouse  
+    sort_in_place_by :                      Mouse  (sort_in_place)
+              splice : SubHV  DataP  Moose  Mouse  
+               store :                      Mouse  (alias: set)
+                tail : SubHV  DataP                
+                uniq : SubHV  DataP  Moose  Mouse  
+       uniq_in_place : SubHV                       
+             unshift : SubHV  DataP  Moose  Mouse  
 
   Bool ============================================
-                 not : SubHV  DataP  Moose  Mouse
-               reset : SubHV                     
-                 set : SubHV  DataP  Moose  Mouse
-              toggle : SubHV  DataP  Moose  Mouse
-               unset : SubHV  DataP  Moose  Mouse
+                 not : SubHV  DataP  Moose  Mouse  
+               reset : SubHV                       
+                 set : SubHV  DataP  Moose  Mouse  
+              toggle : SubHV  DataP  Moose  Mouse  
+               unset : SubHV  DataP  Moose  Mouse  
 
   Code ============================================
-             execute : SubHV  DataP  Moose  Mouse
-      execute_method : SubHV         Moose  Mouse
+             execute : SubHV  DataP  Moose  Mouse  
+      execute_method : SubHV         Moose  Mouse  
 
   Counter =========================================
-                 dec : SubHV  DataP  Moose  Mouse
-                 inc : SubHV  DataP  Moose  Mouse
-               reset : SubHV  DataP  Moose  Mouse
-                 set : SubHV         Moose  Mouse
+                 dec : SubHV  DataP  Moose  Mouse  
+                 inc : SubHV  DataP  Moose  Mouse  
+               reset : SubHV  DataP  Moose  Mouse  
+                 set : SubHV         Moose  Mouse  
 
   Hash ============================================
-            accessor : SubHV  DataP  Moose  Mouse
-                 all : SubHV  DataP              
-               clear : SubHV  DataP  Moose  Mouse
-               count : SubHV  DataP  Moose  Mouse
-             defined : SubHV  DataP  Moose  Mouse
-              delete : SubHV  DataP  Moose  Mouse
-            elements : SubHV  DataP  Moose  Mouse
-              exists : SubHV  DataP  Moose  Mouse
-               fetch :                      Mouse
-        for_each_key : SubHV                Mouse
-       for_each_pair : SubHV                Mouse
-      for_each_value : SubHV                Mouse
-                 get : SubHV  DataP  Moose  Mouse
-            is_empty : SubHV  DataP  Moose  Mouse
-                keys : SubHV  DataP  Moose  Mouse
-                  kv : SubHV  DataP  Moose  Mouse
-                 set : SubHV  DataP  Moose  Mouse
-       shallow_clone : SubHV  DataP  Moose       
-         sorted_keys : SubHV                Mouse
-               store :                      Mouse
-              values : SubHV  DataP  Moose  Mouse
+            accessor : SubHV  DataP  Moose  Mouse  
+                 all : SubHV  DataP                
+               clear : SubHV  DataP  Moose  Mouse  
+               count : SubHV  DataP  Moose  Mouse  
+             defined : SubHV  DataP  Moose  Mouse  
+              delete : SubHV  DataP  Moose  Mouse  
+            elements : SubHV  DataP  Moose  Mouse  
+              exists : SubHV  DataP  Moose  Mouse  
+               fetch :                      Mouse  (alias: get)
+        for_each_key : SubHV                Mouse  
+       for_each_pair : SubHV                Mouse  
+      for_each_value : SubHV                Mouse  
+                 get : SubHV  DataP  Moose  Mouse  
+            is_empty : SubHV  DataP  Moose  Mouse  
+                keys : SubHV  DataP  Moose  Mouse  
+                  kv : SubHV  DataP  Moose  Mouse  
+                 set : SubHV  DataP  Moose  Mouse  
+       shallow_clone : SubHV  DataP  Moose         
+         sorted_keys : SubHV                Mouse  
+               store :                      Mouse  (alias: set)
+              values : SubHV  DataP  Moose  Mouse  
 
   Number ==========================================
-                 abs : SubHV  DataP  Moose  Mouse
-                 add : SubHV  DataP  Moose  Mouse
-                 div : SubHV  DataP  Moose  Mouse
-                 get : SubHV                     
-                 mod : SubHV  DataP  Moose  Mouse
-                 mul : SubHV  DataP  Moose  Mouse
-                 set : SubHV         Moose       
-                 sub : SubHV  DataP  Moose  Mouse
-
-  Scalar ==========================================
-    scalar_reference : SubHV                    
+                 abs : SubHV  DataP  Moose  Mouse  
+                 add : SubHV  DataP  Moose  Mouse  
+                 div : SubHV  DataP  Moose  Mouse  
+                 get : SubHV                       
+                 mod : SubHV  DataP  Moose  Mouse  
+                 mul : SubHV  DataP  Moose  Mouse  
+                 set : SubHV         Moose         
+                 sub : SubHV  DataP  Moose  Mouse  
 
   String ==========================================
-              append : SubHV  DataP  Moose  Mouse
-               chomp : SubHV  DataP  Moose  Mouse
-                chop : SubHV  DataP  Moose  Mouse
-               clear : SubHV  DataP  Moose  Mouse
-                 get : SubHV                     
-                 inc : SubHV  DataP  Moose  Mouse
-              length : SubHV  DataP  Moose  Mouse
-               match : SubHV  DataP  Moose  Mouse
-             prepend : SubHV  DataP  Moose  Mouse
-             replace : SubHV  DataP  Moose  Mouse
-    replace_globally : SubHV                Mouse
-               reset : SubHV                     
-                 set : SubHV                     
-              substr : SubHV  DataP  Moose  Mouse
+              append : SubHV  DataP  Moose  Mouse  
+               chomp : SubHV  DataP  Moose  Mouse  
+                chop : SubHV  DataP  Moose  Mouse  
+               clear : SubHV  DataP  Moose  Mouse  
+                 get : SubHV                       
+                 inc : SubHV  DataP  Moose  Mouse  
+              length : SubHV  DataP  Moose  Mouse  
+               match : SubHV  DataP  Moose  Mouse  
+             prepend : SubHV  DataP  Moose  Mouse  
+             replace : SubHV  DataP  Moose  Mouse  
+    replace_globally : SubHV                Mouse  
+               reset : SubHV                       
+                 set : SubHV                       
+              substr : SubHV  DataP  Moose  Mouse  
 
 =head2 Method Chaining
 

@@ -75,16 +75,25 @@ for my $category (@categories) {
 
 delete $all{Code}{execute_method}{'Data::Perl'};
 
+$all{Array}{fetch}{info}   = 'alias: get';
+$all{Array}{remove}{info}  = 'alias: delete';
+$all{Array}{sort_by}{info} = 'sort';
+$all{Array}{sort_in_place_by}{info} = 'sort_in_place';
+$all{Array}{store}{info}   = 'alias: set';
+$all{Hash}{fetch}{info}    = 'alias: get';
+$all{Hash}{store}{info}    = 'alias: set';
+
 for my $category (sort keys %all) {
 	print "  $category ", "="x(48-length $category), "\n";
 	for my $method (sort keys %{$all{$category}}) {
 		printf(
-			"%20s : %5s  %5s  %5s  %5s\n",
+			"%20s : %5s  %5s  %5s  %5s  %s\n",
 			$method,
 			exists($all{$category}{$method}{'Sub::HandlesVia'})       ? 'SubHV' : '',
 			exists($all{$category}{$method}{'Data::Perl'})            ? 'DataP' : '',
 			exists($all{$category}{$method}{'Moose'})                 ? 'Moose' : '',
 			exists($all{$category}{$method}{'MouseX::NativeTraits'})  ? 'Mouse' : '',
+			exists($all{$category}{$method}{'info'})                  ? sprintf('(%s)', $all{$category}{$method}{'info'}) : '',
 		);
 	}
 	print "\n";
