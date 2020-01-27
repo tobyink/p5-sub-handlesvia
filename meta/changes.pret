@@ -60,3 +60,9 @@
 	changeset [
 		item "Load Carp::Always for failing test case."^^Tests;
 	].
+
+`Sub-HandlesVia 0.008_002 cpan:TOBYINK`
+	issued  2020-01-27;
+	changeset [
+		item "Spew even more output in t/03moo_mxtt/trait_hash.t."^^Tests;
+	].

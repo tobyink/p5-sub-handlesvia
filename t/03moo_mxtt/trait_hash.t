@@ -93,6 +93,12 @@ diag "can stuff";
 diag "done can stuff";
 #    with_immutable {
 diag "new";
+
+require B::Deparse;
+diag( B::Deparse->new->coderef2text($class->can('new')) );
+eval { $class->new };
+diag( B::Deparse->new->coderef2text($class->can('new')) );
+
         my $obj = $class->new( options => {} );
 diag "done new";
         ok( $obj->has_no_options, '... we have no options' );
