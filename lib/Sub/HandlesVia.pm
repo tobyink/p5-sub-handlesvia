@@ -362,8 +362,8 @@ aliases for existing methods.
          first_index : SubHV  DataP  Moose       
              flatten : SubHV  DataP              
         flatten_deep : SubHV  DataP              
-            for_each :                      Mouse
-       for_each_pair :                      Mouse
+            for_each : SubHV                Mouse
+       for_each_pair : SubHV                Mouse
                  get : SubHV  DataP  Moose  Mouse
                 grep : SubHV  DataP  Moose  Mouse
                 head : SubHV  DataP              
