@@ -14,7 +14,7 @@ use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( ArrayRef Optional Str CodeRef Int Item Any Ref Defined FileHandle );
 
 our @METHODS = qw( count is_empty all elements flatten get pop push shift
-	unshift clear first first_index reduce set accessor natatime
+	unshift clear first first_index reduce set accessor natatime any
 	shallow_clone map grep sort reverse sort_in_place splice shuffle
 	shuffle_in_place uniq uniq_in_place delete insert flatten flatten_deep
 	join print head tail apply pick_random for_each for_each_pair );
@@ -212,6 +212,16 @@ sub first {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => '&List::Util::first($ARG, @{$GET})',
+}
+
+sub any {
+	require List::Util;
+	handler
+		name      => 'Array:any',
+		args      => 1,
+		signature => [CodeRef],
+		usage     => '$coderef',
+		template  => '&List::Util::any($ARG, @{$GET})',
 }
 
 sub first_index {

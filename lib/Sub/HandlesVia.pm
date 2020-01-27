@@ -349,7 +349,7 @@ native traits, and L<MouseX::NativeTraits>.
   Array ===========================================
             accessor : SubHV  DataP  Moose  Mouse  
                  all : SubHV  DataP                
-                 any :                      Mouse  
+                 any : SubHV                Mouse  
                apply : SubHV                Mouse  
                clear : SubHV  DataP  Moose  Mouse  
                count : SubHV  DataP  Moose  Mouse  
