@@ -66,3 +66,9 @@
 	changeset [
 		item "Spew even more output in t/03moo_mxtt/trait_hash.t."^^Tests;
 	].
+
+`Sub-HandlesVia 0.008_003 cpan:TOBYINK`
+	issued  2020-01-27;
+	changeset [
+		item "Skip t/03moo_mxtt/trait_hash.t if Type::Tiny is not using XS."^^Tests;
+	].
