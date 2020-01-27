@@ -92,3 +92,10 @@
 		item "`for_each_key` method for Hash."^^Addition;
 		item "`for_each_value` method for Hash."^^Addition;
 	].
+
+`Sub-HandlesVia 0.011 cpan:TOBYINK`
+	issued  2020-01-27;
+	changeset [
+		item "`any` method for Array."^^Addition;
+		item "Document which aliases MouseX::NativeTraits provides."^^Documentation;
+	].
