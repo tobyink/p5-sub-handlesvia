@@ -72,3 +72,12 @@
 	changeset [
 		item "Skip t/03moo_mxtt/trait_hash.t if Type::Tiny is not using XS."^^Tests;
 	].
+
+`Sub-HandlesVia 0.009 cpan:TOBYINK`
+	issued  2020-01-27;
+	changeset [
+		item "Revert MooX::TypeTiny test verbosity from 0.008_xxx."^^Tests;
+		item "Revert testing dependency additions from 0.008_xxx."^^Packaging;
+		item "Skip Array trait tests under Mouse if Mouse is not using XS due to Mouse::PurePerl bug."^^Tests;
+	].
+
