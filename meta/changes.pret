@@ -99,3 +99,9 @@
 		item "`any` method for Array."^^Addition;
 		item "Document which aliases MouseX::NativeTraits provides."^^Documentation;
 	].
+
+`Sub-HandlesVia 0.012 cpan:TOBYINK`
+	issued  2020-02-02;
+	changeset [
+		item "Add missing methods from List::Util to Array. (These are mostly untested, but probably don't have bugs as they are simple non-mutator methods.)"^^Addition;
+	].
