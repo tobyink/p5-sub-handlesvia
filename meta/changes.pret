@@ -105,3 +105,9 @@
 	changeset [
 		item "Add missing methods from List::Util to Array. (These are mostly untested, but probably don't have bugs as they are simple non-mutator methods.)"^^Addition;
 	].
+
+`Sub-HandlesVia 0.013 cpan:TOBYINK`
+	issued  2020-02-04;
+	changeset [
+		item "Skip Moo tests on very old Moo."^^Tests;
+	].
