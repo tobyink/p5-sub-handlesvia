@@ -111,3 +111,9 @@
 	changeset [
 		item "Skip Moo tests on very old Moo."^^Tests;
 	].
+
+`Sub-HandlesVia 0.014 cpan:TOBYINK`
+	issued  2020-08-25;
+	changeset [
+		item "Fix compilation errors caused by value coercions under some circumstances."^^Bugfix;
+	].
