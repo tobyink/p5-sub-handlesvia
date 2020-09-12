@@ -117,3 +117,11 @@
 	changeset [
 		item "Fix compilation errors caused by value coercions under some circumstances."^^Bugfix;
 	].
+
+`Sub-HandlesVia 0.015 cpan:TOBYINK`
+	issued  2020-09-12;
+	changeset [
+		item "`reset` method for Array."^^Addition;
+		item "`reset` method for Hash."^^Addition;
+		item "Plain toolkit (used by non-Moo/Moose/Mouse classes) now supports defaults/builders."^^Change;
+	].
