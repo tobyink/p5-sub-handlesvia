@@ -15,7 +15,7 @@ use Types::Standard qw( HashRef ArrayRef Optional Str CodeRef Item Any Ref Defin
 
 our @METHODS = qw( all accessor clear count defined delete elements exists get
 	is_empty keys kv set shallow_clone values sorted_keys
-	for_each_pair for_each_key for_each_value );
+	for_each_pair for_each_key for_each_value reset );
 
 sub _type_inspector {
 	my ($me, $type) = @_;
@@ -291,6 +291,14 @@ sub for_each_value {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'for my $shv_value (values %{$GET}) { &{$ARG}($shv_value) }; $SELF',
+}
+
+sub reset {
+	handler
+		name      => 'Hash:reset',
+		args      => 0,
+		template  => '« $DEFAULT »',
+		default_for_reset => sub { '{}' },
 }
 
 1;

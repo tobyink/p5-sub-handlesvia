@@ -324,6 +324,10 @@ sub coderef {
 #	warn join("\n", @{$eval{source}});
 #	for my $key (sort keys %{$eval{environment}}) {
 #		warn ">> $key : ".ref($eval{environment}{$key});
+#		if ( ref($eval{environment}{$key}) eq 'REF' and ref(${$eval{environment}{$key}}) eq 'CODE' ) {
+#			require B::Deparse;
+#			warn B::Deparse->new->coderef2text(${$eval{environment}{$key}});
+#		}
 #	}
 	require Eval::TypeTiny;
 	Eval::TypeTiny::eval_closure(%eval);
