@@ -125,3 +125,9 @@
 		item "`reset` method for Hash."^^Addition;
 		item "Plain toolkit (used by non-Moo/Moose/Mouse classes) now supports defaults/builders."^^Change;
 	].
+
+`Sub-HandlesVia 0.016 cpan:TOBYINK`
+	issued  2020-09-20;
+	changeset [
+		item "Fix load order issue where handles_via is used in a Moo::Role when Moo.pm isn't loaded yet."^^Bugfix;
+	].
