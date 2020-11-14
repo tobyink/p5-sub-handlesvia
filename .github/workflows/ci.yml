@@ -1,7 +1,7 @@
 name: Continuous Integration
 on:
-  push
-  pull_request
+  - push
+  -pull_request
 jobs:
   dist:
     name: Make distribution using Dist::Inkt
