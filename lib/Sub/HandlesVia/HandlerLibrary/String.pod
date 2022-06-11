@@ -67,6 +67,10 @@ Arguments: B<< Str >>.
 
 Appends another string to the end of the current string and updates the attribute.
 
+  my $object = My::Class->new( attr => 'foo' );
+  $object->my_append('bar');
+  say $object->attr; ## ==> 'foobar'
+
 =head2 C<< chomp() >>
 
 Like C<chomp> from L<perlfunc>.
@@ -78,6 +82,10 @@ Like C<chop> from L<perlfunc>.
 =head2 C<< clear() >>
 
 Sets the string to the empty string.
+
+  my $object = My::Class->new( attr => 'foo' );
+  $object->my_clear;
+  say $object->attr; ## nothing
 
 =head2 C<< cmp( $str ) >>
 
@@ -147,6 +155,9 @@ Returns C<< fc($object->attr) ge fc($str) >>. Uses C<lc> instead of C<fc> in ver
 
 Gets the current value of the string.
 
+  my $object = My::Class->new( attr => 'foo' );
+  say $object->my_get; ## ==> 'foo'
+
 =head2 C<< gt( $str ) >>
 
 Arguments: B<< Str >>.
@@ -183,6 +194,9 @@ Returns C<< fc($object->attr) le fc($str) >>. Uses C<lc> instead of C<fc> in ver
 
 Like C<length> from L<perlfunc>.
 
+  my $object = My::Class->new( attr => 'foo' );
+  say $object->my_length; ## ==> 3
+
 =head2 C<< lt( $str ) >>
 
 Arguments: B<< Str >>.
@@ -201,11 +215,21 @@ Arguments: B<< Str|RegexpRef >>.
 
 Returns true iff the string matches the regexp.
 
+  my $object = My::Class->new( attr => 'foo' );
+  if ( $object->my_match( '^f..$' ) ) {
+    say 'matched!';
+  }
+
 =head2 C<< match_i( $regexp ) >>
 
 Arguments: B<< Str|RegexpRef >>.
 
 Returns true iff the string matches the regexp case-insensitively.
+
+  my $object = My::Class->new( attr => 'foo' );
+  if ( $object->my_match_i( '^F..$' ) ) {
+    say 'matched!';
+  }
 
 =head2 C<< ne( $str ) >>
 
@@ -225,17 +249,37 @@ Arguments: B<< Str >>.
 
 Prepends another string to the start of the current string and updates the attribute.
 
+  my $object = My::Class->new( attr => 'foo' );
+  $object->my_prepend('bar');
+  say $object->attr; ## ==> 'barfoo'
+
 =head2 C<< replace( $regexp, $replacement ) >>
 
 Arguments: B<< Str|RegexpRef >>, B<< Str|CodeRef >>.
 
 Replaces the first regexp match within the string with the replacement string.
 
+  my $object = My::Class->new( attr => 'foo' );
+  $object->my_replace('o' => 'a');
+  say $object->attr; ## ==> 'fao'
+
+  my $object = My::Class->new( attr => 'foo' );
+  $object->my_replace( qr/O/i => sub { return 'e' } );
+  say $object->attr; ## ==> 'feo'
+
 =head2 C<< replace_globally( $regexp, $replacement ) >>
 
 Arguments: B<< Str|RegexpRef >>, B<< Str|CodeRef >>.
 
 Replaces the all regexp matches within the string with the replacement string.
+
+  my $object = My::Class->new( attr => 'foo' );
+  $object->my_replace_globally('o' => 'a');
+  say $object->attr; ## ==> 'faa'
+
+  my $object = My::Class->new( attr => 'foo' );
+  $object->my_replace_globally( qr/O/i => sub { return 'e' } );
+  say $object->attr; ## ==> 'fee'
 
 =head2 C<< reset() >>
 
@@ -246,6 +290,10 @@ Resets the attribute to its default value, or an empty string if it has no defau
 Arguments: B<< Str >>.
 
 Sets the string to a new value.
+
+  my $object = My::Class->new( attr => 'foo' );
+  $object->my_set( 'bar' );
+  say $object->attr; ## ==> 'bar'
 
 =head2 C<< starts_with( $head ) >>
 

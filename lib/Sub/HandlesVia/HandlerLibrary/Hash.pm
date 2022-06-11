@@ -80,6 +80,13 @@ sub count {
 		args      => 0,
 		template  => 'scalar keys %{$GET}',
 		documentation => 'Returns the number of keys in the hash.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  say \$object->$method; ## ==> 2\n",
+				"\n";
+		},
 }
 
 sub is_empty {
@@ -88,6 +95,15 @@ sub is_empty {
 		args      => 0,
 		template  => '!scalar keys %{$GET}',
 		documentation => 'Returns true iff there are no keys in the hash.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  say \$object->$method; ## ==> 0\n",
+				"  \$object->_set_$attr( {} );\n",
+				"  say \$object->$method; ## ==> 1\n",
+				"\n";
+		},
 }
 
 sub keys {
@@ -96,6 +112,14 @@ sub keys {
 		args      => 0,
 		template  => 'keys %{$GET}',
 		documentation => 'Returns the list of keys in the hash.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  # says 'foo' and 'bar' in an unpredictable order\n",
+				"  say for \$object->$method;\n",
+				"\n";
+		},
 }
 
 sub sorted_keys {
@@ -104,6 +128,14 @@ sub sorted_keys {
 		args      => 0,
 		template  => 'sort(keys %{$GET})',
 		documentation => 'Returns an alphabetically sorted list of keys in the hash.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  # says 'bar' then 'foo'\n",
+				"  say for \$object->$method;\n",
+				"\n";
+		},
 }
 
 sub values {
@@ -112,6 +144,14 @@ sub values {
 		args      => 0,
 		template  => 'values %{$GET}',
 		documentation => 'Returns the list of values in the hash.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  # says '0' and '1' in an unpredictable order\n",
+				"  say for \$object->$method;\n",
+				"\n";
+		},
 }
 
 sub all {
@@ -120,6 +160,13 @@ sub all {
 		args      => 0,
 		template  => '%{$GET}',
 		documentation => 'Returns the hash in list context.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  my \%hash = \$object->$method;\n",
+				"\n";
+		},
 }
 
 sub elements {
@@ -128,6 +175,13 @@ sub elements {
 		args      => 0,
 		template  => '%{$GET}',
 		documentation => 'Returns the hash in list context.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  my \%hash = \$object->$method;\n",
+				"\n";
+		},
 }
 
 sub kv {
@@ -145,6 +199,13 @@ sub get {
 		usage     => '$key',
 		template  => '#ARG>1 ? @{$GET}{@ARG} : ($GET)->{$ARG}',
 		documentation => 'Returns a value from the hashref by its key.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  say \$object->$method( 'bar' ); ## ==> 1\n",
+				"\n";
+		},
 }
 
 sub defined {
@@ -155,6 +216,13 @@ sub defined {
 		usage     => '$key',
 		template  => 'defined(($GET)->{$ARG})',
 		documentation => 'Indicates whether a value exists and is defined in the hashref by its key.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  say \$object->$method( 'foo' ); ## ==> 1\n",
+				"\n";
+		},
 }
 
 sub exists {
@@ -165,6 +233,14 @@ sub exists {
 		usage     => '$key',
 		template  => 'defined(($GET)->{$ARG})',
 		documentation => 'Indicates whether a value exists in the hashref by its key.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  say \$object->$method( 'foo' ); ## ==> 1\n",
+				"  say \$object->$method( 'baz' ); ## ==> 0\n",
+				"\n";
+		},
 }
 
 sub delete {
@@ -176,6 +252,14 @@ sub delete {
 		lvalue_template  => 'delete(@{$GET}{@ARG})',
 		additional_validation => 'no incoming values',
 		documentation => 'Removes a value from the hashref by its key.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  \$object->$method( 'foo' );\n",
+				"  say exists \$object->$attr\->{foo}; ## ==> 0\n",
+				"\n";
+		},
 }
 
 sub clear {
@@ -186,6 +270,15 @@ sub clear {
 		lvalue_template => '%{$GET} = ()',
 		additional_validation => 'no incoming values',
 		documentation => 'Empties the hash.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  \$object->$method;\n",
+				"  say exists \$object->$attr\->{foo}; ## ==> 0\n",
+				"  say exists \$object->$attr\->{bar}; ## ==> 0\n",
+				"\n";
+		},
 }
 
 sub shallow_clone {
@@ -255,6 +348,16 @@ sub set {
 			return;
 		},
 		documentation => 'Given a key and value, adds the key to the hashref with the given value.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
+				"  \$object->$method( bar => 2, baz => 1 );\n",
+				"  say \$object->$attr\->{foo}; ## ==> 0\n",
+				"  say \$object->$attr\->{baz}; ## ==> 1\n",
+				"  say \$object->$attr\->{bar}; ## ==> 2\n",
+				"\n";
+		},
 }
 
 sub accessor {

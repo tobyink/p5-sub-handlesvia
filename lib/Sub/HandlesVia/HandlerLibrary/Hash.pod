@@ -53,13 +53,24 @@ Acts like C<get> if given one argument, or C<set> if given two arguments.
 
 Returns the hash in list context.
 
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  my %hash = $object->my_all;
+
 =head2 C<< clear() >>
 
 Empties the hash.
 
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  $object->my_clear;
+  say exists $object->attr->{foo}; ## ==> 0
+  say exists $object->attr->{bar}; ## ==> 0
+
 =head2 C<< count() >>
 
 Returns the number of keys in the hash.
+
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  say $object->my_count; ## ==> 2
 
 =head2 C<< defined( $key ) >>
 
@@ -67,19 +78,33 @@ Arguments: B<< Str >>.
 
 Indicates whether a value exists and is defined in the hashref by its key.
 
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  say $object->my_defined( 'foo' ); ## ==> 1
+
 =head2 C<< delete( $key ) >>
 
 Removes a value from the hashref by its key.
 
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  $object->my_delete( 'foo' );
+  say exists $object->attr->{foo}; ## ==> 0
+
 =head2 C<< elements() >>
 
 Returns the hash in list context.
+
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  my %hash = $object->my_elements;
 
 =head2 C<< exists( $key ) >>
 
 Arguments: B<< Str >>.
 
 Indicates whether a value exists in the hashref by its key.
+
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  say $object->my_exists( 'foo' ); ## ==> 1
+  say $object->my_exists( 'baz' ); ## ==> 0
 
 =head2 C<< for_each_key( $coderef ) >>
 
@@ -103,13 +128,25 @@ Chainable method which calls the coderef for each value in the hash, passing jus
 
 Returns a value from the hashref by its key.
 
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  say $object->my_get( 'bar' ); ## ==> 1
+
 =head2 C<< is_empty() >>
 
 Returns true iff there are no keys in the hash.
 
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  say $object->my_is_empty; ## ==> 0
+  $object->_set_attr( {} );
+  say $object->my_is_empty; ## ==> 1
+
 =head2 C<< keys() >>
 
 Returns the list of keys in the hash.
+
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  # says 'foo' and 'bar' in an unpredictable order
+  say for $object->my_keys;
 
 =head2 C<< kv() >>
 
@@ -123,6 +160,12 @@ Resets the attribute to its default value, or an empty hashref if it has no defa
 
 Given a key and value, adds the key to the hashref with the given value.
 
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  $object->my_set( bar => 2, baz => 1 );
+  say $object->attr->{foo}; ## ==> 0
+  say $object->attr->{baz}; ## ==> 1
+  say $object->attr->{bar}; ## ==> 2
+
 =head2 C<< shallow_clone() >>
 
 Creates a new hashref with the same keys and values as the original.
@@ -131,9 +174,17 @@ Creates a new hashref with the same keys and values as the original.
 
 Returns an alphabetically sorted list of keys in the hash.
 
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  # says 'bar' then 'foo'
+  say for $object->my_sorted_keys;
+
 =head2 C<< values() >>
 
 Returns the list of values in the hash.
+
+  my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
+  # says '0' and '1' in an unpredictable order
+  say for $object->my_values;
 
 =head1 BUGS
 

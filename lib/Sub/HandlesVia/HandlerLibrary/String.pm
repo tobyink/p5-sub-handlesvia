@@ -41,6 +41,14 @@ sub set {
 		lvalue_template => '$GET = $ARG',
 		usage     => '$value',
 		documentation => "Sets the string to a new value.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => 'foo' );\n",
+				"  \$object->$method\( 'bar' );\n",
+				"  say \$object->$attr; ## ==> 'bar'\n",
+				"\n";
+		},
 }
 
 sub get {
@@ -49,6 +57,13 @@ sub get {
 		args      => 0,
 		template  => '$GET',
 		documentation => "Gets the current value of the string.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => 'foo' );\n",
+				"  say \$object->$method; ## ==> 'foo'\n",
+				"\n";
+		},
 }
 
 sub inc {
@@ -70,6 +85,14 @@ sub append {
 		lvalue_template => '$GET .= $ARG',
 		usage     => '$tail',
 		documentation => "Appends another string to the end of the current string and updates the attribute.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => 'foo' );\n",
+				"  \$object->$method('bar');\n",
+				"  say \$object->$attr; ## ==> 'foobar'\n",
+				"\n";
+		},
 }
 
 sub prepend {
@@ -80,6 +103,14 @@ sub prepend {
 		template  => '« $ARG . $GET »',
 		usage     => '$head',
 		documentation => "Prepends another string to the start of the current string and updates the attribute.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => 'foo' );\n",
+				"  \$object->$method('bar');\n",
+				"  say \$object->$attr; ## ==> 'barfoo'\n",
+				"\n";
+		},
 }
 
 sub replace {
@@ -97,6 +128,18 @@ sub replace {
 			CodeRef->inline_check('$ARG[2]'),
 		),
 		documentation => "Replaces the first regexp match within the string with the replacement string.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => 'foo' );\n",
+				"  \$object->$method('o' => 'a');\n",
+				"  say \$object->$attr; ## ==> 'fao'\n",
+				"\n",
+				"  my \$object = $class\->new( $attr => 'foo' );\n",
+				"  \$object->$method( qr/O/i => sub { return 'e' } );\n",
+				"  say \$object->$attr; ## ==> 'feo'\n",
+				"\n";
+		},
 }
 
 sub replace_globally {
@@ -114,6 +157,18 @@ sub replace_globally {
 			CodeRef->inline_check('$ARG[2]'),
 		),
 		documentation => "Replaces the all regexp matches within the string with the replacement string.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => 'foo' );\n",
+				"  \$object->$method('o' => 'a');\n",
+				"  say \$object->$attr; ## ==> 'faa'\n",
+				"\n",
+				"  my \$object = $class\->new( $attr => 'foo' );\n",
+				"  \$object->$method( qr/O/i => sub { return 'e' } );\n",
+				"  say \$object->$attr; ## ==> 'fee'\n",
+				"\n";
+		},
 }
 
 sub match {
@@ -124,6 +179,15 @@ sub match {
 		usage     => '$regexp',
 		template  => '$GET =~ /$ARG/',
 		documentation => "Returns true iff the string matches the regexp.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => 'foo' );\n",
+				"  if ( \$object->$method\( '^f..\$' ) ) {\n",
+				"    say 'matched!';\n",
+				"  }\n",
+				"\n";
+		},
 }
 
 sub match_i {
@@ -134,6 +198,15 @@ sub match_i {
 		usage     => '$regexp',
 		template  => '$GET =~ /$ARG/i',
 		documentation => "Returns true iff the string matches the regexp case-insensitively.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => 'foo' );\n",
+				"  if ( \$object->$method\( '^F..\$' ) ) {\n",
+				"    say 'matched!';\n",
+				"  }\n",
+				"\n";
+		},
 }
 
 sub starts_with {
@@ -223,6 +296,14 @@ sub clear {
 		template  => '«q()»',
 		additional_validation => 'no incoming values',
 		documentation => "Sets the string to the empty string.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => 'foo' );\n",
+				"  \$object->$method;\n",
+				"  say \$object->$attr; ## nothing\n",
+				"\n";
+		},
 }
 
 sub reset {
@@ -240,6 +321,13 @@ sub length {
 		args      => 0,
 		template  => 'length($GET)',
 		documentation => "Like C<length> from L<perlfunc>.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => 'foo' );\n",
+				"  say \$object->$method; ## ==> 3\n",
+				"\n";
+		},
 }
 
 sub substr {
