@@ -33,7 +33,7 @@ This is a library of methods for L<Sub::HandlesVia>.
 Returns the opposite value of the boolean.
 
   my $object = My::Class->new( attr => 1 );
-  say $object->my_not(); ## ==> 0
+  say $object->my_not(); ## ==> false
 
 =head2 C<< reset() >>
 
@@ -45,7 +45,7 @@ Sets the value of the boolean to true.
 
   my $object = My::Class->new();
   $object->my_set();
-  say $object->attr; ## ==> 1
+  say $object->attr; ## ==> true
 
 =head2 C<< toggle() >>
 
@@ -53,9 +53,9 @@ Toggles the truth value of the boolean.
 
   my $object = My::Class->new();
   $object->my_toggle();
-  say $object->attr; ## ==> 1
+  say $object->attr; ## ==> true
   $object->my_toggle();
-  say $object->attr; ## ==> 0
+  say $object->attr; ## ==> false
 
 =head2 C<< unset() >>
 
@@ -63,7 +63,7 @@ Sets the value of the boolean to false.
 
   my $object = My::Class->new();
   $object->my_unset();
-  say $object->attr; ## ==> 0
+  say $object->attr; ## ==> false
 
 =head1 BUGS
 

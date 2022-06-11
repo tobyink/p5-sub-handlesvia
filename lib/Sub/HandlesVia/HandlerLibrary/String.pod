@@ -263,9 +263,9 @@ Replaces the first regexp match within the string with the replacement string.
   $object->my_replace( 'o' => 'a' );
   say $object->attr; ## ==> 'fao'
 
-  my $object = My::Class->new( attr => 'foo' );
-  $object->my_replace( qr/O/i => sub { return 'e' } );
-  say $object->attr; ## ==> 'feo'
+  my $object2 = My::Class->new( attr => 'foo' );
+  $object2->my_replace( qr/O/i => sub { return 'e' } );
+  say $object2->attr; ## ==> 'feo'
 
 =head2 C<< replace_globally( $regexp, $replacement ) >>
 
@@ -277,9 +277,9 @@ Replaces the all regexp matches within the string with the replacement string.
   $object->my_replace_globally( 'o' => 'a' );
   say $object->attr; ## ==> 'faa'
 
-  my $object = My::Class->new( attr => 'foo' );
-  $object->my_replace_globally( qr/O/i => sub { return 'e' } );
-  say $object->attr; ## ==> 'fee'
+  my $object2 = My::Class->new( attr => 'foo' );
+  $object2->my_replace_globally( qr/O/i => sub { return 'e' } );
+  say $object2->attr; ## ==> 'fee'
 
 =head2 C<< reset() >>
 

@@ -41,7 +41,7 @@ Returns a setter coderef.
 
   my $object = My::Class->new( attr => 10 );
   my $setter = $object->my_make_setter;
-  $setter->(11);
+  $setter->( 11 );
   say $object->attr; ## ==> 11
 
 =head2 C<< scalar_reference() >>

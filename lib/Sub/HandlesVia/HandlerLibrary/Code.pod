@@ -29,7 +29,7 @@ This is a library of methods for L<Sub::HandlesVia>.
 
 Calls the coderef, passing it any arguments.
 
-  my $coderef = sub { ... };
+  my $coderef = sub { 'code' };
   my $object  = My::Class->new( attr => $coderef );
   
   # $coderef->( 1, 2, 3 )
@@ -39,7 +39,7 @@ Calls the coderef, passing it any arguments.
 
 Calls the coderef as if it were a method, passing any arguments.
 
-  my $coderef = sub { ... };
+  my $coderef = sub { 'code' };
   my $object  = My::Class->new( attr => $coderef );
   
   # $coderef->( $object, 1, 2, 3 )

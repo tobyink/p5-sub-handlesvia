@@ -216,16 +216,16 @@ Inserts a value into the array with the given index. Elements after it will be "
 
   my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
   $object->my_insert( 1, 'quux' );
-  say $object->attr; ## ==> [ 'foo', 'quux', 'bar', 'baz' ]
+  say Dumper( $object->attr ); ## ==> [ 'foo', 'quux', 'bar', 'baz' ]
 
 =head2 C<< is_empty() >>
 
 Boolean indicating if the referenced array is empty.
 
   my $object = My::Class->new( attr => [ 'foo', 'bar' ] );
-  say $object->my_is_empty; ## ==> 0
+  say $object->my_is_empty; ## ==> false
   $object->_set_attr( [] );
-  say $object->my_is_empty; ## ==> 1
+  say $object->my_is_empty; ## ==> true
 
 =head2 C<< join( $with? ) >>
 

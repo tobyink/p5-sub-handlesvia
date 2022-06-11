@@ -62,8 +62,8 @@ Empties the hash.
 
   my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
   $object->my_clear;
-  say exists $object->attr->{foo}; ## ==> 0
-  say exists $object->attr->{bar}; ## ==> 0
+  say exists $object->attr->{foo}; ## ==> false
+  say exists $object->attr->{bar}; ## ==> false
 
 =head2 C<< count() >>
 
@@ -87,7 +87,7 @@ Removes a value from the hashref by its key.
 
   my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
   $object->my_delete( 'foo' );
-  say exists $object->attr->{foo}; ## ==> 0
+  say exists $object->attr->{foo}; ## ==> false
 
 =head2 C<< elements() >>
 
@@ -103,8 +103,8 @@ Arguments: B<< Str >>.
 Indicates whether a value exists in the hashref by its key.
 
   my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
-  say $object->my_exists( 'foo' ); ## ==> 1
-  say $object->my_exists( 'baz' ); ## ==> 0
+  say $object->my_exists( 'foo' ); ## ==> true
+  say $object->my_exists( 'baz' ); ## ==> false
 
 =head2 C<< for_each_key( $coderef ) >>
 
@@ -136,9 +136,9 @@ Returns a value from the hashref by its key.
 Returns true iff there are no keys in the hash.
 
   my $object = My::Class->new( attr => { foo => 0, bar => 1 } );
-  say $object->my_is_empty; ## ==> 0
+  say $object->my_is_empty; ## ==> false
   $object->_set_attr( {} );
-  say $object->my_is_empty; ## ==> 1
+  say $object->my_is_empty; ## ==> true
 
 =head2 C<< keys() >>
 
