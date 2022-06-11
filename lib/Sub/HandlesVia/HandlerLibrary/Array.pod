@@ -1,0 +1,416 @@
+=head1 NAME
+
+Sub::HandlesVia::HandlerLibrary::Array - library of Array-related methods
+
+=head1 SYNOPSIS
+
+  package My::Class {
+    use Moo;
+    use Sub::HandlesVia;
+    use Types::Standard 'ArrayRef';
+    has my_array => (
+      is => 'ro',
+      isa => ArrayRef,
+      handles_via => 'Array',
+      handles => {
+        'my_accessor' => 'accessor',
+        'my_all' => 'all',
+        'my_all_true' => 'all_true',
+        'my_any' => 'any',
+        'my_apply' => 'apply',
+        'my_clear' => 'clear',
+        'my_count' => 'count',
+        'my_delete' => 'delete',
+        'my_elements' => 'elements',
+        'my_first' => 'first',
+        'my_first_index' => 'first_index',
+        'my_flatten' => 'flatten',
+        'my_flatten_deep' => 'flatten_deep',
+        'my_for_each' => 'for_each',
+        'my_for_each_pair' => 'for_each_pair',
+        'my_get' => 'get',
+        'my_grep' => 'grep',
+        'my_head' => 'head',
+        'my_insert' => 'insert',
+        'my_is_empty' => 'is_empty',
+        'my_join' => 'join',
+        'my_map' => 'map',
+        'my_max' => 'max',
+        'my_maxstr' => 'maxstr',
+        'my_min' => 'min',
+        'my_minstr' => 'minstr',
+        'my_natatime' => 'natatime',
+        'my_not_all_true' => 'not_all_true',
+        'my_pairfirst' => 'pairfirst',
+        'my_pairgrep' => 'pairgrep',
+        'my_pairkeys' => 'pairkeys',
+        'my_pairmap' => 'pairmap',
+        'my_pairs' => 'pairs',
+        'my_pairvalues' => 'pairvalues',
+        'my_pick_random' => 'pick_random',
+        'my_pop' => 'pop',
+        'my_print' => 'print',
+        'my_product' => 'product',
+        'my_push' => 'push',
+        'my_reduce' => 'reduce',
+        'my_reductions' => 'reductions',
+        'my_reset' => 'reset',
+        'my_reverse' => 'reverse',
+        'my_sample' => 'sample',
+        'my_set' => 'set',
+        'my_shallow_clone' => 'shallow_clone',
+        'my_shift' => 'shift',
+        'my_shuffle' => 'shuffle',
+        'my_shuffle_in_place' => 'shuffle_in_place',
+        'my_sort' => 'sort',
+        'my_sort_in_place' => 'sort_in_place',
+        'my_splice' => 'splice',
+        'my_sum' => 'sum',
+        'my_tail' => 'tail',
+        'my_uniq' => 'uniq',
+        'my_uniq_in_place' => 'uniq_in_place',
+        'my_uniqnum' => 'uniqnum',
+        'my_uniqnum_in_place' => 'uniqnum_in_place',
+        'my_uniqstr' => 'uniqstr',
+        'my_uniqstr_in_place' => 'uniqstr_in_place',
+        'my_unshift' => 'unshift',
+      },
+    );
+  }
+
+=head1 DESCRIPTION
+
+This is a library of methods for L<Sub::HandlesVia>.
+
+=head1 DELEGATABLE METHODS
+
+=head2 C<< accessor( $index, $value? ) >>
+
+Arguments: B<< Int >>, B<< Optional[Any] >>.
+
+Acts like C<get> if given one argument, or C<set> if given two arguments.
+
+=head2 C<< all() >>
+
+All elements in the array, in list context.
+
+=head2 C<< all_true( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Like C<< List::Util::all() >>.
+
+=head2 C<< any( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Like C<< List::Util::any() >>.
+
+=head2 C<< apply( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Executes the coderef (which should modify C<< $_ >>) against each element of the array; returns the resulting array in list context.
+
+=head2 C<< clear() >>
+
+Empties the array.
+
+=head2 C<< count() >>
+
+The number of elements in the referenced array.
+
+=head2 C<< delete( $index ) >>
+
+Arguments: B<< Int >>.
+
+Removes the indexed element from the array and returns it. Elements after it will be "moved up".
+
+=head2 C<< elements() >>
+
+All elements in the array, in list context.
+
+=head2 C<< first( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Like C<< List::Util::first() >>.
+
+=head2 C<< first_index( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Like C<< List::MoreUtils::first_index() >>.
+
+=head2 C<< flatten() >>
+
+All elements in the array, in list context.
+
+=head2 C<< flatten_deep( $depth? ) >>
+
+Arguments: B<< Optional[Int] >>.
+
+Flattens the arrayref into a list, including any nested arrayrefs.
+
+=head2 C<< for_each( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Chainable method which executes the coderef on each element of the array. The coderef will be passed two values: the element and its index.
+
+=head2 C<< for_each_pair( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Chainable method which executes the coderef on each pair of elements in the array. The coderef will be passed the two elements.
+
+=head2 C<< get( $index ) >>
+
+Arguments: B<< Int >>.
+
+Returns a single element from the array by index.
+
+=head2 C<< grep( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Like C<grep> from L<perlfunc>.
+
+=head2 C<< head( $count ) >>
+
+Arguments: B<< Int >>.
+
+Returns the first C<< $count >> elements of the array in list context.
+
+=head2 C<< insert( $index, $value ) >>
+
+Arguments: B<< Int >>, B<< Any >>.
+
+Inserts a value into the array with the given index. Elements after it will be "moved down".
+
+=head2 C<< is_empty() >>
+
+Boolean indicating if the referenced array is empty.
+
+=head2 C<< join( $with? ) >>
+
+Arguments: B<< Optional[Str] >>.
+
+Returns a string joining all the elements in the array; if C<< $with >> is omitted, defaults to a comma.
+
+=head2 C<< map( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Like C<map> from L<perlfunc>.
+
+=head2 C<< max() >>
+
+Like C<< List::Util::max() >>.
+
+=head2 C<< maxstr() >>
+
+Like C<< List::Util::maxstr() >>.
+
+=head2 C<< min() >>
+
+Like C<< List::Util::min() >>.
+
+=head2 C<< minstr() >>
+
+Like C<< List::Util::minstr() >>.
+
+=head2 C<< natatime( $n, $callback? ) >>
+
+Arguments: B<< Int >>, B<< Optional[CodeRef] >>.
+
+Given just a number, returns an iterator which reads that many elements from the array at a time. If also given a callback, calls the callback repeatedly with those values.
+
+=head2 C<< not_all_true( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Like C<< List::Util::notall() >>.
+
+=head2 C<< pairfirst( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Like C<< List::Util::pairfirst() >>.
+
+=head2 C<< pairgrep( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Like C<< List::Util::pairgrep() >>.
+
+=head2 C<< pairkeys() >>
+
+Like C<< List::Util::pairkeys() >>.
+
+=head2 C<< pairmap( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Like C<< List::Util::pairmap() >>.
+
+=head2 C<< pairs() >>
+
+Like C<< List::Util::pairs() >>.
+
+=head2 C<< pairvalues() >>
+
+Like C<< List::Util::pairvalues() >>.
+
+=head2 C<< pick_random( $count ) >>
+
+Arguments: B<< Optional[Int] >>.
+
+If no C<< $count >> is given, returns one element of the array at random. If C<< $count >> is given, creates a new array with that many random elements from the original array (or fewer if the original array is not long enough) and returns that as an arrayref or list depending on context
+
+=head2 C<< pop() >>
+
+Removes the last element from the array and returns it.
+
+=head2 C<< print( $fh?, $with? ) >>
+
+Arguments: B<< Optional[FileHandle] >>, B<< Optional[Str] >>.
+
+Prints a string joining all the elements in the array; if C<< $fh >> is omitted, defaults to STDOUT; if C<< $with >> is omitted, defaults to a comma.
+
+=head2 C<< product() >>
+
+Like C<< List::Util::product() >>.
+
+=head2 C<< push( @values ) >>
+
+Adds an element to the end of the array.
+
+=head2 C<< reduce( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Like C<< List::Util::reduce() >>.
+
+=head2 C<< reductions( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+Like C<< List::Util::reductions() >>.
+
+=head2 C<< reset() >>
+
+Resets the attribute to its default value, or an empty arrayref if it has no default.
+
+=head2 C<< reverse() >>
+
+Returns the reversed array in list context.
+
+=head2 C<< sample( $count ) >>
+
+Arguments: B<< Int >>.
+
+Like C<< List::Util::sample() >>.
+
+=head2 C<< set( $index, $value ) >>
+
+Arguments: B<< Int >>, B<< Any >>.
+
+Sets the element with the given index to the supplied value.
+
+=head2 C<< shallow_clone() >>
+
+Creates a new arrayref with the same elements as the original.
+
+=head2 C<< shift() >>
+
+Removes an element from the start of the array and returns it.
+
+=head2 C<< shuffle() >>
+
+Returns the array in a random order; can be called in list context or scalar context and will return an arrayref in the latter case.
+
+=head2 C<< shuffle_in_place() >>
+
+Rearranges the array in a random order, and changes the attribute to point to the new order.
+
+=head2 C<< sort( $coderef? ) >>
+
+Arguments: B<< Optional[CodeRef] >>.
+
+Like C<sort> from L<perlfunc>.
+
+=head2 C<< sort_in_place( $coderef? ) >>
+
+Arguments: B<< Optional[CodeRef] >>.
+
+Like C<sort> from L<perlfunc>, but changes the attribute to point to the newly sorted array.
+
+=head2 C<< splice( $index, $length, @values ) >>
+
+Like C<splice> from L<perlfunc>.
+
+=head2 C<< sum() >>
+
+Like C<< List::Util::sum0() >>.
+
+=head2 C<< tail( $count ) >>
+
+Arguments: B<< Int >>.
+
+Returns the last C<< $count >> elements of the array in list context.
+
+=head2 C<< uniq() >>
+
+Returns the array filtered to remove duplicates; can be called in list context or scalar context and will return an arrayref in the latter case.
+
+=head2 C<< uniq_in_place() >>
+
+Filters the array to remove duplicates, and changes the attribute to point to the filtered array.
+
+=head2 C<< uniqnum() >>
+
+Returns the array filtered to remove duplicates numerically; can be called in list context or scalar context and will return an arrayref in the latter case.
+
+=head2 C<< uniqnum_in_place() >>
+
+Filters the array to remove duplicates numerically, and changes the attribute to point to the filtered array.
+
+=head2 C<< uniqstr() >>
+
+Returns the array filtered to remove duplicates stringwise; can be called in list context or scalar context and will return an arrayref in the latter case.
+
+=head2 C<< uniqstr_in_place() >>
+
+Filters the array to remove duplicates stringwise, and changes the attribute to point to the filtered array.
+
+=head2 C<< unshift( @values ) >>
+
+Adds an element to the start of the array.
+
+=head1 BUGS
+
+Please report any bugs to
+L<https://github.com/tobyink/p5-sub-handlesvia/issues>.
+
+=head1 SEE ALSO
+
+L<Sub::HandlesVia>.
+
+=head1 AUTHOR
+
+Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
+
+=head1 COPYRIGHT AND LICENCE
+
+This software is copyright (c) 2020, 2022 by Toby Inkster.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=head1 DISCLAIMER OF WARRANTIES
+
+THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+

@@ -18,6 +18,7 @@ sub set {
 		name      => 'Bool:set',
 		args      => 0,
 		template  => '« !!1 »',
+		documentation => 'Sets the value of the boolean to true.',
 }
 
 sub unset {
@@ -25,6 +26,7 @@ sub unset {
 		name      => 'Bool:unset',
 		args      => 0,
 		template  => '« !!0 »',
+		documentation => 'Sets the value of the boolean to false.',
 }
 
 sub toggle {
@@ -32,6 +34,7 @@ sub toggle {
 		name      => 'Bool:toggle',
 		args      => 0,
 		template  => '« !$GET »',
+		documentation => 'Toggles the truth value of the boolean.',
 }
 
 sub not {
@@ -39,6 +42,7 @@ sub not {
 		name      => 'Bool:not',
 		args      => 0,
 		template  => '!$GET',
+		documentation => 'Returns the opposite value of the boolean.',
 }
 
 sub reset {
@@ -47,7 +51,7 @@ sub reset {
 		args      => 0,
 		template  => '« $DEFAULT »',
 		default_for_reset => sub { 0 },
+		documentation => 'Sets the boolean to its default value, or false if it has no default.',
 }
-
 
 1;

@@ -19,6 +19,7 @@ use Class::Tiny (
 		no_validation_needed
 		additional_validation
 		default_for_reset
+		documentation
 	),
 	{
 		is_mutator   => sub { defined $_[0]{lvalue_template} or $_[0]{template} =~ /«/ },
@@ -134,7 +135,11 @@ sub lookup {
 			my $class = $trait =~ /:/
 				? $trait
 				: "Sub::HandlesVia::HandlerLibrary::$trait";
-			eval "require $class" unless $class eq $trait;
+			if ( $class ne $trait ) {
+				local $@;
+				eval "require $class; 1"
+					or warn $@;
+			}
 			if ($class->isa('Sub::HandlesVia::HandlerLibrary') and $class->can($method_name)) {
 				$handler = $class->$method_name;
 			}

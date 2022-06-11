@@ -18,6 +18,7 @@ sub scalar_reference {
 		name      => 'Scalar:scalar_reference',
 		args      => 0,
 		template  => '$GET;\\($SLOT)',
+		documentation => "Returns a scalar reference to the attribute value's slot within its object.",
 }
 
 1;

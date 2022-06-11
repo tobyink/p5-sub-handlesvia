@@ -37,6 +37,8 @@ sub set {
 		args      => 1,
 		signature => [Int],
 		template  => '« $ARG »',
+		usage     => '$value',
+		documentation => 'Sets the counter to the given value.',
 }
 
 sub inc {
@@ -47,6 +49,8 @@ sub inc {
 		signature => [Optional[Int]],
 		template  => '« $GET + (#ARG ? $ARG : 1) »',
 		lvalue_template => '$GET += (#ARG ? $ARG : 1)',
+		usage     => '$amount?',
+		documentation => 'Increments the counter by C<< $amount >>, or by 1 if no value is given.',
 }
 
 sub dec {
@@ -57,6 +61,8 @@ sub dec {
 		signature => [Optional[Int]],
 		template  => '« $GET - (#ARG ? $ARG : 1) »',
 		lvalue_template => '$GET -= (#ARG ? $ARG : 1)',
+		usage     => '$amount?',
+		documentation => 'Decrements the counter by C<< $amount >>, or by 1 if no value is given.',
 }
 
 sub reset {
@@ -65,6 +71,7 @@ sub reset {
 		args      => 0,
 		template  => '« $DEFAULT »',
 		default_for_reset => sub { 0 },
+		documentation => 'Sets the counter to its default value, or 0 if it has no default.',
 }
 
 1;

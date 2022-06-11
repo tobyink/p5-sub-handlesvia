@@ -33,6 +33,8 @@ sub set {
 		signature => [Num],
 		template  => '« $ARG »',
 		lvalue_template => '$GET = $ARG',
+		usage => '$value',
+		documentation => "Sets the number to a new value.",
 }
 
 sub get {
@@ -40,6 +42,7 @@ sub get {
 		name      => 'Number:get',
 		args      => 0,
 		template  => '$GET',
+		documentation => "Returns the current value of the number.",
 }
 
 sub add {
@@ -48,6 +51,8 @@ sub add {
 		args      => 1,
 		signature => [Num],
 		template  => '« $GET + $ARG »',
+		usage     => '$addend',
+		documentation => "Adds a number to the existing number, updating the attribute.",
 }
 
 sub sub {
@@ -56,6 +61,8 @@ sub sub {
 		args      => 1,
 		signature => [Num],
 		template  => '« $GET - $ARG »',
+		usage     => '$subtrahend',
+		documentation => "Subtracts a number from the existing number, updating the attribute.",
 }
 
 sub mul {
@@ -64,6 +71,8 @@ sub mul {
 		args      => 1,
 		signature => [Num],
 		template  => '« $GET * $ARG »',
+		usage     => '$factor',
+		documentation => "Multiplies the existing number by a number, updating the attribute.",
 }
 
 sub div {
@@ -72,6 +81,8 @@ sub div {
 		args      => 1,
 		signature => [Num],
 		template  => '« $GET / $ARG »',
+		usage     => '$divisor',
+		documentation => "Divides the existing number by a number, updating the attribute.",
 }
 
 sub mod {
@@ -80,6 +91,8 @@ sub mod {
 		args      => 1,
 		signature => [Num],
 		template  => '« $GET % $ARG »',
+		usage     => '$divisor',
+		documentation => "Finds the current number modulo a divisor, updating the attribute.",
 }
 
 sub abs {
@@ -88,6 +101,7 @@ sub abs {
 		args      => 0,
 		template  => '« abs($GET) »',
 		additional_validation => 'no incoming values',
+		documentation => "Finds the absolute value of the current number, updating the attribute.",
 }
 
 for my $comparison ( qw/ cmp eq ne lt gt le ge / ) {
@@ -109,6 +123,7 @@ for my $comparison ( qw/ cmp eq ne lt gt le ge / ) {
 			signature => [Num],
 			usage     => '$num',
 			template  => "\$GET $op \$ARG",
+			documentation => "Returns C<< \$object->attr $op \$num >>.",
 	};
 }
 

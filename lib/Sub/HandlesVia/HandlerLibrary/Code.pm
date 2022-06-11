@@ -17,12 +17,16 @@ sub execute {
 	handler
 		name      => 'Code:execute',
 		template  => '$GET->(@ARG)',
+		usage     => '@args',
+		documentation => 'Calls the coderef, passing it any arguments.',
 }
 
 sub execute_method {
 	handler
 		name      => 'Code:execute_method',
 		template  => '$GET->($SELF, @ARG)',
+		usage     => '@args',
+		documentation => 'Calls the coderef as if it were a method, passing any arguments.',
 }
 
 1;

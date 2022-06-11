@@ -118,6 +118,7 @@ sub count {
 		name      => 'Array:count',
 		args      => 0,
 		template  => 'scalar(@{$GET})',
+		documentation => 'The number of elements in the referenced array.',
 }
 
 sub is_empty {
@@ -125,6 +126,7 @@ sub is_empty {
 		name      => 'Array:is_empty',
 		args      => 0,
 		template  => '!scalar(@{$GET})',
+		documentation => 'Boolean indicating if the referenced array is empty.',
 }
 
 sub all {
@@ -132,6 +134,7 @@ sub all {
 		name      => 'Array:all',
 		args      => 0,
 		template  => '@{$GET}',
+		documentation => 'All elements in the array, in list context.',
 }
 
 sub elements {
@@ -139,6 +142,7 @@ sub elements {
 		name      => 'Array:elements',
 		args      => 0,
 		template  => '@{$GET}',
+		documentation => 'All elements in the array, in list context.',
 }
 
 sub flatten {
@@ -146,6 +150,7 @@ sub flatten {
 		name      => 'Array:flatten',
 		args      => 0,
 		template  => '@{$GET}',
+		documentation => 'All elements in the array, in list context.',
 }
 
 sub get {
@@ -155,6 +160,7 @@ sub get {
 		signature => [Int],
 		usage     => '$index',
 		template  => '($GET)->[$ARG]',
+		documentation => 'Returns a single element from the array by index.',
 }
 
 sub pop {
@@ -165,6 +171,7 @@ sub pop {
 		template  => 'my @shv_tmp = @{$GET}; my $shv_return = pop @shv_tmp; «\\@shv_tmp»; $shv_return',
 		lvalue_template => 'pop(@{$GET})',
 		additional_validation => 'no incoming values',
+		documentation => 'Removes the last element from the array and returns it.',
 }
 
 sub push {
@@ -175,6 +182,7 @@ sub push {
 		template  => 'my @shv_tmp = @{$GET}; my $shv_return = push(@shv_tmp, @ARG); «\\@shv_tmp»; $shv_return',
 		lvalue_template => 'push(@{$GET}, @ARG)',
 		additional_validation => $additional_validation_for_push_and_unshift,
+		documentation => 'Adds an element to the end of the array.',
 }
 
 sub shift {
@@ -185,6 +193,7 @@ sub shift {
 		template  => 'my @shv_tmp = @{$GET}; my $shv_return = shift @shv_tmp; «\\@shv_tmp»; $shv_return',
 		lvalue_template => 'shift(@{$GET})',
 		additional_validation => 'no incoming values',
+		documentation => 'Removes an element from the start of the array and returns it.',
 }
 
 sub unshift {
@@ -195,6 +204,7 @@ sub unshift {
 		template  => 'my @shv_tmp = @{$GET}; my $shv_return = unshift(@shv_tmp, @ARG); «\\@shv_tmp»; $shv_return',
 		lvalue_template => 'unshift(@{$GET}, @ARG)',
 		additional_validation => $additional_validation_for_push_and_unshift,
+		documentation => 'Adds an element to the start of the array.',
 }
 
 sub clear {
@@ -205,6 +215,7 @@ sub clear {
 		template  => '«[]»',
 		lvalue_template => '@{$GET} = ()',
 		additional_validation => 'no incoming values',
+		documentation => 'Empties the array.',
 }
 
 sub first {
@@ -215,6 +226,7 @@ sub first {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => '&List::Util::first($ARG, @{$GET})',
+		documentation => 'Like C<< List::Util::first() >>.',
 }
 
 sub any {
@@ -225,6 +237,7 @@ sub any {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => '&List::Util::any($ARG, @{$GET})',
+		documentation => 'Like C<< List::Util::any() >>.',
 }
 
 sub first_index {
@@ -235,6 +248,7 @@ sub first_index {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => $me.'::_firstidx($ARG, @{$GET})',
+		documentation => 'Like C<< List::MoreUtils::first_index() >>.',
 }
 
 # Implementation from List::MoreUtils::PP.
@@ -257,6 +271,7 @@ sub reduce {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'my $shv_callback = $ARG; List::Util::reduce { $shv_callback->($a,$b) } @{$GET}',
+		documentation => 'Like C<< List::Util::reduce() >>.',
 }
 
 sub set {
@@ -269,6 +284,7 @@ sub set {
 		template  => 'my @shv_tmp = @{$GET}; $shv_tmp[$ARG[1]] = $ARG[2]; «\\@shv_tmp»; $ARG[2]',
 		lvalue_template => '($GET)->[ $ARG[1] ] = $ARG[2]',
 		additional_validation => $additional_validation_for_set_and_insert,
+		documentation => 'Sets the element with the given index to the supplied value.',
 }
 
 sub accessor {
@@ -317,6 +333,7 @@ sub accessor {
 			}
 			return;
 		},
+	documentation => 'Acts like C<get> if given one argument, or C<set> if given two arguments.',
 }
 
 sub natatime {
@@ -328,6 +345,7 @@ sub natatime {
 		signature => [Int, Optional[CodeRef]],
 		usage     => '$n, $callback?',
 		template  => 'my $shv_iterator = '.$me.'::_natatime($ARG[1], @{$GET}); if ($ARG[2]) { while (my @shv_values = $shv_iterator->()) { $ARG[2]->(@shv_values) } } else { $shv_iterator }',
+		documentation => 'Given just a number, returns an iterator which reads that many elements from the array at a time. If also given a callback, calls the callback repeatedly with those values.',
 }
 
 # Implementation from List::MoreUtils::PP.
@@ -343,6 +361,7 @@ sub shallow_clone {
 		name      => 'Array:shallow_clone',
 		args      => 0,
 		template  => '[@{$GET}]',
+		documentation => 'Creates a new arrayref with the same elements as the original.',
 }
 
 sub map {
@@ -352,6 +371,7 @@ sub map {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'map($ARG->($_), @{$GET})',
+		documentation => 'Like C<map> from L<perlfunc>.',
 }
 
 sub grep {
@@ -361,6 +381,7 @@ sub grep {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'grep($ARG->($_), @{$GET})',
+		documentation => 'Like C<grep> from L<perlfunc>.',
 }
 
 sub sort {
@@ -371,6 +392,7 @@ sub sort {
 		signature => [Optional[CodeRef]],
 		usage     => '$coderef?',
 		template  => 'my @shv_return = $ARG ? (sort {$ARG->($a,$b)} @{$GET}) : (sort @{$GET})',
+		documentation => 'Like C<sort> from L<perlfunc>.',
 }
 
 sub reverse {
@@ -378,6 +400,7 @@ sub reverse {
 		name      => 'Array:reverse',
 		args      => 0,
 		template  => 'reverse @{$GET}',
+		documentation => 'Returns the reversed array in list context.',
 }
 
 sub sort_in_place {
@@ -389,6 +412,7 @@ sub sort_in_place {
 		usage     => '$coderef?',
 		template  => 'my @shv_return = $ARG ? (sort {$ARG->($a,$b)} @{$GET}) : (sort @{$GET}); «\@shv_return»',
 		additional_validation => 'no incoming values',
+		documentation => 'Like C<sort> from L<perlfunc>, but changes the attribute to point to the newly sorted array.',
 }
 
 sub shuffle {
@@ -397,6 +421,7 @@ sub shuffle {
 		name      => 'Array:shuffle',
 		args      => 0,
 		template  => 'my @shv_return = List::Util::shuffle(@{$GET}); wantarray ? @shv_return : \@shv_return',
+		documentation => 'Returns the array in a random order; can be called in list context or scalar context and will return an arrayref in the latter case.',
 }
 
 sub shuffle_in_place {
@@ -406,6 +431,7 @@ sub shuffle_in_place {
 		args      => 0,
 		template  => 'my @shv_return = List::Util::shuffle(@{$GET}); «\@shv_return»',
 		additional_validation => 'no incoming values',
+		documentation => 'Rearranges the array in a random order, and changes the attribute to point to the new order.',
 }
 
 sub uniq {
@@ -414,6 +440,7 @@ sub uniq {
 		name      => 'Array:uniq',
 		args      => 0,
 		template  => 'my @shv_return = List::Util::uniq(@{$GET}); wantarray ? @shv_return : \@shv_return',
+		documentation => 'Returns the array filtered to remove duplicates; can be called in list context or scalar context and will return an arrayref in the latter case.',
 }
 
 sub uniq_in_place {
@@ -423,6 +450,7 @@ sub uniq_in_place {
 		args      => 0,
 		template  => 'my @shv_return = List::Util::uniq(@{$GET}); «\@shv_return»',
 		additional_validation => 'no incoming values',
+		documentation => 'Filters the array to remove duplicates, and changes the attribute to point to the filtered array.',
 }
 
 sub uniqnum {
@@ -431,6 +459,7 @@ sub uniqnum {
 		name      => 'Array:uniqnum',
 		args      => 0,
 		template  => 'my @shv_return = List::Util::uniqnum(@{$GET}); wantarray ? @shv_return : \@shv_return',
+		documentation => 'Returns the array filtered to remove duplicates numerically; can be called in list context or scalar context and will return an arrayref in the latter case.',
 }
 
 sub uniqnum_in_place {
@@ -440,6 +469,7 @@ sub uniqnum_in_place {
 		args      => 0,
 		template  => 'my @shv_return = List::Util::uniqnum(@{$GET}); «\@shv_return»',
 		additional_validation => 'no incoming values',
+		documentation => 'Filters the array to remove duplicates numerically, and changes the attribute to point to the filtered array.',
 }
 
 sub uniqstr {
@@ -448,6 +478,7 @@ sub uniqstr {
 		name      => 'Array:uniqstr',
 		args      => 0,
 		template  => 'my @shv_return = List::Util::uniqstr(@{$GET}); wantarray ? @shv_return : \@shv_return',
+		documentation => 'Returns the array filtered to remove duplicates stringwise; can be called in list context or scalar context and will return an arrayref in the latter case.',
 }
 
 sub uniqstr_in_place {
@@ -457,6 +488,7 @@ sub uniqstr_in_place {
 		args      => 0,
 		template  => 'my @shv_return = List::Util::uniqstr(@{$GET}); «\@shv_return»',
 		additional_validation => 'no incoming values',
+		documentation => 'Filters the array to remove duplicates stringwise, and changes the attribute to point to the filtered array.',
 }
 
 sub splice {
@@ -505,6 +537,7 @@ sub splice {
 				return @rv;
 			}
 		},
+		documentation => 'Like C<splice> from L<perlfunc>.',
 }
 
 sub delete {
@@ -516,6 +549,7 @@ sub delete {
 		template  => 'my @shv_tmp = @{$GET}; my ($shv_return) = splice(@shv_tmp, $ARG, 1); «\\@shv_tmp»; $shv_return',
 		lvalue_template => 'splice(@{$GET}, $ARG, 1)',
 		additional_validation => 'no incoming values',
+		documentation => 'Removes the indexed element from the array and returns it. Elements after it will be "moved up".',
 }
 
 sub insert {
@@ -528,6 +562,7 @@ sub insert {
 		template  => 'my @shv_tmp = @{$GET}; my ($shv_return) = splice(@shv_tmp, $ARG[1], 0, $ARG[2]); «\\@shv_tmp»;',
 		lvalue_template => 'splice(@{$GET}, $ARG[1], 0, $ARG[2])',
 		additional_validation => $additional_validation_for_set_and_insert,
+		documentation => 'Inserts a value into the array with the given index. Elements after it will be "moved down".',
 }
 
 sub flatten_deep {
@@ -539,6 +574,7 @@ sub flatten_deep {
 		signature => [Optional[Int]],
 		usage     => '$depth?',
 		template  => "$me\::_flatten_deep(\@{\$GET}, \$ARG)",
+		documentation => 'Flattens the arrayref into a list, including any nested arrayrefs.',
 }
 
 # callback!
@@ -561,6 +597,7 @@ sub join {
 		signature => [Optional[Str]],
 		usage     => '$with?',
 		template  => 'my $shv_param_with = #ARG ? $ARG : q[,]; join($shv_param_with, @{$GET})',
+		documentation => 'Returns a string joining all the elements in the array; if C<< $with >> is omitted, defaults to a comma.',
 }
 
 sub print {
@@ -571,6 +608,7 @@ sub print {
 		signature => [Optional[FileHandle], Optional[Str]],
 		usage     => '$fh?, $with?',
 		template  => 'my $shv_param_with = (#ARG>1) ? $ARG[2] : q[,]; print {$ARG[1]||*STDOUT} join($shv_param_with, @{$GET})',
+		documentation => 'Prints a string joining all the elements in the array; if C<< $fh >> is omitted, defaults to STDOUT; if C<< $with >> is omitted, defaults to a comma.',
 }
 
 sub head {
@@ -580,6 +618,7 @@ sub head {
 		signature => [Int],
 		usage     => '$count',
 		template  => 'my $shv_count=$ARG; $shv_count=@{$GET} if $shv_count>@{$GET}; $shv_count=@{$GET}+$shv_count if $shv_count<0; (@{$GET})[0..($shv_count-1)]',
+		documentation => 'Returns the first C<< $count >> elements of the array in list context.',
 }
 
 sub tail {
@@ -589,6 +628,7 @@ sub tail {
 		signature => [Int],
 		usage     => '$count',
 		template  => 'my $shv_count=$ARG; $shv_count=@{$GET} if $shv_count>@{$GET}; $shv_count=@{$GET}+$shv_count if $shv_count<0; my $shv_start = scalar(@{$GET})-$shv_count; my $shv_end = scalar(@{$GET})-1; (@{$GET})[$shv_start..$shv_end]',
+		documentation => 'Returns the last C<< $count >> elements of the array in list context.',
 }
 
 sub apply {
@@ -598,6 +638,7 @@ sub apply {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'my @shv_tmp = @{$GET}; &{$ARG} foreach @shv_tmp; wantarray ? @shv_tmp : $shv_tmp[-1]',
+		documentation => 'Executes the coderef (which should modify C<< $_ >>) against each element of the array; returns the resulting array in list context.',
 }
 
 sub pick_random {
@@ -607,8 +648,9 @@ sub pick_random {
 		min_args  => 0,
 		max_args  => 1,
 		signature => [Optional[Int]],
-		usage     => '$coderef',
+		usage     => '$count',
 		template  => 'my @shv_tmp = List::Util::shuffle(@{$GET}); my $shv_count = $ARG; $shv_count=@{$GET} if $shv_count > @{$GET}; $shv_count=@{$GET}+$shv_count if $shv_count<0; if (wantarray and #ARG) { @shv_tmp[0..$shv_count-1] } elsif (#ARG) { [@shv_tmp[0..$shv_count-1]] } else { $shv_tmp[0] }',
+		documentation => 'If no C<< $count >> is given, returns one element of the array at random. If C<< $count >> is given, creates a new array with that many random elements from the original array (or fewer if the original array is not long enough) and returns that as an arrayref or list depending on context',
 }
 
 sub for_each {
@@ -618,6 +660,7 @@ sub for_each {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'foreach my $shv_index (0 .. $#{$GET}) { &{$ARG}(($GET)->[$shv_index], $shv_index) }; $SELF',
+		documentation => 'Chainable method which executes the coderef on each element of the array. The coderef will be passed two values: the element and its index.',
 }
 
 sub for_each_pair {
@@ -627,6 +670,7 @@ sub for_each_pair {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'for (my $shv_index=0; $shv_index<@{$GET}; $shv_index+=2) { &{$ARG}(($GET)->[$shv_index], ($GET)->[$shv_index+1]) }; $SELF',
+		documentation => 'Chainable method which executes the coderef on each pair of elements in the array. The coderef will be passed the two elements.',
 }
 
 sub all_true {
@@ -637,6 +681,7 @@ sub all_true {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => '&List::Util::all($ARG, @{$GET})',
+		documentation => 'Like C<< List::Util::all() >>.',
 }
 
 sub not_all_true {
@@ -647,6 +692,7 @@ sub not_all_true {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => '&List::Util::notall($ARG, @{$GET})',
+		documentation => 'Like C<< List::Util::notall() >>.',
 }
 
 sub min {
@@ -655,6 +701,7 @@ sub min {
 		name      => 'Array:min',
 		args      => 0,
 		template  => '&List::Util::min(@{$GET})',
+		documentation => 'Like C<< List::Util::min() >>.',
 }
 
 sub max {
@@ -663,6 +710,7 @@ sub max {
 		name      => 'Array:max',
 		args      => 0,
 		template  => '&List::Util::max(@{$GET})',
+		documentation => 'Like C<< List::Util::max() >>.',
 }
 
 sub minstr {
@@ -671,6 +719,7 @@ sub minstr {
 		name      => 'Array:minstr',
 		args      => 0,
 		template  => '&List::Util::minstr(@{$GET})',
+		documentation => 'Like C<< List::Util::minstr() >>.',
 }
 
 sub maxstr {
@@ -679,6 +728,7 @@ sub maxstr {
 		name      => 'Array:maxstr',
 		args      => 0,
 		template  => '&List::Util::maxstr(@{$GET})',
+		documentation => 'Like C<< List::Util::maxstr() >>.',
 }
 
 sub sum {
@@ -687,6 +737,7 @@ sub sum {
 		name      => 'Array:sum',
 		args      => 0,
 		template  => '&List::Util::sum(0, @{$GET})',
+		documentation => 'Like C<< List::Util::sum0() >>.',
 }
 
 sub product {
@@ -695,6 +746,7 @@ sub product {
 		name      => 'Array:product',
 		args      => 0,
 		template  => '&List::Util::product(1, @{$GET})',
+		documentation => 'Like C<< List::Util::product() >>.',
 }
 
 sub sample {
@@ -705,6 +757,7 @@ sub sample {
 		signature => [Int],
 		usage     => '$count',
 		template  => '&List::Util::sample($ARG, @{$GET})',
+		documentation => 'Like C<< List::Util::sample() >>.',
 }
 
 sub reductions {
@@ -715,6 +768,7 @@ sub reductions {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'my $shv_callback = $ARG; List::Util::reductions { $shv_callback->($a,$b) } @{$GET}',
+		documentation => 'Like C<< List::Util::reductions() >>.',
 }
 
 sub pairs {
@@ -723,6 +777,7 @@ sub pairs {
 		name      => 'Array:pairs',
 		args      => 0,
 		template  => '&List::Util::pairs(@{$GET})',
+		documentation => 'Like C<< List::Util::pairs() >>.',
 }
 
 sub pairkeys {
@@ -731,14 +786,16 @@ sub pairkeys {
 		name      => 'Array:pairkeys',
 		args      => 0,
 		template  => '&List::Util::pairkeys(@{$GET})',
+		documentation => 'Like C<< List::Util::pairkeys() >>.',
 }
 
 sub pairvalues {
 	require List::Util;
 	handler
-		name      => 'Array:pairkeys',
+		name      => 'Array:pairvalues',
 		args      => 0,
-		template  => '&List::Util::pairkeys(@{$GET})',
+		template  => '&List::Util::pairvalues(@{$GET})',
+		documentation => 'Like C<< List::Util::pairvalues() >>.',
 }
 
 sub pairgrep {
@@ -749,6 +806,7 @@ sub pairgrep {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'List::Util::pairgrep { $ARG->($_) } @{$GET}',
+		documentation => 'Like C<< List::Util::pairgrep() >>.',
 }
 
 sub pairfirst {
@@ -759,6 +817,7 @@ sub pairfirst {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'List::Util::pairfirst { $ARG->($_) } @{$GET}',
+		documentation => 'Like C<< List::Util::pairfirst() >>.',
 }
 
 sub pairmap {
@@ -769,6 +828,7 @@ sub pairmap {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'List::Util::pairmap { $ARG->($_) } @{$GET}',
+		documentation => 'Like C<< List::Util::pairmap() >>.',
 }
 
 sub reset {
@@ -777,6 +837,7 @@ sub reset {
 		args      => 0,
 		template  => '« $DEFAULT »',
 		default_for_reset => sub { '[]' },
+		documentation => 'Resets the attribute to its default value, or an empty arrayref if it has no default.',
 }
 
 1;

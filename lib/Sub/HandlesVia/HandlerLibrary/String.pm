@@ -39,6 +39,8 @@ sub set {
 		signature => [Str],
 		template  => '« $ARG »',
 		lvalue_template => '$GET = $ARG',
+		usage     => '$value',
+		documentation => "Sets the string to a new value.",
 }
 
 sub get {
@@ -46,6 +48,7 @@ sub get {
 		name      => 'String:get',
 		args      => 0,
 		template  => '$GET',
+		documentation => "Gets the current value of the string.",
 }
 
 sub inc {
@@ -55,6 +58,7 @@ sub inc {
 		template  => '« do { my $shv_tmp = $GET; ++$shv_tmp } »',
 		lvalue_template => '++$GET',
 		additional_validation => 'no incoming values',
+		documentation => "Performs C<< ++ >> on the string.",
 }
 
 sub append {
@@ -64,6 +68,8 @@ sub append {
 		signature => [Str],
 		template  => '« $GET . $ARG »',
 		lvalue_template => '$GET .= $ARG',
+		usage     => '$tail',
+		documentation => "Appends another string to the end of the current string and updates the attribute.",
 }
 
 sub prepend {
@@ -72,6 +78,8 @@ sub prepend {
 		name      => 'String:prepend',
 		signature => [Str],
 		template  => '« $ARG . $GET »',
+		usage     => '$head',
+		documentation => "Prepends another string to the start of the current string and updates the attribute.",
 }
 
 sub replace {
@@ -88,6 +96,7 @@ sub replace {
 			'if (%s) { my $shv_callback = $ARG[2]; $GET =~ s/$ARG[1]/$shv_callback->()/e } else { $GET =~ s/$ARG[1]/$ARG[2]/ } $GET',
 			CodeRef->inline_check('$ARG[2]'),
 		),
+		documentation => "Replaces the first regexp match within the string with the replacement string.",
 }
 
 sub replace_globally {
@@ -104,6 +113,7 @@ sub replace_globally {
 			'if (%s) { my $shv_callback = $ARG[2]; $GET =~ s/$ARG[1]/$shv_callback->()/eg } else { $GET =~ s/$ARG[1]/$ARG[2]/g } $GET',
 			CodeRef->inline_check('$ARG[2]'),
 		),
+		documentation => "Replaces the all regexp matches within the string with the replacement string.",
 }
 
 sub match {
@@ -113,6 +123,7 @@ sub match {
 		signature => [ Str|RegexpRef ],
 		usage     => '$regexp',
 		template  => '$GET =~ /$ARG/',
+		documentation => "Returns true iff the string matches the regexp.",
 }
 
 sub match_i {
@@ -122,6 +133,7 @@ sub match_i {
 		signature => [ Str|RegexpRef ],
 		usage     => '$regexp',
 		template  => '$GET =~ /$ARG/i',
+		documentation => "Returns true iff the string matches the regexp case-insensitively.",
 }
 
 sub starts_with {
@@ -131,6 +143,7 @@ sub starts_with {
 		signature => [ Str ],
 		usage     => '$head',
 		template  => 'substr($GET, 0, length $ARG) eq $ARG',
+		documentation => "Returns true iff the string starts with C<< \$head >>.",
 }
 
 sub starts_with_i {
@@ -140,6 +153,7 @@ sub starts_with_i {
 		signature => [ Str ],
 		usage     => '$head',
 		template  => sprintf( '%s(substr($GET, 0, length $ARG)) eq %s($ARG)', $fold, $fold ),
+		documentation => "Returns true iff the string starts with C<< \$head >> case-insensitvely.",
 }
 
 sub ends_with {
@@ -149,6 +163,7 @@ sub ends_with {
 		signature => [ Str ],
 		usage     => '$tail',
 		template  => 'substr($GET, -length $ARG) eq $ARG',
+		documentation => "Returns true iff the string ends with C<< \$tail >>.",
 }
 
 sub ends_with_i {
@@ -158,6 +173,7 @@ sub ends_with_i {
 		signature => [ Str ],
 		usage     => '$tail',
 		template  => sprintf( '%s(substr($GET, -length $ARG)) eq %s($ARG)', $fold, $fold ),
+		documentation => "Returns true iff the string ends with C<< \$tail >> case-insensitvely.",
 }
 
 sub contains {
@@ -167,6 +183,7 @@ sub contains {
 		signature => [ Str ],
 		usage     => '$str',
 		template  => 'index($GET, $ARG) != -1',
+		documentation => "Returns true iff the string contains C<< \$str >>.",
 }
 
 sub contains_i {
@@ -176,6 +193,7 @@ sub contains_i {
 		signature => [ Str ],
 		usage     => '$tail',
 		template  => sprintf( 'index(%s($GET), %s($ARG)) != -1', $fold, $fold ),
+		documentation => "Returns true iff the string contains C<< \$str >> case-insensitvely.",
 }
 
 sub chop {
@@ -185,6 +203,7 @@ sub chop {
 		template  => 'my $shv_return = chop(my $shv_tmp = $GET); «$shv_tmp»; $shv_return',
 		lvalue_template => 'chop($GET)',
 		additional_validation => 'no incoming values',
+		documentation => "Like C<chop> from L<perlfunc>.",
 }
 
 sub chomp {
@@ -194,6 +213,7 @@ sub chomp {
 		template  => 'my $shv_return = chomp(my $shv_tmp = $GET); «$shv_tmp»; $shv_return',
 		lvalue_template => 'chomp($GET)',
 		additional_validation => 'no incoming values',
+		documentation => "Like C<chomp> from L<perlfunc>.",
 }
 
 sub clear {
@@ -202,6 +222,7 @@ sub clear {
 		args      => 0,
 		template  => '«q()»',
 		additional_validation => 'no incoming values',
+		documentation => "Sets the string to the empty string.",
 }
 
 sub reset {
@@ -210,6 +231,7 @@ sub reset {
 		args      => 0,
 		template  => '« $DEFAULT »',
 		default_for_reset => sub { 'q()' },
+		documentation => 'Resets the attribute to its default value, or an empty string if it has no default.',
 }
 
 sub length {
@@ -217,6 +239,7 @@ sub length {
 		name      => 'String:length',
 		args      => 0,
 		template  => 'length($GET)',
+		documentation => "Like C<length> from L<perlfunc>.",
 }
 
 sub substr {
@@ -228,6 +251,7 @@ sub substr {
 		usage     => '$start, $length?, $replacement?',
 		template  => 'if (#ARG==1) { substr($GET, $ARG[1]) } elsif (#ARG==2) { substr($GET, $ARG[1], $ARG[2]) } elsif (#ARG==3) { my $shv_tmp = $GET; my $shv_return = substr($shv_tmp, $ARG[1], $ARG[2], $ARG[3]); «$shv_tmp»; $shv_return } ',
 		lvalue_template  => 'if (#ARG==1) { substr($GET, $ARG[1]) } elsif (#ARG==2) { substr($GET, $ARG[1], $ARG[2]) } elsif (#ARG==3) { substr($GET, $ARG[1], $ARG[2], $ARG[3]) } ',
+		documentation => "Like C<substr> from L<perlfunc>, but is not an lvalue.",
 }
 
 for my $comparison ( qw/ cmp eq ne lt gt le ge / ) {
@@ -240,6 +264,7 @@ for my $comparison ( qw/ cmp eq ne lt gt le ge / ) {
 			signature => [Str],
 			usage     => '$str',
 			template  => "\$GET $comparison \$ARG",
+			documentation => "Returns C<< \$object->attr $comparison \$str >>.",
 	};
 
 	*{ $comparison . 'i' } = sub {
@@ -249,16 +274,22 @@ for my $comparison ( qw/ cmp eq ne lt gt le ge / ) {
 			signature => [Str],
 			usage     => '$str',
 			template  => "$fold(\$GET) $comparison $fold(\$ARG)",
+			documentation => "Returns C<< fc(\$object->attr) $comparison fc(\$str) >>. Uses C<lc> instead of C<fc> in versions of Perl older than 5.16.",
 	};
 }
 
 for my $mutation ( qw/ uc fc lc / ) {
 	no strict 'refs';
+	my $mutationf = $mutation;
+	if ( $mutationf eq 'fc' ) {
+		$mutationf = $fold;
+	}
 	*$mutation = sub {
 		handler
 			name      => "String:$mutation",
 			args      => 0,
-			template  => "$mutation(\$GET)",
+			template  => "$mutationf(\$GET)",
+			documentation => "Returns C<< $mutation(\$object->attr) >>.",
 	};
 }
 

@@ -14,8 +14,8 @@ use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( HashRef ArrayRef Optional Str CodeRef Item Any Ref Defined );
 
 our @METHODS = qw( all accessor clear count defined delete elements exists get
-	is_empty keys kv set shallow_clone values sorted_keys
-	for_each_pair for_each_key for_each_value reset );
+	is_empty keys kv set shallow_clone values sorted_keys reset
+	for_each_key for_each_value for_each_pair );
 
 sub _type_inspector {
 	my ($me, $type) = @_;
@@ -79,6 +79,7 @@ sub count {
 		name      => 'Hash:count',
 		args      => 0,
 		template  => 'scalar keys %{$GET}',
+		documentation => 'Returns the number of keys in the hash.',
 }
 
 sub is_empty {
@@ -86,6 +87,7 @@ sub is_empty {
 		name      => 'Hash:is_empty',
 		args      => 0,
 		template  => '!scalar keys %{$GET}',
+		documentation => 'Returns true iff there are no keys in the hash.',
 }
 
 sub keys {
@@ -93,6 +95,7 @@ sub keys {
 		name      => 'Hash:keys',
 		args      => 0,
 		template  => 'keys %{$GET}',
+		documentation => 'Returns the list of keys in the hash.',
 }
 
 sub sorted_keys {
@@ -100,6 +103,7 @@ sub sorted_keys {
 		name      => 'Hash:sorted_keys',
 		args      => 0,
 		template  => 'sort(keys %{$GET})',
+		documentation => 'Returns an alphabetically sorted list of keys in the hash.',
 }
 
 sub values {
@@ -107,20 +111,23 @@ sub values {
 		name      => 'Hash:values',
 		args      => 0,
 		template  => 'values %{$GET}',
+		documentation => 'Returns the list of values in the hash.',
 }
 
 sub all {
 	handler
 		name      => 'Hash:all',
 		args      => 0,
-		template  => 'map { $_ => ($GET)->{$_} } keys %{$GET}',
+		template  => '%{$GET}',
+		documentation => 'Returns the hash in list context.',
 }
 
 sub elements {
 	handler
 		name      => 'Hash:elements',
 		args      => 0,
-		template  => 'map { $_ => ($GET)->{$_} } keys %{$GET}',
+		template  => '%{$GET}',
+		documentation => 'Returns the hash in list context.',
 }
 
 sub kv {
@@ -128,6 +135,7 @@ sub kv {
 		name      => 'Hash:kv',
 		args      => 0,
 		template  => 'map [ $_ => ($GET)->{$_} ], keys %{$GET}',
+		documentation => 'Returns a list of arrayrefs, where each arrayref is a key-value pair.',
 }
 
 sub get {
@@ -136,6 +144,7 @@ sub get {
 		min_args  => 1,
 		usage     => '$key',
 		template  => '#ARG>1 ? @{$GET}{@ARG} : ($GET)->{$ARG}',
+		documentation => 'Returns a value from the hashref by its key.',
 }
 
 sub defined {
@@ -145,6 +154,7 @@ sub defined {
 		signature => [Str],
 		usage     => '$key',
 		template  => 'defined(($GET)->{$ARG})',
+		documentation => 'Indicates whether a value exists and is defined in the hashref by its key.',
 }
 
 sub exists {
@@ -154,6 +164,7 @@ sub exists {
 		signature => [Str],
 		usage     => '$key',
 		template  => 'defined(($GET)->{$ARG})',
+		documentation => 'Indicates whether a value exists in the hashref by its key.',
 }
 
 sub delete {
@@ -164,6 +175,7 @@ sub delete {
 		template  => 'my %shv_tmp = %{$GET}; my @shv_return = delete @shv_tmp{@ARG}; «\%shv_tmp»; wantarray ? @shv_return : $shv_return[-1]',
 		lvalue_template  => 'delete(@{$GET}{@ARG})',
 		additional_validation => 'no incoming values',
+		documentation => 'Removes a value from the hashref by its key.',
 }
 
 sub clear {
@@ -173,6 +185,7 @@ sub clear {
 		template  => '«{}»',
 		lvalue_template => '%{$GET} = ()',
 		additional_validation => 'no incoming values',
+		documentation => 'Empties the hash.',
 }
 
 sub shallow_clone {
@@ -180,18 +193,7 @@ sub shallow_clone {
 		name      => 'Hash:shallow_clone',
 		args      => 0,
 		template  => '+{%{$GET}}',
-}
-
-sub _old_set {
-	my $me = CORE::shift;
-	handler
-		name      => 'Hash:set',
-		args      => 2,
-		signature => [Str, Any],
-		usage     => '$key, $value',
-		template  => 'my %shv_tmp = %{$GET}; $shv_tmp{$ARG[1]} = $ARG[2]; «\\%shv_tmp»',
-		lvalue_template => '($GET)->{ $ARG[1] } = $ARG[2]',
-		additional_validation => $additional_validation_for_set_and_insert,
+		documentation => 'Creates a new hashref with the same keys and values as the original.',
 }
 
 sub set {
@@ -251,7 +253,8 @@ sub set {
 				);
 			}
 			return;
-		}
+		},
+		documentation => 'Given a key and value, adds the key to the hashref with the given value.',
 }
 
 sub accessor {
@@ -264,6 +267,7 @@ sub accessor {
 		template  => 'if (#ARG == 1) { ($GET)->{ $ARG[1] } } else { my %shv_tmp = %{$GET}; $shv_tmp{$ARG[1]} = $ARG[2]; «\\%shv_tmp» }',
 		lvalue_template => '(#ARG == 1) ? ($GET)->{ $ARG[1] } : (($GET)->{ $ARG[1] } = $ARG[2])',
 		additional_validation => $additional_validation_for_set_and_insert,
+		documentation => 'Acts like C<get> if given one argument, or C<set> if given two arguments.',
 }
 
 sub for_each_pair {
@@ -273,6 +277,7 @@ sub for_each_pair {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'while (my ($shv_key,$shv_value)=each %{$GET}) { &{$ARG}($shv_key,$shv_value) }; $SELF',
+		documentation => 'Chainable method which calls the coderef for each key in the hash, passing the key and value to the coderef.',
 }
 
 sub for_each_key {
@@ -282,6 +287,7 @@ sub for_each_key {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'for my $shv_key (keys %{$GET}) { &{$ARG}($shv_key) }; $SELF',
+		documentation => 'Chainable method which calls the coderef for each key in the hash, passing just the key to the coderef.',
 }
 
 sub for_each_value {
@@ -291,6 +297,7 @@ sub for_each_value {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'for my $shv_value (values %{$GET}) { &{$ARG}($shv_value) }; $SELF',
+		documentation => 'Chainable method which calls the coderef for each value in the hash, passing just the value to the coderef.',
 }
 
 sub reset {
@@ -299,6 +306,7 @@ sub reset {
 		args      => 0,
 		template  => '« $DEFAULT »',
 		default_for_reset => sub { '{}' },
+		documentation => 'Resets the attribute to its default value, or an empty hashref if it has no default.',
 }
 
 1;
