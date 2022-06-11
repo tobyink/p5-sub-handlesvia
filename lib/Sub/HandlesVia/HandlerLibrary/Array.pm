@@ -138,9 +138,9 @@ sub is_empty {
 			my ( $class, $attr, $method ) = @_;
 			return CORE::join "",
 				"  my \$object = $class\->new( $attr => [ 'foo', 'bar' ] );\n",
-				"  say \$object->$method; ## ==> 0\n",
+				"  say \$object->$method; ## ==> false\n",
 				"  \$object->_set_$attr( [] );\n",
-				"  say \$object->$method; ## ==> 1\n",
+				"  say \$object->$method; ## ==> true\n",
 				"\n";
 		},
 }
@@ -666,7 +666,7 @@ sub insert {
 			return CORE::join "",
 				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
 				"  \$object->$method( 1, 'quux' );\n",
-				"  say \$object->$attr; ## ==> [ 'foo', 'quux', 'bar', 'baz' ]\n",
+				"  say Dumper( \$object->$attr ); ## ==> [ 'foo', 'quux', 'bar', 'baz' ]\n",
 				"\n";
 		},
 }

@@ -27,6 +27,7 @@ use Class::Tiny (
 		min_args     => sub { shift->args },
 		max_args     => sub { shift->args },
 		usage        => sub { shift->_build_usage },
+		allow_getter_shortcuts => sub { 1 },
 	},
 );
 sub has_min_args { defined shift->min_args }
@@ -176,7 +177,8 @@ sub _process_template {
 			[\]\}]          #     closing ] or }
 		){0,3}             # ... up to thrice
 		$/x
-		and $template =~ /\$GET/) {
+		and $template =~ /\$GET/
+		and $self->allow_getter_shortcuts) {
 		# Getter is kind of complex (maybe includes function calls, etc
 		# So only do it once.
 		$getter =~ s/%/%%/g;

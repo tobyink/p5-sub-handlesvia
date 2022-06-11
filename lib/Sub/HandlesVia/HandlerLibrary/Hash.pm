@@ -99,9 +99,9 @@ sub is_empty {
 			my ( $class, $attr, $method ) = @_;
 			return join "",
 				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
-				"  say \$object->$method; ## ==> 0\n",
+				"  say \$object->$method; ## ==> false\n",
 				"  \$object->_set_$attr( {} );\n",
-				"  say \$object->$method; ## ==> 1\n",
+				"  say \$object->$method; ## ==> true\n",
 				"\n";
 		},
 }
@@ -237,8 +237,8 @@ sub exists {
 			my ( $class, $attr, $method ) = @_;
 			return join "",
 				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
-				"  say \$object->$method( 'foo' ); ## ==> 1\n",
-				"  say \$object->$method( 'baz' ); ## ==> 0\n",
+				"  say \$object->$method( 'foo' ); ## ==> true\n",
+				"  say \$object->$method( 'baz' ); ## ==> false\n",
 				"\n";
 		},
 }
@@ -257,7 +257,7 @@ sub delete {
 			return join "",
 				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
 				"  \$object->$method( 'foo' );\n",
-				"  say exists \$object->$attr\->{foo}; ## ==> 0\n",
+				"  say exists \$object->$attr\->{foo}; ## ==> false\n",
 				"\n";
 		},
 }
@@ -275,8 +275,8 @@ sub clear {
 			return join "",
 				"  my \$object = $class\->new( $attr => { foo => 0, bar => 1 } );\n",
 				"  \$object->$method;\n",
-				"  say exists \$object->$attr\->{foo}; ## ==> 0\n",
-				"  say exists \$object->$attr\->{bar}; ## ==> 0\n",
+				"  say exists \$object->$attr\->{foo}; ## ==> false\n",
+				"  say exists \$object->$attr\->{bar}; ## ==> false\n",
 				"\n";
 		},
 }

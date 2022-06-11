@@ -28,13 +28,14 @@ sub scalar_reference {
 				"  say \$object->$attr; ## ==> 11\n",
 				"\n";
 		},
+		allow_getter_shortcuts => 0,
 }
 
 sub make_getter {
 	handler
 		name      => 'Scalar:make_getter',
 		args      => 0,
-		template  => 'sub { $GET }',
+		template  => 'my $s = $SELF; sub { unshift @_, $s; $GET }',
 		documentation => "Returns a getter coderef.",
 		_examples => sub {
 			my ( $class, $attr, $method ) = @_;
@@ -45,23 +46,25 @@ sub make_getter {
 				"  say \$getter->(); ## ==> 11\n",
 				"\n";
 		},
+		allow_getter_shortcuts => 0,
 }
 
 sub make_setter {
 	handler
 		name      => 'Scalar:make_setter',
 		args      => 0,
-		template  => 'sub { $GET }',
+		template  => 'my $s = $SELF; sub { my $val = shift; unshift @_, $s; « $val » }',
 		documentation => "Returns a setter coderef.",
 		_examples => sub {
 			my ( $class, $attr, $method ) = @_;
 			return CORE::join "",
 				"  my \$object = $class\->new( $attr => 10 );\n",
 				"  my \$setter = \$object->$method;\n",
-				"  \$setter->(11);\n",
+				"  \$setter->( 11 );\n",
 				"  say \$object->$attr; ## ==> 11\n",
 				"\n";
 		},
+		allow_getter_shortcuts => 0,
 }
 
 1;

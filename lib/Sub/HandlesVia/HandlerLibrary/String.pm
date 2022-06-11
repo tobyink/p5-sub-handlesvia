@@ -135,9 +135,9 @@ sub replace {
 				"  \$object->$method( 'o' => 'a' );\n",
 				"  say \$object->$attr; ## ==> 'fao'\n",
 				"\n",
-				"  my \$object = $class\->new( $attr => 'foo' );\n",
-				"  \$object->$method( qr/O/i => sub { return 'e' } );\n",
-				"  say \$object->$attr; ## ==> 'feo'\n",
+				"  my \$object2 = $class\->new( $attr => 'foo' );\n",
+				"  \$object2->$method( qr/O/i => sub { return 'e' } );\n",
+				"  say \$object2->$attr; ## ==> 'feo'\n",
 				"\n";
 		},
 }
@@ -164,9 +164,9 @@ sub replace_globally {
 				"  \$object->$method( 'o' => 'a' );\n",
 				"  say \$object->$attr; ## ==> 'faa'\n",
 				"\n",
-				"  my \$object = $class\->new( $attr => 'foo' );\n",
-				"  \$object->$method( qr/O/i => sub { return 'e' } );\n",
-				"  say \$object->$attr; ## ==> 'fee'\n",
+				"  my \$object2 = $class\->new( $attr => 'foo' );\n",
+				"  \$object2->$method( qr/O/i => sub { return 'e' } );\n",
+				"  say \$object2->$attr; ## ==> 'fee'\n",
 				"\n";
 		},
 }

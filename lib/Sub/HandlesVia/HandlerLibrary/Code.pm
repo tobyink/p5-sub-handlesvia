@@ -22,7 +22,7 @@ sub execute {
 		_examples => sub {
 			my ( $class, $attr, $method ) = @_;
 			return join "",
-				"  my \$coderef = sub { ... };\n",
+				"  my \$coderef = sub { 'code' };\n",
 				"  my \$object  = $class\->new( $attr => \$coderef );\n",
 				"  \n",
 				"  # \$coderef->( 1, 2, 3 )\n",
@@ -40,7 +40,7 @@ sub execute_method {
 		_examples => sub {
 			my ( $class, $attr, $method ) = @_;
 			return join "",
-				"  my \$coderef = sub { ... };\n",
+				"  my \$coderef = sub { 'code' };\n",
 				"  my \$object  = $class\->new( $attr => \$coderef );\n",
 				"  \n",
 				"  # \$coderef->( \$object, 1, 2, 3 )\n",

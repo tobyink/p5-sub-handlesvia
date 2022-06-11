@@ -24,7 +24,7 @@ sub set {
 			return join "",
 				"  my \$object = $class\->new();\n",
 				"  \$object->$method\();\n",
-				"  say \$object->$attr; ## ==> 1\n",
+				"  say \$object->$attr; ## ==> true\n",
 				"\n";
 		},
 }
@@ -40,7 +40,7 @@ sub unset {
 			return join "",
 				"  my \$object = $class\->new();\n",
 				"  \$object->$method\();\n",
-				"  say \$object->$attr; ## ==> 0\n",
+				"  say \$object->$attr; ## ==> false\n",
 				"\n";
 		},
 }
@@ -56,9 +56,9 @@ sub toggle {
 			return join "",
 				"  my \$object = $class\->new();\n",
 				"  \$object->$method\();\n",
-				"  say \$object->$attr; ## ==> 1\n",
+				"  say \$object->$attr; ## ==> true\n",
 				"  \$object->$method\();\n",
-				"  say \$object->$attr; ## ==> 0\n",
+				"  say \$object->$attr; ## ==> false\n",
 				"\n";
 		},
 }
@@ -73,7 +73,7 @@ sub not {
 			my ( $class, $attr, $method ) = @_;
 			return join "",
 				"  my \$object = $class\->new( $attr => 1 );\n",
-				"  say \$object->$method\(); ## ==> 0\n",
+				"  say \$object->$method\(); ## ==> false\n",
 				"\n";
 		},
 }
