@@ -125,7 +125,7 @@ sub div {
 		_examples => sub {
 			my ( $class, $attr, $method ) = @_;
 			return join "",
-				"  my \$object = $class\->new( $attr => 5 );\n",
+				"  my \$object = $class\->new( $attr => 6 );\n",
 				"  \$object->$method( 2 );\n",
 				"  say \$object->$attr; ## ==> 3\n",
 				"\n";
