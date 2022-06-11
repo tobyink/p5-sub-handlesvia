@@ -93,7 +93,7 @@ Acts like C<get> if given one argument, or C<set> if given two arguments.
   my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
   $object->my_accessor( 1, 'quux' );
   say Dumper( $object->attr ); ## ==> [ 'foo', 'quux', 'baz' ]
-  $object->my_accessor( 2 ); ## ==> 'baz'
+  say $object->my_accessor( 2 ); ## ==> 'baz'
 
 =head2 C<< all() >>
 
@@ -177,7 +177,7 @@ Arguments: B<< CodeRef >>.
 Chainable method which executes the coderef on each element of the array. The coderef will be passed two values: the element and its index.
 
   my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
-  $object->my_for_each(sub { say "Item $_[1] is $_[0]." });
+  $object->my_for_each( sub { say "Item $_[1] is $_[0]." } );
 
 =head2 C<< for_each_pair( $coderef ) >>
 

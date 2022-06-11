@@ -429,7 +429,7 @@ sub accessor {
 			"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
 			"  \$object->$method( 1, 'quux' );\n",
 			"  say Dumper( \$object->$attr ); ## ==> [ 'foo', 'quux', 'baz' ]\n",
-			"  \$object->$method( 2 ); ## ==> 'baz'\n",
+			"  say \$object->$method( 2 ); ## ==> 'baz'\n",
 			"\n";
 	},
 }
@@ -779,7 +779,7 @@ sub for_each {
 			my ( $class, $attr, $method ) = @_;
 			return CORE::join "",
 				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
-				"  \$object->$method(sub { say \"Item \$_[1] is \$_[0].\" });\n",
+				"  \$object->$method( sub { say \"Item \$_[1] is \$_[0].\" } );\n",
 				"\n";
 		},
 }

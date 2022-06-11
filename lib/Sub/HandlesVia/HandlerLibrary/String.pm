@@ -89,7 +89,7 @@ sub append {
 			my ( $class, $attr, $method ) = @_;
 			return join "",
 				"  my \$object = $class\->new( $attr => 'foo' );\n",
-				"  \$object->$method('bar');\n",
+				"  \$object->$method( 'bar' );\n",
 				"  say \$object->$attr; ## ==> 'foobar'\n",
 				"\n";
 		},
@@ -107,7 +107,7 @@ sub prepend {
 			my ( $class, $attr, $method ) = @_;
 			return join "",
 				"  my \$object = $class\->new( $attr => 'foo' );\n",
-				"  \$object->$method('bar');\n",
+				"  \$object->$method( 'bar' );\n",
 				"  say \$object->$attr; ## ==> 'barfoo'\n",
 				"\n";
 		},
@@ -132,7 +132,7 @@ sub replace {
 			my ( $class, $attr, $method ) = @_;
 			return join "",
 				"  my \$object = $class\->new( $attr => 'foo' );\n",
-				"  \$object->$method('o' => 'a');\n",
+				"  \$object->$method( 'o' => 'a' );\n",
 				"  say \$object->$attr; ## ==> 'fao'\n",
 				"\n",
 				"  my \$object = $class\->new( $attr => 'foo' );\n",
@@ -161,7 +161,7 @@ sub replace_globally {
 			my ( $class, $attr, $method ) = @_;
 			return join "",
 				"  my \$object = $class\->new( $attr => 'foo' );\n",
-				"  \$object->$method('o' => 'a');\n",
+				"  \$object->$method( 'o' => 'a' );\n",
 				"  say \$object->$attr; ## ==> 'faa'\n",
 				"\n",
 				"  my \$object = $class\->new( $attr => 'foo' );\n",

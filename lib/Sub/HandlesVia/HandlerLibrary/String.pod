@@ -68,7 +68,7 @@ Arguments: B<< Str >>.
 Appends another string to the end of the current string and updates the attribute.
 
   my $object = My::Class->new( attr => 'foo' );
-  $object->my_append('bar');
+  $object->my_append( 'bar' );
   say $object->attr; ## ==> 'foobar'
 
 =head2 C<< chomp() >>
@@ -250,7 +250,7 @@ Arguments: B<< Str >>.
 Prepends another string to the start of the current string and updates the attribute.
 
   my $object = My::Class->new( attr => 'foo' );
-  $object->my_prepend('bar');
+  $object->my_prepend( 'bar' );
   say $object->attr; ## ==> 'barfoo'
 
 =head2 C<< replace( $regexp, $replacement ) >>
@@ -260,7 +260,7 @@ Arguments: B<< Str|RegexpRef >>, B<< Str|CodeRef >>.
 Replaces the first regexp match within the string with the replacement string.
 
   my $object = My::Class->new( attr => 'foo' );
-  $object->my_replace('o' => 'a');
+  $object->my_replace( 'o' => 'a' );
   say $object->attr; ## ==> 'fao'
 
   my $object = My::Class->new( attr => 'foo' );
@@ -274,7 +274,7 @@ Arguments: B<< Str|RegexpRef >>, B<< Str|CodeRef >>.
 Replaces the all regexp matches within the string with the replacement string.
 
   my $object = My::Class->new( attr => 'foo' );
-  $object->my_replace_globally('o' => 'a');
+  $object->my_replace_globally( 'o' => 'a' );
   say $object->attr; ## ==> 'faa'
 
   my $object = My::Class->new( attr => 'foo' );

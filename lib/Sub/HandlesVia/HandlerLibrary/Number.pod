@@ -68,7 +68,7 @@ Arguments: B<< Num >>.
 
 Divides the existing number by a number, updating the attribute.
 
-  my $object = My::Class->new( attr => 5 );
+  my $object = My::Class->new( attr => 6 );
   $object->my_div( 2 );
   say $object->attr; ## ==> 3
 
