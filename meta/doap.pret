@@ -7,7 +7,7 @@
 	:shortdesc            "alternative handles_via implementation";
 	:homepage             <https://metacpan.org/release/Sub-HandlesVia>;
 	:download-page        <https://metacpan.org/release/Sub-HandlesVia>;
-	:bug-database         <http://rt.cpan.org/Dist/Display.html?Queue=Sub-HandlesVia>;
+	:bug-database         <https://github.com/tobyink/p5-sub-handlesvia/issues>;
 	:repository           [ a :GitRepository; :browse <https://github.com/tobyink/p5-sub-handlesvia> ];
 	:created              2020-01-18;
 	:license              <http://dev.perl.org/licenses/>;
