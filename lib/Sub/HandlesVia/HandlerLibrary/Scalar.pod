@@ -13,6 +13,8 @@ Sub::HandlesVia::HandlerLibrary::Scalar - library of Scalar-related methods
       isa => Any,
       handles_via => 'Scalar',
       handles => {
+        'my_make_getter' => 'make_getter',
+        'my_make_setter' => 'make_setter',
         'my_scalar_reference' => 'scalar_reference',
       },
     );
@@ -23,6 +25,24 @@ Sub::HandlesVia::HandlerLibrary::Scalar - library of Scalar-related methods
 This is a library of methods for L<Sub::HandlesVia>.
 
 =head1 DELEGATABLE METHODS
+
+=head2 C<< make_getter() >>
+
+Returns a getter coderef.
+
+  my $object = My::Class->new( attr => 10 );
+  my $getter = $object->my_make_getter;
+  $object->_set_attr( 11 );
+  say $getter->(); ## ==> 11
+
+=head2 C<< make_setter() >>
+
+Returns a setter coderef.
+
+  my $object = My::Class->new( attr => 10 );
+  my $setter = $object->my_make_setter;
+  $setter->(11);
+  say $object->attr; ## ==> 11
 
 =head2 C<< scalar_reference() >>
 

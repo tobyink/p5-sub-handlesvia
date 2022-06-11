@@ -478,6 +478,11 @@ native traits, and L<MouseX::NativeTraits>.
                   gt : SubHV                       
                   ge : SubHV                       
  
+  Scalar ==========================================
+         make_getter : SubHV                       
+         make_setter : SubHV                       
+    scalar_reference : SubHV                       
+ 
   String ==========================================
               append : SubHV  DataP  Moose  Mouse  
                chomp : SubHV  DataP  Moose  Mouse  

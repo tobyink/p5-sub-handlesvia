@@ -11,7 +11,7 @@ use Sub::HandlesVia::HandlerLibrary;
 our @ISA = 'Sub::HandlesVia::HandlerLibrary';
 
 use Sub::HandlesVia::Handler qw( handler );
-our @METHODS = qw( scalar_reference );
+our @METHODS = qw( scalar_reference make_getter make_setter );
 
 sub scalar_reference {
 	handler
@@ -25,6 +25,40 @@ sub scalar_reference {
 				"  my \$object = $class\->new( $attr => 10 );\n",
 				"  my \$ref = \$object->$method;\n",
 				"  \$\$ref++;\n",
+				"  say \$object->$attr; ## ==> 11\n",
+				"\n";
+		},
+}
+
+sub make_getter {
+	handler
+		name      => 'Scalar:make_getter',
+		args      => 0,
+		template  => 'sub { $GET }',
+		documentation => "Returns a getter coderef.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => 10 );\n",
+				"  my \$getter = \$object->$method;\n",
+				"  \$object->_set_$attr( 11 );\n",
+				"  say \$getter->(); ## ==> 11\n",
+				"\n";
+		},
+}
+
+sub make_setter {
+	handler
+		name      => 'Scalar:make_setter',
+		args      => 0,
+		template  => 'sub { $GET }',
+		documentation => "Returns a setter coderef.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => 10 );\n",
+				"  my \$setter = \$object->$method;\n",
+				"  \$setter->(11);\n",
 				"  say \$object->$attr; ## ==> 11\n",
 				"\n";
 		},
