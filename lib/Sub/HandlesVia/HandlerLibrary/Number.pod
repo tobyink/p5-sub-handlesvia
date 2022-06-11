@@ -8,8 +8,8 @@ Sub::HandlesVia::HandlerLibrary::Number - library of Number-related methods
     use Moo;
     use Sub::HandlesVia;
     use Types::Standard 'Num';
-    has my_number => (
-      is => 'ro',
+    has attr => (
+      is => 'rwp',
       isa => Num,
       handles_via => 'Number',
       handles => {
@@ -42,11 +42,19 @@ This is a library of methods for L<Sub::HandlesVia>.
 
 Finds the absolute value of the current number, updating the attribute.
 
+  my $object = My::Class->new( attr => -5 );
+  $object->my_abs;
+  say $object->attr; ## ==> 5
+
 =head2 C<< add( $addend ) >>
 
 Arguments: B<< Num >>.
 
 Adds a number to the existing number, updating the attribute.
+
+  my $object = My::Class->new( attr => 4 );
+  $object->my_add( 5 );
+  say $object->attr; ## ==> 9
 
 =head2 C<< cmp( $num ) >>
 
@@ -59,6 +67,10 @@ Returns C<< $object->attr <=> $num >>.
 Arguments: B<< Num >>.
 
 Divides the existing number by a number, updating the attribute.
+
+  my $object = My::Class->new( attr => 5 );
+  $object->my_div( 2 );
+  say $object->attr; ## ==> 3
 
 =head2 C<< eq( $num ) >>
 
@@ -75,6 +87,9 @@ Returns C<< $object->attr >= $num >>.
 =head2 C<< get() >>
 
 Returns the current value of the number.
+
+  my $object = My::Class->new( attr => 4 );
+  say $object->my_get; ## ==> 4
 
 =head2 C<< gt( $num ) >>
 
@@ -100,11 +115,19 @@ Arguments: B<< Num >>.
 
 Finds the current number modulo a divisor, updating the attribute.
 
+  my $object = My::Class->new( attr => 5 );
+  $object->my_mod( 2 );
+  say $object->attr; ## ==> 1
+
 =head2 C<< mul( $factor ) >>
 
 Arguments: B<< Num >>.
 
 Multiplies the existing number by a number, updating the attribute.
+
+  my $object = My::Class->new( attr => 2 );
+  $object->my_mul( 5 );
+  say $object->attr; ## ==> 10
 
 =head2 C<< ne( $num ) >>
 
@@ -118,11 +141,19 @@ Arguments: B<< Num >>.
 
 Sets the number to a new value.
 
+  my $object = My::Class->new( attr => 4 );
+  $object->my_set( 5 );
+  say $object->attr; ## ==> 5
+
 =head2 C<< sub( $subtrahend ) >>
 
 Arguments: B<< Num >>.
 
 Subtracts a number from the existing number, updating the attribute.
+
+  my $object = My::Class->new( attr => 9 );
+  $object->my_sub( 6 );
+  say $object->attr; ## ==> 3
 
 =head1 BUGS
 

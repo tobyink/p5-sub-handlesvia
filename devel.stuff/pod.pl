@@ -52,8 +52,8 @@ for my $category ( @categories ) {
 	print $fh "    use Moo;\n";
 	print $fh "    use Sub::HandlesVia;\n";
 	print $fh "    use Types::Standard '$type';\n";
-	print $fh "    has my_$lccat => (\n";
-	print $fh "      is => 'ro',\n";
+	print $fh "    has attr => (\n";
+	print $fh "      is => 'rwp',\n";
 	print $fh "      isa => $type,\n";
 	print $fh "      handles_via => '$category',\n";
 	print $fh "      handles => {\n";
@@ -87,6 +87,10 @@ for my $category ( @categories ) {
 
 		if ( $h->documentation ) {
 			print $fh $h->documentation, "\n\n";
+		}
+
+		if ( $h->_examples ) {
+			print $fh $h->_examples->( 'My::Class', "attr", "my_$method" );
 		}
 	}
 

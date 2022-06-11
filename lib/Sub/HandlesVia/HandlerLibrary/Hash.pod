@@ -8,8 +8,8 @@ Sub::HandlesVia::HandlerLibrary::Hash - library of Hash-related methods
     use Moo;
     use Sub::HandlesVia;
     use Types::Standard 'HashRef';
-    has my_hash => (
-      is => 'ro',
+    has attr => (
+      is => 'rwp',
       isa => HashRef,
       handles_via => 'Hash',
       handles => {

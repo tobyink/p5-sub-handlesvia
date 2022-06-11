@@ -8,8 +8,8 @@ Sub::HandlesVia::HandlerLibrary::Scalar - library of Scalar-related methods
     use Moo;
     use Sub::HandlesVia;
     use Types::Standard 'Any';
-    has my_scalar => (
-      is => 'ro',
+    has attr => (
+      is => 'rwp',
       isa => Any,
       handles_via => 'Scalar',
       handles => {
@@ -27,6 +27,11 @@ This is a library of methods for L<Sub::HandlesVia>.
 =head2 C<< scalar_reference() >>
 
 Returns a scalar reference to the attribute value's slot within its object.
+
+  my $object = My::Class->new( attr => 10 );
+  my $ref = $object->my_scalar_reference;
+  $$ref++;
+  say $object->attr; ## ==> 11
 
 =head1 BUGS
 

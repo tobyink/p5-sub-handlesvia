@@ -19,6 +19,14 @@ sub set {
 		args      => 0,
 		template  => '« !!1 »',
 		documentation => 'Sets the value of the boolean to true.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new();\n",
+				"  \$object->$method\();\n",
+				"  say \$object->$attr; ## ==> 1\n",
+				"\n";
+		},
 }
 
 sub unset {
@@ -27,6 +35,14 @@ sub unset {
 		args      => 0,
 		template  => '« !!0 »',
 		documentation => 'Sets the value of the boolean to false.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new();\n",
+				"  \$object->$method\();\n",
+				"  say \$object->$attr; ## ==> 0\n",
+				"\n";
+		},
 }
 
 sub toggle {
@@ -35,6 +51,16 @@ sub toggle {
 		args      => 0,
 		template  => '« !$GET »',
 		documentation => 'Toggles the truth value of the boolean.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new();\n",
+				"  \$object->$method\();\n",
+				"  say \$object->$attr; ## ==> 1\n",
+				"  \$object->$method\();\n",
+				"  say \$object->$attr; ## ==> 0\n",
+				"\n";
+		},
 }
 
 sub not {
@@ -43,6 +69,13 @@ sub not {
 		args      => 0,
 		template  => '!$GET',
 		documentation => 'Returns the opposite value of the boolean.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$object = $class\->new( $attr => 1 );\n",
+				"  say \$object->$method\(); ## ==> 0\n",
+				"\n";
+		},
 }
 
 sub reset {

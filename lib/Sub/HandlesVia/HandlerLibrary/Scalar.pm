@@ -19,6 +19,15 @@ sub scalar_reference {
 		args      => 0,
 		template  => '$GET;\\($SLOT)',
 		documentation => "Returns a scalar reference to the attribute value's slot within its object.",
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => 10 );\n",
+				"  my \$ref = \$object->$method;\n",
+				"  \$\$ref++;\n",
+				"  say \$object->$attr; ## ==> 11\n",
+				"\n";
+		},
 }
 
 1;

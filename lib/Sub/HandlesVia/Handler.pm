@@ -20,6 +20,7 @@ use Class::Tiny (
 		additional_validation
 		default_for_reset
 		documentation
+		_examples
 	),
 	{
 		is_mutator   => sub { defined $_[0]{lvalue_template} or $_[0]{template} =~ /«/ },

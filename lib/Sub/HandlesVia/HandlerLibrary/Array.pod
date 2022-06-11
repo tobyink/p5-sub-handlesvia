@@ -8,8 +8,8 @@ Sub::HandlesVia::HandlerLibrary::Array - library of Array-related methods
     use Moo;
     use Sub::HandlesVia;
     use Types::Standard 'ArrayRef';
-    has my_array => (
-      is => 'ro',
+    has attr => (
+      is => 'rwp',
       isa => ArrayRef,
       handles_via => 'Array',
       handles => {
@@ -90,9 +90,17 @@ Arguments: B<< Int >>, B<< Optional[Any] >>.
 
 Acts like C<get> if given one argument, or C<set> if given two arguments.
 
+  my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+  $object->my_accessor( 1, 'quux' );
+  say Dumper( $object->attr ); ## ==> [ 'foo', 'quux', 'baz' ]
+  $object->my_accessor( 2 ); ## ==> 'baz'
+
 =head2 C<< all() >>
 
 All elements in the array, in list context.
+
+  my $object = My::Class->new( attr => [ 'foo', 'bar' ] );
+  my @list = $object->my_all;
 
 =head2 C<< all_true( $coderef ) >>
 
@@ -116,9 +124,16 @@ Executes the coderef (which should modify C<< $_ >>) against each element of the
 
 Empties the array.
 
+  my $object = My::Class->new( attr => [ 'foo' ] );
+  $object->my_clear;
+  say Dumper( $object->attr ); ## ==> []
+
 =head2 C<< count() >>
 
 The number of elements in the referenced array.
+
+  my $object = My::Class->new( attr => [ 'foo', 'bar' ] );
+  say $object->my_count; ## ==> 2
 
 =head2 C<< delete( $index ) >>
 
@@ -129,6 +144,9 @@ Removes the indexed element from the array and returns it. Elements after it wil
 =head2 C<< elements() >>
 
 All elements in the array, in list context.
+
+  my $object = My::Class->new( attr => [ 'foo', 'bar' ] );
+  my @list = $object->my_elements;
 
 =head2 C<< first( $coderef ) >>
 
@@ -158,6 +176,9 @@ Arguments: B<< CodeRef >>.
 
 Chainable method which executes the coderef on each element of the array. The coderef will be passed two values: the element and its index.
 
+  my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+  $object->my_for_each(sub { say "Item $_[1] is $_[0]." });
+
 =head2 C<< for_each_pair( $coderef ) >>
 
 Arguments: B<< CodeRef >>.
@@ -169,6 +190,11 @@ Chainable method which executes the coderef on each pair of elements in the arra
 Arguments: B<< Int >>.
 
 Returns a single element from the array by index.
+
+  my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+  say $object->my_get(  0 ); ## ==> 'foo'
+  say $object->my_get(  1 ); ## ==> 'bar'
+  say $object->my_get( -1 ); ## ==> 'baz'
 
 =head2 C<< grep( $coderef ) >>
 
@@ -188,15 +214,28 @@ Arguments: B<< Int >>, B<< Any >>.
 
 Inserts a value into the array with the given index. Elements after it will be "moved down".
 
+  my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+  $object->my_insert( 1, 'quux' );
+  say $object->attr; ## ==> [ 'foo', 'quux', 'bar', 'baz' ]
+
 =head2 C<< is_empty() >>
 
 Boolean indicating if the referenced array is empty.
+
+  my $object = My::Class->new( attr => [ 'foo', 'bar' ] );
+  say $object->my_is_empty; ## ==> 0
+  $object->_set_attr( [] );
+  say $object->my_is_empty; ## ==> 1
 
 =head2 C<< join( $with? ) >>
 
 Arguments: B<< Optional[Str] >>.
 
 Returns a string joining all the elements in the array; if C<< $with >> is omitted, defaults to a comma.
+
+  my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+  say $object->my_join;        ## ==> 'foo,bar,baz'
+  say $object->my_join( '|' ); ## ==> 'foo|bar|baz'
 
 =head2 C<< map( $coderef ) >>
 
@@ -272,6 +311,11 @@ If no C<< $count >> is given, returns one element of the array at random. If C<<
 
 Removes the last element from the array and returns it.
 
+  my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+  say $object->my_pop; ## ==> 'baz'
+  say $object->my_pop; ## ==> 'bar'
+  say Dumper( $object->attr ); ## ==> [ 'foo' ]
+
 =head2 C<< print( $fh?, $with? ) >>
 
 Arguments: B<< Optional[FileHandle] >>, B<< Optional[Str] >>.
@@ -284,7 +328,11 @@ Like C<< List::Util::product() >>.
 
 =head2 C<< push( @values ) >>
 
-Adds an element to the end of the array.
+Adds elements to the end of the array.
+
+  my $object = My::Class->new( attr => [ 'foo' ] );
+  $object->my_push( 'bar', 'baz' );
+  say Dumper( $object->attr ); ## ==> [ 'foo', 'bar', 'baz' ]
 
 =head2 C<< reduce( $coderef ) >>
 
@@ -302,6 +350,10 @@ Like C<< List::Util::reductions() >>.
 
 Resets the attribute to its default value, or an empty arrayref if it has no default.
 
+  my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+  $object->my_reset;
+  say Dumper( $object->attr ); ## ==> []
+
 =head2 C<< reverse() >>
 
 Returns the reversed array in list context.
@@ -318,6 +370,10 @@ Arguments: B<< Int >>, B<< Any >>.
 
 Sets the element with the given index to the supplied value.
 
+  my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+  $object->my_set( 1, 'quux' );
+  say Dumper( $object->attr ); ## ==> [ 'foo', 'quux', 'baz' ]
+
 =head2 C<< shallow_clone() >>
 
 Creates a new arrayref with the same elements as the original.
@@ -325,6 +381,11 @@ Creates a new arrayref with the same elements as the original.
 =head2 C<< shift() >>
 
 Removes an element from the start of the array and returns it.
+
+  my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+  say $object->my_shift; ## ==> 'foo'
+  say $object->my_shift; ## ==> 'bar'
+  say Dumper( $object->attr ); ## ==> [ 'baz' ]
 
 =head2 C<< shuffle() >>
 
@@ -387,6 +448,10 @@ Filters the array to remove duplicates stringwise, and changes the attribute to 
 =head2 C<< unshift( @values ) >>
 
 Adds an element to the start of the array.
+
+  my $object = My::Class->new( attr => [ 'foo' ] );
+  $object->my_unshift( 'bar', 'baz' );
+  say Dumper( $object->attr ); ## ==> [ 'bar', 'baz', 'foo' ]
 
 =head1 BUGS
 

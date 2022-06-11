@@ -119,6 +119,13 @@ sub count {
 		args      => 0,
 		template  => 'scalar(@{$GET})',
 		documentation => 'The number of elements in the referenced array.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar' ] );\n",
+				"  say \$object->$method; ## ==> 2\n",
+				"\n";
+		},
 }
 
 sub is_empty {
@@ -127,6 +134,15 @@ sub is_empty {
 		args      => 0,
 		template  => '!scalar(@{$GET})',
 		documentation => 'Boolean indicating if the referenced array is empty.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar' ] );\n",
+				"  say \$object->$method; ## ==> 0\n",
+				"  \$object->_set_$attr( [] );\n",
+				"  say \$object->$method; ## ==> 1\n",
+				"\n";
+		},
 }
 
 sub all {
@@ -135,6 +151,13 @@ sub all {
 		args      => 0,
 		template  => '@{$GET}',
 		documentation => 'All elements in the array, in list context.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar' ] );\n",
+				"  my \@list = \$object->$method;\n",
+				"\n";
+		},
 }
 
 sub elements {
@@ -143,6 +166,13 @@ sub elements {
 		args      => 0,
 		template  => '@{$GET}',
 		documentation => 'All elements in the array, in list context.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar' ] );\n",
+				"  my \@list = \$object->$method;\n",
+				"\n";
+		},
 }
 
 sub flatten {
@@ -161,6 +191,15 @@ sub get {
 		usage     => '$index',
 		template  => '($GET)->[$ARG]',
 		documentation => 'Returns a single element from the array by index.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
+				"  say \$object->$method(  0 ); ## ==> 'foo'\n",
+				"  say \$object->$method(  1 ); ## ==> 'bar'\n",
+				"  say \$object->$method( -1 ); ## ==> 'baz'\n",
+				"\n";
+		},
 }
 
 sub pop {
@@ -172,6 +211,15 @@ sub pop {
 		lvalue_template => 'pop(@{$GET})',
 		additional_validation => 'no incoming values',
 		documentation => 'Removes the last element from the array and returns it.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
+				"  say \$object->$method; ## ==> 'baz'\n",
+				"  say \$object->$method; ## ==> 'bar'\n",
+				"  say Dumper( \$object->$attr ); ## ==> [ 'foo' ]\n",
+				"\n";
+		},
 }
 
 sub push {
@@ -182,7 +230,15 @@ sub push {
 		template  => 'my @shv_tmp = @{$GET}; my $shv_return = push(@shv_tmp, @ARG); «\\@shv_tmp»; $shv_return',
 		lvalue_template => 'push(@{$GET}, @ARG)',
 		additional_validation => $additional_validation_for_push_and_unshift,
-		documentation => 'Adds an element to the end of the array.',
+		documentation => 'Adds elements to the end of the array.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo' ] );\n",
+				"  \$object->$method( 'bar', 'baz' );\n",
+				"  say Dumper( \$object->$attr ); ## ==> [ 'foo', 'bar', 'baz' ]\n",
+				"\n";
+		},
 }
 
 sub shift {
@@ -194,6 +250,15 @@ sub shift {
 		lvalue_template => 'shift(@{$GET})',
 		additional_validation => 'no incoming values',
 		documentation => 'Removes an element from the start of the array and returns it.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
+				"  say \$object->$method; ## ==> 'foo'\n",
+				"  say \$object->$method; ## ==> 'bar'\n",
+				"  say Dumper( \$object->$attr ); ## ==> [ 'baz' ]\n",
+				"\n";
+		},
 }
 
 sub unshift {
@@ -205,6 +270,14 @@ sub unshift {
 		lvalue_template => 'unshift(@{$GET}, @ARG)',
 		additional_validation => $additional_validation_for_push_and_unshift,
 		documentation => 'Adds an element to the start of the array.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo' ] );\n",
+				"  \$object->$method( 'bar', 'baz' );\n",
+				"  say Dumper( \$object->$attr ); ## ==> [ 'bar', 'baz', 'foo' ]\n",
+				"\n";
+		},
 }
 
 sub clear {
@@ -216,6 +289,14 @@ sub clear {
 		lvalue_template => '@{$GET} = ()',
 		additional_validation => 'no incoming values',
 		documentation => 'Empties the array.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo' ] );\n",
+				"  \$object->$method;\n",
+				"  say Dumper( \$object->$attr ); ## ==> []\n",
+				"\n";
+		},
 }
 
 sub first {
@@ -285,6 +366,14 @@ sub set {
 		lvalue_template => '($GET)->[ $ARG[1] ] = $ARG[2]',
 		additional_validation => $additional_validation_for_set_and_insert,
 		documentation => 'Sets the element with the given index to the supplied value.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
+				"  \$object->$method( 1, 'quux' );\n",
+				"  say Dumper( \$object->$attr ); ## ==> [ 'foo', 'quux', 'baz' ]\n",
+				"\n";
+		},
 }
 
 sub accessor {
@@ -334,6 +423,15 @@ sub accessor {
 			return;
 		},
 	documentation => 'Acts like C<get> if given one argument, or C<set> if given two arguments.',
+	_examples => sub {
+		my ( $class, $attr, $method ) = @_;
+		return CORE::join "",
+			"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
+			"  \$object->$method( 1, 'quux' );\n",
+			"  say Dumper( \$object->$attr ); ## ==> [ 'foo', 'quux', 'baz' ]\n",
+			"  \$object->$method( 2 ); ## ==> 'baz'\n",
+			"\n";
+	},
 }
 
 sub natatime {
@@ -563,6 +661,14 @@ sub insert {
 		lvalue_template => 'splice(@{$GET}, $ARG[1], 0, $ARG[2])',
 		additional_validation => $additional_validation_for_set_and_insert,
 		documentation => 'Inserts a value into the array with the given index. Elements after it will be "moved down".',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
+				"  \$object->$method( 1, 'quux' );\n",
+				"  say \$object->$attr; ## ==> [ 'foo', 'quux', 'bar', 'baz' ]\n",
+				"\n";
+		},
 }
 
 sub flatten_deep {
@@ -598,6 +704,14 @@ sub join {
 		usage     => '$with?',
 		template  => 'my $shv_param_with = #ARG ? $ARG : q[,]; join($shv_param_with, @{$GET})',
 		documentation => 'Returns a string joining all the elements in the array; if C<< $with >> is omitted, defaults to a comma.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
+				"  say \$object->$method;        ## ==> 'foo,bar,baz'\n",
+				"  say \$object->$method( '|' ); ## ==> 'foo|bar|baz'\n",
+				"\n";
+		},
 }
 
 sub print {
@@ -661,6 +775,13 @@ sub for_each {
 		usage     => '$coderef',
 		template  => 'foreach my $shv_index (0 .. $#{$GET}) { &{$ARG}(($GET)->[$shv_index], $shv_index) }; $SELF',
 		documentation => 'Chainable method which executes the coderef on each element of the array. The coderef will be passed two values: the element and its index.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
+				"  \$object->$method(sub { say \"Item \$_[1] is \$_[0].\" });\n",
+				"\n";
+		},
 }
 
 sub for_each_pair {
@@ -838,6 +959,14 @@ sub reset {
 		template  => '« $DEFAULT »',
 		default_for_reset => sub { '[]' },
 		documentation => 'Resets the attribute to its default value, or an empty arrayref if it has no default.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
+				"  \$object->$method;\n",
+				"  say Dumper( \$object->$attr ); ## ==> []\n",
+				"\n";
+		},
 }
 
 1;

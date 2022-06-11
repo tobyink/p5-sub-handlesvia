@@ -8,8 +8,8 @@ Sub::HandlesVia::HandlerLibrary::String - library of String-related methods
     use Moo;
     use Sub::HandlesVia;
     use Types::Standard 'Str';
-    has my_string => (
-      is => 'ro',
+    has attr => (
+      is => 'rwp',
       isa => Str,
       handles_via => 'String',
       handles => {

@@ -8,8 +8,8 @@ Sub::HandlesVia::HandlerLibrary::Code - library of Code-related methods
     use Moo;
     use Sub::HandlesVia;
     use Types::Standard 'CodeRef';
-    has my_code => (
-      is => 'ro',
+    has attr => (
+      is => 'rwp',
       isa => CodeRef,
       handles_via => 'Code',
       handles => {
@@ -29,9 +29,21 @@ This is a library of methods for L<Sub::HandlesVia>.
 
 Calls the coderef, passing it any arguments.
 
+  my $coderef = sub { ... };
+  my $object  = My::Class->new( attr => $coderef );
+  
+  # $coderef->( 1, 2, 3 )
+  $object->my_execute( 1, 2, 3 );
+
 =head2 C<< execute_method( @args ) >>
 
 Calls the coderef as if it were a method, passing any arguments.
+
+  my $coderef = sub { ... };
+  my $object  = My::Class->new( attr => $coderef );
+  
+  # $coderef->( $object, 1, 2, 3 )
+  $object->my_execute_method( 1, 2, 3 );
 
 =head1 BUGS
 

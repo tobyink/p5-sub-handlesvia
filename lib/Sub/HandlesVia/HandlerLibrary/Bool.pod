@@ -8,8 +8,8 @@ Sub::HandlesVia::HandlerLibrary::Bool - library of Bool-related methods
     use Moo;
     use Sub::HandlesVia;
     use Types::Standard 'Bool';
-    has my_bool => (
-      is => 'ro',
+    has attr => (
+      is => 'rwp',
       isa => Bool,
       handles_via => 'Bool',
       handles => {
@@ -32,6 +32,9 @@ This is a library of methods for L<Sub::HandlesVia>.
 
 Returns the opposite value of the boolean.
 
+  my $object = My::Class->new( attr => 1 );
+  say $object->my_not(); ## ==> 0
+
 =head2 C<< reset() >>
 
 Sets the boolean to its default value, or false if it has no default.
@@ -40,13 +43,27 @@ Sets the boolean to its default value, or false if it has no default.
 
 Sets the value of the boolean to true.
 
+  my $object = My::Class->new();
+  $object->my_set();
+  say $object->attr; ## ==> 1
+
 =head2 C<< toggle() >>
 
 Toggles the truth value of the boolean.
 
+  my $object = My::Class->new();
+  $object->my_toggle();
+  say $object->attr; ## ==> 1
+  $object->my_toggle();
+  say $object->attr; ## ==> 0
+
 =head2 C<< unset() >>
 
 Sets the value of the boolean to false.
+
+  my $object = My::Class->new();
+  $object->my_unset();
+  say $object->attr; ## ==> 0
 
 =head1 BUGS
 

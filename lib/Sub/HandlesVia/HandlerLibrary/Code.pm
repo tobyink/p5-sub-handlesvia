@@ -19,6 +19,16 @@ sub execute {
 		template  => '$GET->(@ARG)',
 		usage     => '@args',
 		documentation => 'Calls the coderef, passing it any arguments.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$coderef = sub { ... };\n",
+				"  my \$object  = $class\->new( $attr => \$coderef );\n",
+				"  \n",
+				"  # \$coderef->( 1, 2, 3 )\n",
+				"  \$object->$method\( 1, 2, 3 );\n",
+				"\n";
+		},
 }
 
 sub execute_method {
@@ -27,6 +37,16 @@ sub execute_method {
 		template  => '$GET->($SELF, @ARG)',
 		usage     => '@args',
 		documentation => 'Calls the coderef as if it were a method, passing any arguments.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return join "",
+				"  my \$coderef = sub { ... };\n",
+				"  my \$object  = $class\->new( $attr => \$coderef );\n",
+				"  \n",
+				"  # \$coderef->( \$object, 1, 2, 3 )\n",
+				"  \$object->$method\( 1, 2, 3 );\n",
+				"\n";
+		},
 }
 
 1;
