@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Fatal;
+## skip Test::Tabs
 
 { package Local::Dummy1; use Test::Requires { 'Moo' => '1.006' } };
 
