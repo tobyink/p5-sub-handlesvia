@@ -131,3 +131,14 @@
 	changeset [
 		item "Fix load order issue where handles_via is used in a Moo::Role when Moo.pm isn't loaded yet."^^Bugfix;
 	].
+
+`Sub-HandlesVia 0.017 cpan:TOBYINK`
+	issued  2022-06-11;
+	changeset [
+		item "Numeric comparison methods."^^Addition;
+		item "String comparison methods."^^Addition;
+		item "Case-insensitive versions of string comparison methods."^^Addition;
+		item "String uc, lc, and fc methods."^^Addition;
+		item "String match_i method."^^Addition;
+		item "String starts_with, ends_with, and contains methods, plus case-insensitive versions of them."^^Addition;
+	].
