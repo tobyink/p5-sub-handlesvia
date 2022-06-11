@@ -149,3 +149,9 @@
 		item "Sub::HandlesVia::Handler objects now have a `documentation` attribute."^^Addition;
 		item "Generated pod for the HandlerLibrary modules."^^Documentation;
 	].
+
+`Sub-HandlesVia 0.019 cpan:TOBYINK`
+	issued  2022-06-11;
+	changeset [
+		item "Include more examples in pod for HandlerLibrary modules."^^Documentation;
+	].
