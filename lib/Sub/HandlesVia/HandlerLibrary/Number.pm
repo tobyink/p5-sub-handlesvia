@@ -13,7 +13,7 @@ our @ISA = 'Sub::HandlesVia::HandlerLibrary';
 use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( Num Any Item Defined );
 
-our @METHODS = qw( set get add sub mul div mod abs );
+our @METHODS = qw( set get add sub mul div mod abs cmp eq ne gt lt ge le );
 
 sub _type_inspector {
 	my ($me, $type) = @_;
@@ -89,5 +89,28 @@ sub abs {
 		template  => '« abs($GET) »',
 		additional_validation => 'no incoming values',
 }
+
+for my $comparison ( qw/ cmp eq ne lt gt le ge / ) {
+	my $op = {
+		cmp => '<=>',
+		eq  => '==',
+		ne  => '!=',
+		lt  => '<',
+		gt  => '>',
+		le  => '<=',
+		ge  => '>=',
+	}->{$comparison};
+
+	no strict 'refs';
+	*$comparison = sub {
+		handler
+			name      => "Number:$comparison",
+			args      => 1,
+			signature => [Num],
+			usage     => '$num',
+			template  => "\$GET $op \$ARG",
+	};
+}
+
 
 1;

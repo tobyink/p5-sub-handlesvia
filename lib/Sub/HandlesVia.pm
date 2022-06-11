@@ -470,21 +470,54 @@ native traits, and L<MouseX::NativeTraits>.
                  set : SubHV         Moose         
                  sub : SubHV  DataP  Moose  Mouse  
  
+                 cmp : SubHV                       
+                  eq : SubHV                       
+                  ne : SubHV                       
+                  lt : SubHV                       
+                  le : SubHV                       
+                  gt : SubHV                       
+                  ge : SubHV                       
+ 
   String ==========================================
               append : SubHV  DataP  Moose  Mouse  
                chomp : SubHV  DataP  Moose  Mouse  
                 chop : SubHV  DataP  Moose  Mouse  
                clear : SubHV  DataP  Moose  Mouse  
+            contains : SubHV                       
+          contains_i : SubHV                       
+           ends_with : SubHV                       
+         ends_with_i : SubHV                       
+                  fc : SubHV                       
                  get : SubHV                       
                  inc : SubHV  DataP  Moose  Mouse  
+                  lc : SubHV                       
               length : SubHV  DataP  Moose  Mouse  
                match : SubHV  DataP  Moose  Mouse  
+             match_i : SubHV                       
              prepend : SubHV  DataP  Moose  Mouse  
              replace : SubHV  DataP  Moose  Mouse  
     replace_globally : SubHV                Mouse  
                reset : SubHV                       
                  set : SubHV                       
+         starts_with : SubHV                       
+       starts_with_i : SubHV                       
               substr : SubHV  DataP  Moose  Mouse  
+                  uc : SubHV                       
+ 
+                 cmp : SubHV                       
+                cmpi : SubHV                       
+                  eq : SubHV                       
+                 eqi : SubHV                       
+                  ne : SubHV                       
+                 nei : SubHV                       
+                  lt : SubHV                       
+                 lti : SubHV                       
+                  le : SubHV                       
+                 lei : SubHV                       
+                  gt : SubHV                       
+                 gti : SubHV                       
+                  ge : SubHV                       
+                 gei : SubHV                       
 
 =head2 Method Chaining
 
