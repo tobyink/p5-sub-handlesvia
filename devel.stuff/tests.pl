@@ -139,20 +139,20 @@ sub trim {
 sub munge_line {
 	my $line = shift;
 
-	if ( $line =~ /^(\s*)say Dumper\((.*)\)\s*;\s*## ==>(.*)$/ ) {
-		my ( $space, $expr, $expected ) = ( $1, trim("$2"), trim("$3") );
-		return "${space}is_deeply( $expr, $expected, q{$expr deep match} );";
+	if ( $line =~ /^(\s*)say Dumper\((.*)\)\s*;\s*#(.*)# ==>(.*)$/ ) {
+		my ( $space, $expr, $pfx, $expected ) = ( $1, trim("$2"), $3, trim("$4") );
+		return "${space}${pfx}is_deeply( $expr, $expected, q{$expr deep match} );";
 	}
-	elsif ( $line =~ /^(\s*)say(.*);\s*## ==>(.*)$/ ) {
-		my ( $space, $expr, $expected ) = ( $1, trim("$2"), trim("$3") );
+	elsif ( $line =~ /^(\s*)say(.*);\s*#(.*)# ==>(.*)$/ ) {
+		my ( $space, $expr, $pfx, $expected ) = ( $1, trim("$2"), $3, trim("$4") );
 		if ( $expected eq 'true' ) {
-			return "${space}ok( $expr, q{$expr is true} );";
+			return "${space}${pfx}ok( $expr, q{$expr is true} );";
 		}
 		elsif ( $expected eq 'false' ) {
-			return "${space}ok( !($expr), q{$expr is false} );";
+			return "${space}${pfx}ok( !($expr), q{$expr is false} );";
 		}
 		else {
-			return "${space}is( $expr, $expected, q{$expr is $expected} );";
+			return "${space}${pfx}is( $expr, $expected, q{$expr is $expected} );";
 		}
 	}
 

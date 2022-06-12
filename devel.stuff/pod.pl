@@ -108,7 +108,10 @@ for my $category ( @categories ) {
 			my @lines = split /\n/, $code;
 			print $fh "=head2 $name\n\n";
 			print $fh "$args{head}\n\n" if $args{head};
-			print $fh "  $_\n" for @lines;
+			for ( @lines ) {
+				s/#.*# ==>//g;
+				print $fh "  $_\n";
+			}
 			print $fh "\n";
 			print $fh "$args{tail}\n\n" if $args{tail};
 		}

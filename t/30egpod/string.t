@@ -312,6 +312,51 @@ can_ok( 'My::Class', 'my_substr' );
 
 can_ok( 'My::Class', 'my_uc' );
 
+## Curried match
+
+subtest q{Curried match (extended example)} => sub {
+  use strict;
+  use warnings;
+  
+  {
+    package My::Component;
+    use Moo;
+    use Sub::HandlesVia;
+    use Types::Standard qw( Str Int );
+    
+    has id => (
+      is => 'ro',
+      isa => Int,
+      required => 1,
+    );
+    
+    has name => (
+      is => 'ro',
+      isa => Str,
+      required => 1,
+      handles_via => 'String',
+      handles => {
+        name_is_safe_filename => [ match => qr/\A[A-Za-z0-9]+\z/ ],
+        _lc_name => 'lc',
+      },
+    );
+    
+    sub config_filename {
+      my $self = shift;
+      if ( $self->name_is_safe_filename ) {
+        return sprintf( '%s.ini', $self->_lc_name );
+      }
+      return sprintf( 'component-%d.ini', $self->id );
+    }
+  }
+  
+  my $foo = My::Component->new( id => 42, name => 'Foo' );
+  is( $foo->config_filename, 'foo.ini', q{$foo->config_filename is 'foo.ini'} );
+  
+  my $bar4 = My::Component->new( id => 99, name => 'Bar #4' );
+  is( $bar4->config_filename, 'component-99.ini', q{$bar4->config_filename is 'component-99.ini'} );
+};
+
 ## Using eq for Enum
 
 subtest q{Using eq for Enum (extended example)} => sub {
