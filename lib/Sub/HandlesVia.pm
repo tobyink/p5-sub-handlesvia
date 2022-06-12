@@ -522,6 +522,16 @@ native traits, and L<MouseX::NativeTraits>.
               substr : SubHV  DataP  Moose  Mouse  
                   uc : SubHV                       
 
+For further details see:
+L<Array|Sub::HandlesVia::HandlerLibrary::Array>,
+L<Bool|Sub::HandlesVia::HandlerLibrary::Bool>,
+L<Code|Sub::HandlesVia::HandlerLibrary::Code>,
+L<Counter|Sub::HandlesVia::HandlerLibrary::Counter>,
+L<Hash|Sub::HandlesVia::HandlerLibrary::Hash>,
+L<Number|Sub::HandlesVia::HandlerLibrary::Number>,
+L<Scalar|Sub::HandlesVia::HandlerLibrary::Scalar>, and
+L<String|Sub::HandlesVia::HandlerLibrary::String>.
+
 =head2 Method Chaining
 
 Say you have the following
@@ -661,7 +671,19 @@ L<https://github.com/tobyink/p5-sub-handlesvia/issues>.
 
 =head1 SEE ALSO
 
-L<Moose>, L<MouseX::NativeTraits>, L<Data::Perl>, L<MooX::HandlesVia>.
+Documentation for delegatable methods:
+L<Array|Sub::HandlesVia::HandlerLibrary::Array>,
+L<Bool|Sub::HandlesVia::HandlerLibrary::Bool>,
+L<Code|Sub::HandlesVia::HandlerLibrary::Code>,
+L<Counter|Sub::HandlesVia::HandlerLibrary::Counter>,
+L<Hash|Sub::HandlesVia::HandlerLibrary::Hash>,
+L<Number|Sub::HandlesVia::HandlerLibrary::Number>,
+L<Scalar|Sub::HandlesVia::HandlerLibrary::Scalar>, and
+L<String|Sub::HandlesVia::HandlerLibrary::String>.
+
+Other implementations of the same concept:
+L<Moose::Meta::Attribute::Native>, L<MouseX::NativeTraits>, and
+L<MooX::HandlesVia> with L<Data::Perl>.
 
 =head1 AUTHOR
 
