@@ -11,7 +11,7 @@ use Class::Inspector;
 use Path::Tiny 'path';
 
 my $MooseTraitBase = path(
-	'/home/tai/perl5/perlbrew/perls/perl-5.26.2/lib/site_perl/5.26.2/x86_64-linux/Moose/Meta/Method/Accessor/Native/'
+	'/home/tai/perl5/perlbrew/perls/perl-5.34.0/lib/site_perl/5.34.0/x86_64-linux/Moose/Meta/Method/Accessor/Native/'
 );
 
 my @categories = qw(
@@ -21,6 +21,7 @@ my @categories = qw(
 	Counter
 	Hash
 	Number
+	Scalar
 	String
 );
 
@@ -28,32 +29,33 @@ my %all;
 
 for my $category (@categories) {
 	
-	{
+	DATAPERL: {
 		my $class = 'Data::Perl::Role::'.($category=~/(Hash)|(Array)/ ? 'Collection::' : '').$category;
-		eval "require $class" or die($@);
+		eval "require $class" or last DATAPERL;
 		my @funcs = 
 			grep !/^_/,
 			grep !/^(new|with|after|around|before|requires|use_package_optimistically|blessed)$/,
 			@{ Class::Inspector->functions($class) };
 		undef $all{$category}{$_}{'Data::Perl'} for @funcs;
-	}
+	};
 	
-	{
+	SHV: {
 		my $class = "Sub::HandlesVia::HandlerLibrary::$category";
-		eval "require $class" or die($@);
+		eval "require $class" or last SHV;
 		no strict 'refs';
 		my @funcs = @{"$class\::METHODS"};
 		undef $all{$category}{$_}{'Sub::HandlesVia'} for @funcs;
-	}
+	};
 	
-	{
-		my $dir   = $MooseTraitBase->child($category);
+	MOOSE: {
+		my $dir = $MooseTraitBase->child($category);
+		$dir->is_dir or last MOOSE;
 		my @files = $dir->children(qr/\.pmc?$/);
 		my @funcs = grep !/Writer/, map $_->basename(qr/\.pmc?$/), @files;
 		undef $all{$category}{$_}{'Moose'} for @funcs;
-	}
+	};
 	
-	{
+	MOUSE: {
 		my $mousecat = {qw/
 			Array      ArrayRef
 			Bool       Bool
@@ -64,13 +66,13 @@ for my $category (@categories) {
 			String     Str
 		/}->{$category};
 		my $class = "MouseX::NativeTraits::MethodProvider::$mousecat";
-		eval "require $class" or die($@);
+		eval "require $class" or last MOUSE;
 		my @funcs = 
 			map  s/^generate_//r,
 			grep /^generate_/,
 			@{ Class::Inspector->functions($class) };
 		undef $all{$category}{$_}{'MouseX::NativeTraits'} for @funcs;
-	}
+	};
 }
 
 delete $all{Code}{execute_method}{'Data::Perl'};

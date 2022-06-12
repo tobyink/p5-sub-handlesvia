@@ -418,24 +418,24 @@ native traits, and L<MouseX::NativeTraits>.
              uniqstr : SubHV                       
     uniqstr_in_place : SubHV                       
              unshift : SubHV  DataP  Moose  Mouse  
- 
+  
   Bool ============================================
                  not : SubHV  DataP  Moose  Mouse  
                reset : SubHV                       
                  set : SubHV  DataP  Moose  Mouse  
               toggle : SubHV  DataP  Moose  Mouse  
                unset : SubHV  DataP  Moose  Mouse  
- 
+  
   Code ============================================
              execute : SubHV  DataP  Moose  Mouse  
       execute_method : SubHV         Moose  Mouse  
- 
+  
   Counter =========================================
                  dec : SubHV  DataP  Moose  Mouse  
                  inc : SubHV  DataP  Moose  Mouse  
                reset : SubHV  DataP  Moose  Mouse  
                  set : SubHV         Moose  Mouse  
- 
+  
   Hash ============================================
             accessor : SubHV  DataP  Moose  Mouse  
                  all : SubHV  DataP                
@@ -459,46 +459,59 @@ native traits, and L<MouseX::NativeTraits>.
          sorted_keys : SubHV                Mouse  
                store :                      Mouse  (alias: set)
               values : SubHV  DataP  Moose  Mouse  
- 
+  
   Number ==========================================
                  abs : SubHV  DataP  Moose  Mouse  
                  add : SubHV  DataP  Moose  Mouse  
+                 cmp : SubHV                       
                  div : SubHV  DataP  Moose  Mouse  
+                  eq : SubHV                       
+                  ge : SubHV                       
                  get : SubHV                       
+                  gt : SubHV                       
+                  le : SubHV                       
+                  lt : SubHV                       
                  mod : SubHV  DataP  Moose  Mouse  
                  mul : SubHV  DataP  Moose  Mouse  
+                  ne : SubHV                       
                  set : SubHV         Moose         
                  sub : SubHV  DataP  Moose  Mouse  
- 
-                 cmp : SubHV                       
-                  eq : SubHV                       
-                  ne : SubHV                       
-                  lt : SubHV                       
-                  le : SubHV                       
-                  gt : SubHV                       
-                  ge : SubHV                       
- 
+  
   Scalar ==========================================
          make_getter : SubHV                       
          make_setter : SubHV                       
     scalar_reference : SubHV                       
- 
+  
   String ==========================================
               append : SubHV  DataP  Moose  Mouse  
                chomp : SubHV  DataP  Moose  Mouse  
                 chop : SubHV  DataP  Moose  Mouse  
                clear : SubHV  DataP  Moose  Mouse  
+                 cmp : SubHV                       
+                cmpi : SubHV                       
             contains : SubHV                       
           contains_i : SubHV                       
            ends_with : SubHV                       
          ends_with_i : SubHV                       
+                  eq : SubHV                       
+                 eqi : SubHV                       
                   fc : SubHV                       
+                  ge : SubHV                       
+                 gei : SubHV                       
                  get : SubHV                       
+                  gt : SubHV                       
+                 gti : SubHV                       
                  inc : SubHV  DataP  Moose  Mouse  
                   lc : SubHV                       
+                  le : SubHV                       
+                 lei : SubHV                       
               length : SubHV  DataP  Moose  Mouse  
+                  lt : SubHV                       
+                 lti : SubHV                       
                match : SubHV  DataP  Moose  Mouse  
              match_i : SubHV                       
+                  ne : SubHV                       
+                 nei : SubHV                       
              prepend : SubHV  DataP  Moose  Mouse  
              replace : SubHV  DataP  Moose  Mouse  
     replace_globally : SubHV                Mouse  
@@ -508,21 +521,6 @@ native traits, and L<MouseX::NativeTraits>.
        starts_with_i : SubHV                       
               substr : SubHV  DataP  Moose  Mouse  
                   uc : SubHV                       
- 
-                 cmp : SubHV                       
-                cmpi : SubHV                       
-                  eq : SubHV                       
-                 eqi : SubHV                       
-                  ne : SubHV                       
-                 nei : SubHV                       
-                  lt : SubHV                       
-                 lti : SubHV                       
-                  le : SubHV                       
-                 lei : SubHV                       
-                  gt : SubHV                       
-                 gti : SubHV                       
-                  ge : SubHV                       
-                 gei : SubHV                       
 
 =head2 Method Chaining
 
