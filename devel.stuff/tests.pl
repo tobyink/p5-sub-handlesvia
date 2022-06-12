@@ -124,7 +124,7 @@ HEADER
 				print $fh '    ', munge_line( $line ), "\n";
 			}
 			print $fh "  };\n\n";
-			print $fh "  is( \$e, undef, 'no exception thrown running example' );\n\n";
+			print $fh "  is( \$e, undef, 'no exception thrown running example' );\n";
 			print $fh "};\n\n";
 		}
 	}
