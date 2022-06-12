@@ -317,6 +317,43 @@ Like C<substr> from L<perlfunc>, but is not an lvalue.
 
 Returns C<< uc($object->attr) >>.
 
+=head1 EXTENDED EXAMPLES
+
+=head2 Using eq for Enum
+
+  package My::Person {
+    use Moo;
+    use Sub::HandlesVia;
+    use Types::Standard qw( Str Enum );
+    
+    has name => (
+      is => 'ro',
+      isa => Str,
+      required => 1,
+    );
+    
+    has status => (
+      is => 'rwp',
+      isa => Enum[ 'alive', 'dead' ],
+      handles_via => 'String',
+      handles => {
+        is_alive => [ eq  => 'alive' ],
+        is_dead  => [ eq  => 'dead' ],
+        kill     => [ set => 'dead' ],
+      },
+      default => 'alive',
+    );
+  }
+  
+  my $bob = My::Person->new( name => 'Robert' );
+  say $bob->is_alive; ## ==> true
+  say $bob->is_dead;  ## ==> false
+  $bob->kill;
+  say $bob->is_alive; ## ==> false
+  say $bob->is_dead;  ## ==> true
+
+See also L<MooX::Enumeration> and L<MooseX::Enumeration>.
+
 =head1 BUGS
 
 Please report any bugs to

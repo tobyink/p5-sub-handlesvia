@@ -254,6 +254,7 @@ subtest 'Testing my_replace' => sub {
     my $object = My::Class->new( attr => 'foo' );
     $object->my_replace( 'o' => 'a' );
     is( $object->attr, 'fao', q{$object->attr is 'fao'} );
+  
     my $object2 = My::Class->new( attr => 'foo' );
     $object2->my_replace( qr/O/i => sub { return 'e' } );
     is( $object2->attr, 'feo', q{$object2->attr is 'feo'} );
@@ -270,6 +271,7 @@ subtest 'Testing my_replace_globally' => sub {
     my $object = My::Class->new( attr => 'foo' );
     $object->my_replace_globally( 'o' => 'a' );
     is( $object->attr, 'faa', q{$object->attr is 'faa'} );
+  
     my $object2 = My::Class->new( attr => 'foo' );
     $object2->my_replace_globally( qr/O/i => sub { return 'e' } );
     is( $object2->attr, 'fee', q{$object2->attr is 'fee'} );
@@ -309,5 +311,41 @@ can_ok( 'My::Class', 'my_substr' );
 ## uc
 
 can_ok( 'My::Class', 'my_uc' );
+
+## Using eq for Enum
+
+subtest q{Extended example: Using eq for Enum} => sub {
+  {
+    package My::Person;
+    use Moo;
+    use Sub::HandlesVia;
+    use Types::Standard qw( Str Enum );
+    
+    has name => (
+      is => 'ro',
+      isa => Str,
+      required => 1,
+    );
+    
+    has status => (
+      is => 'rwp',
+      isa => Enum[ 'alive', 'dead' ],
+      handles_via => 'String',
+      handles => {
+        is_alive => [ eq  => 'alive' ],
+        is_dead  => [ eq  => 'dead' ],
+        kill     => [ set => 'dead' ],
+      },
+      default => 'alive',
+    );
+  }
+  
+  my $bob = My::Person->new( name => 'Robert' );
+  ok( $bob->is_alive, q{$bob->is_alive is true} );
+  ok( !($bob->is_dead), q{$bob->is_dead is false} );
+  $bob->kill;
+  ok( !($bob->is_alive), q{$bob->is_alive is false} );
+  ok( $bob->is_dead, q{$bob->is_dead is true} );
+};
 
 done_testing;

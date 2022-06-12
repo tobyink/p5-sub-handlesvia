@@ -4,7 +4,9 @@ use strict;
 use warnings;
 use FindBin '$Bin';
 use lib "$Bin/../lib";
+use lib "$Bin/../lib", $Bin;
 
+use SubHandlesViaExamples;
 use Sub::HandlesVia ();
 use Path::Tiny 'path';
 
@@ -45,7 +47,7 @@ for my $category ( @categories ) {
 		Number  => 'Num',
 		Scalar  => 'Any',
 		String  => 'Str',
-	}->{$category};
+	}->{$category} // 'Any';
 	my $default = {
 		Array   => '[]',
 		Bool    => '0',
@@ -55,7 +57,7 @@ for my $category ( @categories ) {
 		Number  => '0',
 		Scalar  => 'q[]',
 		String  => 'q[]',
-	}->{$category};
+	}->{$category} // 'undef';
 
 print $fh <<'HEADER';
 use 5.008;
@@ -99,29 +101,27 @@ HEADER
 			my @lines = split /\n/, $h->_examples->( 'My::Class', "attr", "my_$method" );
 			print $fh "  my \$e = exception {\n";
 			for my $line ( @lines ) {
-				if ( $line =~ /^(\s*)say Dumper\((.*)\)\s*;\s## ==>(.*)$/ ) {
-					my ( $space, $expr, $expected ) = ( $1, trim("$2"), trim("$3") );
-					print $fh $space . "  is_deeply( $expr, $expected, q{$expr deep match} );\n";
-				}
-				elsif ( $line =~ /^(\s*)say(.*);\s## ==>(.*)$/ ) {
-					my ( $space, $expr, $expected ) = ( $1, trim("$2"), trim("$3") );
-					if ( $expected eq 'true' ) {
-						print $fh $space . "  ok( $expr, q{$expr is true} );\n";
-					}
-					elsif ( $expected eq 'false' ) {
-						print $fh $space . "  ok( !($expr), q{$expr is false} );\n";
-					}
-					else {
-						print $fh $space . "  is( $expr, $expected, q{$expr is $expected} );\n";
-					}
-				}
-				elsif ( $line ) {
-					$line =~ s/\bsay\b/note/;
-					print $fh "  $line\n";
-				}
+				print $fh '  ', munge_line( $line ), "\n";
 			}
 			print $fh "  };\n";
 			print $fh "  is( \$e, undef, 'no exception thrown running $method example' );\n";
+			print $fh "};\n\n";
+		}
+	}
+
+	my %EG = %SubHandlesViaExamples::EG;
+	if ( ref $EG{$category} ) {
+		for my $eg ( @{ $EG{$category} } ) {
+			my @eg = @$eg;
+			my $code = pop @eg;
+			my ( $name, %args ) = @eg;
+			my @lines = split /\n/, $code;
+			print $fh "## $name\n\n";
+			print $fh "subtest q{Extended example: $name} => sub {\n";
+			@lines = map { /^package (.+) \{/ ? ("{", "  package $1;") : $_ } @lines;
+			for my $line ( @lines ) {
+				print $fh '  ', munge_line( $line ), "\n";
+			}
 			print $fh "};\n\n";
 		}
 	}
@@ -134,4 +134,28 @@ sub trim {
 	$arg =~ s/^\s*//g;
 	$arg =~ s/\s*$//g;
 	return $arg;
+}
+
+sub munge_line {
+	my $line = shift;
+
+	if ( $line =~ /^(\s*)say Dumper\((.*)\)\s*;\s*## ==>(.*)$/ ) {
+		my ( $space, $expr, $expected ) = ( $1, trim("$2"), trim("$3") );
+		return "${space}is_deeply( $expr, $expected, q{$expr deep match} );";
+	}
+	elsif ( $line =~ /^(\s*)say(.*);\s*## ==>(.*)$/ ) {
+		my ( $space, $expr, $expected ) = ( $1, trim("$2"), trim("$3") );
+		if ( $expected eq 'true' ) {
+			return "${space}ok( $expr, q{$expr is true} );";
+		}
+		elsif ( $expected eq 'false' ) {
+			return "${space}ok( !($expr), q{$expr is false} );";
+		}
+		else {
+			return "${space}is( $expr, $expected, q{$expr is $expected} );";
+		}
+	}
+
+	$line =~ s/\bsay\b/note/;
+	return $line;
 }

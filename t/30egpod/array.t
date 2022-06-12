@@ -252,7 +252,7 @@ can_ok( 'My::Class', 'my_join' );
 subtest 'Testing my_join' => sub {
   my $e = exception {
     my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
-    note $object->my_join;        ## ==> 'foo,bar,baz'
+    is( $object->my_join, 'foo,bar,baz', q{$object->my_join is 'foo,bar,baz'} );
     is( $object->my_join( '|' ), 'foo|bar|baz', q{$object->my_join( '|' ) is 'foo|bar|baz'} );
   };
   is( $e, undef, 'no exception thrown running join example' );

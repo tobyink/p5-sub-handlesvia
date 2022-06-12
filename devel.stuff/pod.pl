@@ -3,8 +3,9 @@ use v5.16;
 use strict;
 use warnings;
 use FindBin '$Bin';
-use lib "$Bin/../lib";
+use lib "$Bin/../lib", $Bin;
 
+use SubHandlesViaExamples;
 use Sub::HandlesVia ();
 use Path::Tiny 'path';
 
@@ -97,6 +98,22 @@ for my $category ( @categories ) {
 		}
 	}
 
+	my %EG = %SubHandlesViaExamples::EG;
+	if ( ref $EG{$category} ) {
+		print $fh "=head1 EXTENDED EXAMPLES\n\n";
+		for my $eg ( @{ $EG{$category} } ) {
+			my @eg = @$eg;
+			my $code = pop @eg;
+			my ( $name, %args ) = @eg;
+			my @lines = split /\n/, $code;
+			print $fh "=head2 $name\n\n";
+			print $fh "$args{head}\n\n" if $args{head};
+			print $fh "  $_\n" for @lines;
+			print $fh "\n";
+			print $fh "$args{tail}\n\n" if $args{tail};
+		}
+	}
+
 	print $fh <<'EOF';
 =head1 BUGS
 
@@ -126,5 +143,3 @@ MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 EOF
 }
-
-
