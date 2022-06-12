@@ -353,7 +353,6 @@ subtest q{Using eq for Enum (extended example)} => sub {
   };
 
   is( $e, undef, 'no exception thrown running example' );
-
 };
 
 ## Match with curried regexp
@@ -403,7 +402,6 @@ subtest q{Match with curried regexp (extended example)} => sub {
   };
 
   is( $e, undef, 'no exception thrown running example' );
-
 };
 
 done_testing;

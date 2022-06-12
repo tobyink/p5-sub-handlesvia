@@ -123,7 +123,6 @@ subtest q{Using execute_method (extended example)} => sub {
   };
 
   is( $e, undef, 'no exception thrown running example' );
-
 };
 
 done_testing;

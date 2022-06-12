@@ -544,7 +544,6 @@ subtest q{Using for_each (extended example)} => sub {
   };
 
   is( $e, undef, 'no exception thrown running example' );
-
 };
 
 done_testing;
