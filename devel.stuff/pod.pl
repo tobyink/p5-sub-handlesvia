@@ -45,7 +45,7 @@ for my $category ( @categories ) {
 	}->{$category};
 
 	print $fh "=head1 NAME\n\n";
-	print $fh "Sub::HandlesVia::HandlerLibrary::$category - library of $category-related methods\n\n";
+	print $fh "Sub::HandlesVia::HandlerLibrary::$category - library of $lccat-related methods\n\n";
 
 	print $fh "=head1 SYNOPSIS\n\n";
 	print $fh "  package My::Class {\n";
