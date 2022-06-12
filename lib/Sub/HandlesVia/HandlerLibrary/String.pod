@@ -349,11 +349,11 @@ Returns C<< uc($object->attr) >>.
   }
   
   my $bob = My::Person->new( name => 'Robert' );
-  say $bob->is_alive;  true
-  say $bob->is_dead;   false
+  say $bob->is_alive; ## ==> true
+  say $bob->is_dead;  ## ==> false
   $bob->kill;
-  say $bob->is_alive;  false
-  say $bob->is_dead;   true
+  say $bob->is_alive; ## ==> false
+  say $bob->is_dead;  ## ==> true
 
 See also L<MooX::Enumeration> and L<MooseX::Enumeration>.
 
@@ -394,10 +394,10 @@ See also L<MooX::Enumeration> and L<MooseX::Enumeration>.
   }
   
   my $foo = My::Component->new( id => 42, name => 'Foo' );
-  say $foo->config_filename;  'foo.ini'
+  say $foo->config_filename; ## ==> 'foo.ini'
   
   my $bar4 = My::Component->new( id => 99, name => 'Bar #4' );
-  say $bar4->config_filename;  'component-99.ini'
+  say $bar4->config_filename; ## ==> 'component-99.ini'
 
 =head1 BUGS
 

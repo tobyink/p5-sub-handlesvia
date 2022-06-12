@@ -109,7 +109,7 @@ The execute_method handler allows a class to effectively provide certain methods
     'Second Process: continuing process',
     'Second Process: ending process',
   );
-  say Dumper( \@got );  \@expected
+  say Dumper( \@got ); ## ==> \@expected
 
 =head1 BUGS
 

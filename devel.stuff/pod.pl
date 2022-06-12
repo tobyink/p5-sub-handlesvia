@@ -109,7 +109,7 @@ for my $category ( @categories ) {
 			print $fh "=head2 $name\n\n";
 			print $fh "$args{head}\n\n" if $args{head};
 			for ( @lines ) {
-				s/#.*# ==>//g;
+				s/#.*(#\s*==>)/#$1/g;
 				print $fh "  $_\n";
 			}
 			print $fh "\n";

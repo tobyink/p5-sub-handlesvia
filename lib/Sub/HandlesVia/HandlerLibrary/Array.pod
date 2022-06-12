@@ -506,11 +506,11 @@ Adds an element to the start of the array.
     use Moo; with 'My::Plugin';
     sub initialize {
       my ( $self, $processor, @args ) = @_;
-      say "initialize @args";  'initialize 1 2 3'
+      say "initialize @args"; ## ==> 'initialize 1 2 3'
     }
     sub finalize {
       my ( $self, $processor, @args ) = @_;
-      say "finalize @args";  'finalize 1 2 3'
+      say "finalize @args"; ## ==> 'finalize 1 2 3'
     }
   }
   
