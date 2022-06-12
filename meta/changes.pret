@@ -162,3 +162,10 @@
 		item "Improve and document the Sub::HandlesVia::HandlerLibrary::Scalar module."^^Documentation;
 		item "Additional tests based on pod examples."^^Tests;
 	].
+
+`Sub-HandlesVia 0.021 cpan:TOBYINK`
+	issued  2022-06-12;
+	changeset [
+		item "Provide extended examples in HandlerLibrary pod."^^Documentation;
+		item "Additional tests based on extended examples."^^Tests;
+	].

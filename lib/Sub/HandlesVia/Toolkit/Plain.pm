@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::Toolkit::Plain;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.020';
+our $VERSION   = '0.021';
 
 use Sub::HandlesVia::Toolkit;
 our @ISA = 'Sub::HandlesVia::Toolkit';
