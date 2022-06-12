@@ -1,6 +1,6 @@
 =head1 NAME
 
-Sub::HandlesVia::HandlerLibrary::String - library of String-related methods
+Sub::HandlesVia::HandlerLibrary::String - library of string-related methods
 
 =head1 SYNOPSIS
 

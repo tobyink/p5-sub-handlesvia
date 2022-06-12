@@ -1,6 +1,9 @@
+#!/usr/bin/env perl
 use v5.16;
 use strict;
 use warnings;
+use FindBin '$Bin';
+use lib "$Bin/../lib";
 
 use Sub::HandlesVia ();
 use Path::Tiny 'path';

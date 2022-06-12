@@ -1,6 +1,6 @@
 =head1 NAME
 
-Sub::HandlesVia::HandlerLibrary::Counter - library of Counter-related methods
+Sub::HandlesVia::HandlerLibrary::Counter - library of counter-related methods
 
 =head1 SYNOPSIS
 

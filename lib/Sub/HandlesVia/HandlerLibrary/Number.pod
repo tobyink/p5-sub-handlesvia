@@ -1,6 +1,6 @@
 =head1 NAME
 
-Sub::HandlesVia::HandlerLibrary::Number - library of Number-related methods
+Sub::HandlesVia::HandlerLibrary::Number - library of number-related methods
 
 =head1 SYNOPSIS
 

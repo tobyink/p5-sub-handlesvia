@@ -1,6 +1,6 @@
 =head1 NAME
 
-Sub::HandlesVia::HandlerLibrary::Code - library of Code-related methods
+Sub::HandlesVia::HandlerLibrary::Code - library of code-related methods
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 =head1 NAME
 
-Sub::HandlesVia::HandlerLibrary::Hash - library of Hash-related methods
+Sub::HandlesVia::HandlerLibrary::Hash - library of hash-related methods
 
 =head1 SYNOPSIS
 

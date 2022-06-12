@@ -1,6 +1,6 @@
 =head1 NAME
 
-Sub::HandlesVia::HandlerLibrary::Scalar - library of Scalar-related methods
+Sub::HandlesVia::HandlerLibrary::Scalar - library of scalar-related methods
 
 =head1 SYNOPSIS
 

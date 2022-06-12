@@ -1,6 +1,6 @@
 =head1 NAME
 
-Sub::HandlesVia::HandlerLibrary::Bool - library of Bool-related methods
+Sub::HandlesVia::HandlerLibrary::Bool - library of bool-related methods
 
 =head1 SYNOPSIS
 

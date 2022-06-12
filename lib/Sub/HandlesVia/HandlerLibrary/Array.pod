@@ -1,6 +1,6 @@
 =head1 NAME
 
-Sub::HandlesVia::HandlerLibrary::Array - library of Array-related methods
+Sub::HandlesVia::HandlerLibrary::Array - library of array-related methods
 
 =head1 SYNOPSIS
 
