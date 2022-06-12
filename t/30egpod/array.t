@@ -477,69 +477,74 @@ subtest 'Testing my_unshift' => sub {
 ## Using for_each
 
 subtest q{Using for_each (extended example)} => sub {
-  use strict;
-  use warnings;
-  
-  {
-    package My::Plugin;
-    use Moo::Role;
-    sub initialize {}
-    sub finalize {}
-  }
-  
-  {
-    package My::Processor;
-    use Moo;
-    use Sub::HandlesVia;
-    use Types::Standard qw( ArrayRef ConsumerOf );
+  my $e = exception {
+    use strict;
+    use warnings;
     
-    has plugins => (
-      is => 'ro',
-      isa => ArrayRef[ ConsumerOf['My::Plugin'] ],
-      handles_via => 'Array',
-      handles => {
-        add_plugin => 'push',
-        plugin_do => 'for_each',
-      },
-      default => sub { [] },
-    );
-    
-    sub _do_stuff {
-      return;
+    {
+      package My::Plugin;
+      use Moo::Role;
+      sub initialize {}
+      sub finalize {}
     }
     
-    sub run_process {
-      my ( $self, @args ) = @_;
-      $self->plugin_do( sub {
-        my $plugin = shift;
-        $plugin->initialize( $self, @args );
-      } );
-      $self->_do_stuff( @args );
-      $self->plugin_do( sub {
-        my $plugin = shift;
-        $plugin->finalize( $self, @args );
-      } );
+    {
+      package My::Processor;
+      use Moo;
+      use Sub::HandlesVia;
+      use Types::Standard qw( ArrayRef ConsumerOf );
+      
+      has plugins => (
+        is => 'ro',
+        isa => ArrayRef[ ConsumerOf['My::Plugin'] ],
+        handles_via => 'Array',
+        handles => {
+          add_plugin => 'push',
+          plugin_do => 'for_each',
+        },
+        default => sub { [] },
+      );
+      
+      sub _do_stuff {
+        return;
+      }
+      
+      sub run_process {
+        my ( $self, @args ) = @_;
+        $self->plugin_do( sub {
+          my $plugin = shift;
+          $plugin->initialize( $self, @args );
+        } );
+        $self->_do_stuff( @args );
+        $self->plugin_do( sub {
+          my $plugin = shift;
+          $plugin->finalize( $self, @args );
+        } );
+      }
     }
-  }
-  
-  my $p = My::Processor->new();
-  
-  {
-    package My::Plugin::Noisy;
-    use Moo; with 'My::Plugin';
-    sub initialize {
-      my ( $self, $processor, @args ) = @_;
-      ::is( "initialize @args", 'initialize 1 2 3', q{"initialize @args" is 'initialize 1 2 3'} );
+    
+    my $p = My::Processor->new();
+    
+    {
+      package My::Plugin::Noisy;
+      use Moo; with 'My::Plugin';
+      sub initialize {
+        my ( $self, $processor, @args ) = @_;
+        ::is( "initialize @args", 'initialize 1 2 3', q{"initialize @args" is 'initialize 1 2 3'} );
+      }
+      sub finalize {
+        my ( $self, $processor, @args ) = @_;
+        ::is( "finalize @args", 'finalize 1 2 3', q{"finalize @args" is 'finalize 1 2 3'} );
+      }
     }
-    sub finalize {
-      my ( $self, $processor, @args ) = @_;
-      ::is( "finalize @args", 'finalize 1 2 3', q{"finalize @args" is 'finalize 1 2 3'} );
-    }
-  }
-  
-  $p->add_plugin( My::Plugin::Noisy->new );
-  
-  $p->run_process( 1, 2, 3 );
+    
+    $p->add_plugin( My::Plugin::Noisy->new );
+    
+    $p->run_process( 1, 2, 3 );
+  };
+
+  is( $e, undef, 'no exception thrown running example' );
+
 };
 
 done_testing;
