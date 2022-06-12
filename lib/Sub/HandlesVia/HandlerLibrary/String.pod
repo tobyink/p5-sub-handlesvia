@@ -321,6 +321,9 @@ Returns C<< uc($object->attr) >>.
 
 =head2 Using eq for Enum
 
+  use strict;
+  use warnings;
+  
   package My::Person {
     use Moo;
     use Sub::HandlesVia;

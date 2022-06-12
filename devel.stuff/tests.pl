@@ -117,7 +117,7 @@ HEADER
 			my ( $name, %args ) = @eg;
 			my @lines = split /\n/, $code;
 			print $fh "## $name\n\n";
-			print $fh "subtest q{Extended example: $name} => sub {\n";
+			print $fh "subtest q{$name (extended example)} => sub {\n";
 			@lines = map { /^package (.+) \{/ ? ("{", "  package $1;") : $_ } @lines;
 			for my $line ( @lines ) {
 				print $fh '  ', munge_line( $line ), "\n";

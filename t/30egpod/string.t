@@ -314,7 +314,10 @@ can_ok( 'My::Class', 'my_uc' );
 
 ## Using eq for Enum
 
-subtest q{Extended example: Using eq for Enum} => sub {
+subtest q{Using eq for Enum (extended example)} => sub {
+  use strict;
+  use warnings;
+  
   {
     package My::Person;
     use Moo;
