@@ -42,6 +42,13 @@ package My::Person {
     },
     default => 'alive',
   );
+  
+  # Note: method modifiers work on delegated methods
+  #
+  before kill => sub {
+    my $self = shift;
+    warn "overkill" if $self->is_dead;
+  };
 }
 
 my $bob = My::Person->new( name => 'Robert' );
