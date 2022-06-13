@@ -546,4 +546,80 @@ subtest q{Using for_each (extended example)} => sub {
   is( $e, undef, 'no exception thrown running example' );
 };
 
+## Job queue using push and shift
+
+subtest q{Job queue using push and shift (extended example)} => sub {
+  my $e = exception {
+    use strict;
+    use warnings;
+    use Try::Tiny;
+    
+    {
+      package My::JobQueue;
+      use Moo;
+      use Sub::HandlesVia;
+      use Types::Standard qw( Bool ArrayRef CodeRef HasMethods is_Object );
+      use Try::Tiny;
+      
+      has auto_requeue => (
+        is => 'ro',
+        isa => Bool,
+        default => 0,
+      );
+      
+      has jobs => (
+        is => 'ro',
+        isa => ArrayRef[ CodeRef | HasMethods['run'] ],
+        handles_via => 'Array',
+        handles => {
+          add_job => 'push',
+          _get_job => 'shift',
+          is_empty => 'is_empty',
+        },
+        default => sub { [] },
+      );
+      
+      sub _handle_failed_job {
+        my ( $self, $job ) = @_;
+        $self->add_job( $job ) if $self->auto_requeue;
+      }
+      
+      sub run_jobs {
+        my $self = shift;
+        while ( not $self->is_empty ) {
+          my $job = $self->_get_job;
+          try {
+            is_Object($job) ? $job->run() : $job->();
+          }
+          catch {
+            $self->_handle_failed_job( $job );
+          };
+        }
+      }
+    }
+    
+    my $q = My::JobQueue->new();
+    
+    my $str = '';
+    $q->add_job( sub { $str .= 'A' } );
+    $q->add_job( sub { $str .= 'B' } );
+    $q->add_job( sub { $str .= 'C' } );
+    
+    $q->run_jobs;
+    
+    is( $str, 'ABC', q{$str is 'ABC'} );
+    
+    # Attempt to push invalid value on the queue
+    #
+    try {
+      $q->add_job( "jobs cannot be strings" );
+    }
+    catch {
+      ok( $q->is_empty, q{$q->is_empty is true} );
+    };
+  };
+
+  is( $e, undef, 'no exception thrown running example' );
+};
+
 done_testing;
