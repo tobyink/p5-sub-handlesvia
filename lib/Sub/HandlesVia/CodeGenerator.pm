@@ -16,7 +16,6 @@ use Class::Tiny (
 		generator_for_slot
 		generator_for_get
 		generator_for_set
-		generator_for_simple_set
 		generator_for_default
 		isa
 		coerce
@@ -79,7 +78,7 @@ use Class::Tiny (
 );
 
 my @generatable_things = qw(
-	slot get set simple_set default arg args argc currying usage_string self
+	slot get set default arg args argc currying usage_string self
 );
 for my $thing ( @generatable_things ) {
 	my $generator = "generator_for_$thing";
@@ -305,17 +304,6 @@ sub __generate_set_method {
 	
 	my $return = 'generate_set';
 	
-	# If no type check is needed, a simplified version of the setter
-	# exists, we haven't been told to always set strictly, and the
-	# setter isn't checking isa, we should use the simplified setter.
-	#
-	if ( !$$type_check_needed
-	and  defined $self->generator_for_simple_set
-	and  !$self->set_strictly
-	and  !$self->set_checks_isa ) {
-		$return = 'generate_simple_set';
-	}
-	
 	# If a type check is needed, but the setter doesn't do type checks,
 	# then wrap the setter. Now the setter does the type check, so
 	# we no longer need to.
@@ -522,11 +510,6 @@ A coderef which if called, generates a string like C<< '$_[0]->attrname' >>.
 
 A coderef which if called with a parameter, generates a string like
 C<< "\$_[0]->_set_attrname( $parameter )" >>.
-
-=head2 C<generator_for_simple_set> B<< CodeRef >>
-
-A coderef which if called with a parameter, generates a string like
-C<< "\$_[0]{attrname} = $parameter" >>.
 
 =head2 C<generator_for_simple_default> B<< CodeRef >>
 
