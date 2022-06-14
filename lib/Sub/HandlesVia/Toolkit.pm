@@ -8,7 +8,7 @@ our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.022';
 
 use Type::Params qw(compile_named_oo);
-use Types::Standard qw( ArrayRef HashRef Str Num Int CodeRef Bool );
+use Types::Standard qw( ArrayRef HashRef Str Num Int CodeRef Bool Item );
 use Types::Standard qw( assert_HashRef is_ArrayRef is_CodeRef is_Str );
 
 my $sig;
@@ -67,6 +67,7 @@ my %default_type = (
 	Counter   => Int,
 	Code      => CodeRef,
 	Bool      => Bool,
+	Scalar    => Item,
 );
 
 sub clean_spec {
@@ -197,7 +198,6 @@ sub code_generator_for_attribute {
 }
 
 1;
-
 
 __END__
 
