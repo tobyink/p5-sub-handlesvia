@@ -134,12 +134,12 @@ sub generate_coderef_for_handler {
 	
 	my $ec_args = $self->_generate_ec_args_for_handler( $method_name, $handler );
 	
-#	warn join("\n", @{$ec_args{source}});
-#	for my $key (sort keys %{$ec_args{environment}}) {
-#		warn ">> $key : ".ref($ec_args{environment}{$key});
-#		if ( ref($ec_args{environment}{$key}) eq 'REF' and ref(${$ec_args{environment}{$key}}) eq 'CODE' ) {
+#	warn join("\n", @{$ec_args->{source}});
+#	for my $key (sort keys %{$ec_args->{environment}}) {
+#		warn ">> $key : ".ref($ec_args->{environment}{$key});
+#		if ( ref($ec_args->{environment}{$key}) eq 'REF' and ref(${$ec_args->{environment}{$key}}) eq 'CODE' ) {
 #			require B::Deparse;
-#			warn B::Deparse->new->coderef2text(${$ec_args{environment}{$key}});
+#			warn B::Deparse->new->coderef2text(${$ec_args->{environment}{$key}});
 #		}
 #	}
 	
@@ -149,10 +149,6 @@ sub generate_coderef_for_handler {
 
 sub _generate_ec_args_for_handler {
 	my ( $self, $method_name, $handler ) = @_;
-	
-	if ( $handler->can('_coderef') ) {
-		return $handler->_coderef( $method_name, $self );
-	}
 	
 	# COPY of $self->env
 	my $env = { %{$self->env} };
@@ -177,6 +173,8 @@ sub _generate_ec_args_for_handler {
 	);
 	
 	push @$code, "}";
+	
+	$handler->_tweak_env( $env );
 	
 	return {
 		source      => $code,

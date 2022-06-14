@@ -91,10 +91,10 @@ sub _real_additional_validation {
 		my ($sig_was_checked, $callbacks) = @_;
 		my $ti = "Sub::HandlesVia::HandlerLibrary::$lib"->_type_inspector($callbacks->{isa});
 		if ($ti and $ti->{trust_mutated} eq 'always') {
-			return ('1;', {});
+			return { code => '1;', env => {} };
 		}
 		if ($ti and $ti->{trust_mutated} eq 'maybe') {
-			return ('1;', {});
+			return { code => '1;', env => {} };
 		}
 		return;
 	} if $av eq 'no incoming values';
@@ -188,6 +188,8 @@ sub code_as_string {
 	$code;
 }
 
+sub _tweak_env {}
+
 use Exporter::Shiny qw( handler );
 sub _generate_handler {
 	my $me = shift;
@@ -208,46 +210,15 @@ sub BUILD {
 	$_[1]{name} or die 'name required';
 }
 
-sub _coderef {
-	my ($self, $method_name, $gen) = @_;
-	
-	my @code = 'sub {';
-	push @code, sprintf('package %s::__SANDBOX__;', __PACKAGE__);
-	
-	my $env = {};
-	
-	if (my $curried = $self->curried) {
-		if (grep ref, @$curried) {
-			$env->{'@curry'} = $curried;
-			push @code, $gen->generate_currying( '@curry' );
-		} else {
-			require B;
-			my $values = join ',', map { defined($_) ? B::perlstring($_) : 'undef' } @$curried;
-			push @code, $gen->generate_currying( "($values)" );
-		}
-	}
-	
+sub is_mutator { 0 }
+
+sub template {
+	my $self = shift;
 	require B;
-	my $q_name = B::perlstring($self->name);
-	push @code, sprintf(
-		'do{ %s }->${\\ '.$q_name.'}(%s)',
-		$gen->generate_get,
-		$gen->generate_args,
+	my $q_name = B::perlstring( $self->name );
+	return sprintf(
+		'$GET->${\\ '.$q_name.'}( @ARG )',
 	);
-	
-	push @code, ';' . $gen->generate_self
-		if $self->is_chainable;
-	push @code, '}';
-		
-	return {
-		source      => \@code,
-		environment => $env,
-		description => sprintf(
-			"%s=%s",
-			$method_name||'__ANON__',
-			$self->name,
-		),
-	};
 }
 
 package Sub::HandlesVia::Handler::CodeRef;
@@ -259,48 +230,19 @@ BEGIN { our @ISA = 'Sub::HandlesVia::Handler' };
 
 use Class::Tiny qw( delegated_coderef );
 
+sub is_mutator { 0 }
+
 sub BUILD {
 	$_[1]{delegated_coderef} or die 'delegated_coderef required';
 }
 
-sub _coderef {
-	my ($self, $method_name, $gen) = @_;
-	
-	my @code = 'sub {';
-	push @code, sprintf('package %s::__SANDBOX__;', __PACKAGE__);
-	
-	my $env = { '$shv_callback' => \($self->delegated_coderef) };
-	
-	if (my $curried = $self->curried) {
-		if (grep ref, @$curried) {
-			$env->{'@curry'} = $curried;
-			push @code, $gen->generate_currying( '@curry' );
-		} else {
-			require B;
-			my $values = join ',', map { defined($_) ? B::perlstring($_) : 'undef' } @$curried;
-			push @code, $gen->generate_currying( "($values)" );
-		}
-	}
-	
-	push @code, sprintf(
-		'$shv_callback->(do { %s }, %s)',
-		$gen->generate_get,
-		$gen->generate_args,
-	);
-	
-	push @code, ';' . $gen->generate_self
-		if $self->is_chainable;
-	push @code, '}';
-	
-	return {
-		source      => \@code,
-		environment => $env,
-		description => sprintf(
-			"%s=%s",
-			$method_name || '__ANON__',
-			'__ANON__',
-		),
-	};
+sub _tweak_env {
+	my ( $self, $env ) = @_;
+	$env->{'$shv_callback'} = \($self->delegated_coderef);
+}
+
+sub template {
+	return '$shv_callback->(my $shvtmp = $GET, @ARG)';
 }
 
 1;
