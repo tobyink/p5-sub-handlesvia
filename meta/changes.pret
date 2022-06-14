@@ -169,3 +169,12 @@
 		item "Provide extended examples in HandlerLibrary pod."^^Documentation;
 		item "Additional tests based on extended examples."^^Tests;
 	].
+
+`Sub-HandlesVia 0.022 cpan:TOBYINK`
+	issued  2022-06-14;
+	changeset [
+		item "Additional Array example: push and shift."^^Documentation;
+		item "Other documentation improvements."^^Documentation;
+		item "Cleaned up Sub::HandlesVia::Handler and moved a lot of code into a new class Sub::HandlesVia::CodeGenerator, which replaces the big hash of callbacks which was passed around everywhere."^^Change;
+		item "Document Sub::HandlesVia::Handler and Sub::HandlesVia::CodeGenerator."^^Documentation;
+	].
