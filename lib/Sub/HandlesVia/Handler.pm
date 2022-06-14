@@ -259,6 +259,9 @@ Sub::HandlesVia::Handler - template for a method that can be delegated to
 
 =head1 DESCRIPTION
 
+B<< This module is part of Sub::HandlesVia's internal API. >>
+It is mostly of interest to people extending Sub::HandlesVia.
+
 This module works in conjunction with L<Sub::HandlesVia::CodeGenerator>
 and subclasses of L<Sub::HandlesVia::Toolkit> to build a string of Perl
 code which can be compiled into a method to install into your class.

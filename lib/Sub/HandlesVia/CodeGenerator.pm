@@ -449,6 +449,9 @@ Sub::HandlesVia::CodeGenerator - looks at a Handler and generates a string of Pe
 
 =head1 DESCRIPTION
 
+B<< This module is part of Sub::HandlesVia's internal API. >>
+It is mostly of interest to people extending Sub::HandlesVia.
+
 Sub::HandlesVia toolkits create a code generator for each attribute they're
 dealing with, and use the code generator to generate Perl code for one or
 more delegated methods.
