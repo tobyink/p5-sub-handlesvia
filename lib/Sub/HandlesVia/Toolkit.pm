@@ -23,21 +23,28 @@ sub install_delegations {
 	my $me = shift;
 	my $arg = &$sig;
 
-	my $callbacks = $me->make_callbacks($arg->target, $arg->attribute);
+	my $gen = $me->code_generator_for_attribute(
+		$arg->target,
+		$arg->attribute,
+	);
 	
 	use Sub::HandlesVia::Handler;
 	my %handles = %{ $arg->handles };
 	for my $h (sort keys %handles) {
-		my $handler = Sub::HandlesVia::Handler->lookup($handles{$h}, $arg->handles_via);
+		
+		my $handler = 'Sub::HandlesVia::Handler'->lookup(
+			$handles{$h},
+			$arg->handles_via,
+		);
+		
 #		warn $handler->code_as_string(
-#			%$callbacks,
-#			target      => $arg->target,
 #			method_name => $h,
+#			code_generator => $gen,
 #		);
+
 		$handler->install_method(
-			%$callbacks,
-			target      => $arg->target,
-			method_name => $h,
+			method_name    => $h,
+			code_generator => $gen,
 		);
 	}
 }
@@ -107,7 +114,7 @@ sub clean_spec {
 	};
 }
 
-sub make_callbacks {
+sub code_generator_for_attribute {
 	my ($me, $target, $attr) = (shift, @_);
 	die "must be implemented by child classes";
 }

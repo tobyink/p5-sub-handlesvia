@@ -10,7 +10,6 @@ our $VERSION   = '0.021';
 use Sub::HandlesVia::Toolkit;
 our @ISA = 'Sub::HandlesVia::Toolkit';
 
-use Data::Dumper;
 use Types::Standard qw( is_ArrayRef is_Str assert_HashRef is_CodeRef is_Undef );
 use Types::Standard qw( ArrayRef HashRef Str Num Int CodeRef Bool );
 
@@ -55,35 +54,7 @@ sub install_has_wrapper {
 	});
 }
 
-my %standard_callbacks = (
-	args => sub {
-		'@_[1..$#_]';
-	},
-	arg => sub {
-		@_==1 or die;
-		my $n = shift;
-		"\$_[$n]";
-	},
-	argc => sub {
-		'(@_-1)';
-	},
-	curry => sub {
-		@_==1 or die;
-		my $arr = shift;
-		"splice(\@_,1,0,$arr);";
-	},
-	usage_string => sub {
-		@_==2 or die;
-		my $method_name = shift;
-		my $guts = shift;
-		"\$instance->$method_name($guts)";
-	},
-	self => sub {
-		'$_[0]';
-	},
-);
-
-sub make_callbacks {
+sub code_generator_for_attribute {
 	my ($me, $target, $attrname) = (shift, @_);
 	
 	if (ref $attrname) {
@@ -94,7 +65,7 @@ sub make_callbacks {
 	my $ctor_maker = $INC{'Moo.pm'} && 'Moo'->_constructor_maker_for($target);
 	
 	if (!$ctor_maker) {
-		return $me->_make_callbacks_role($target, $attrname);
+		return $me->_code_generator_for_role_attribute($target, $attrname);
 	}
 	
 	my $spec = $ctor_maker->all_attribute_specs->{$attrname};
@@ -140,44 +111,52 @@ sub make_callbacks {
 		$captures->{'$shv_default_for_reset'} = \$default->[1];
 	}
 	
-	return {
-		%standard_callbacks,
-		is_method      => !!1,
-		slot           => sub { $slot },
-		get            => sub { $get },
-		get_is_lvalue  => $is_simple_get,
-		set            => $set,
-		set_checks_isa => !$is_simple_set,
-		isa            => $type,
-		coerce         => !!$coerce,
-		env            => $captures,
-		be_strict      => $spec->{weak_ref}||$spec->{trigger},
-		default_for_reset => sub {
-			my ($handler, $callbacks) = @_ or die;
-			if (!$default) {
+	require Sub::HandlesVia::CodeGenerator;
+	return 'Sub::HandlesVia::CodeGenerator'->new(
+		toolkit               => $me,
+		target                => $target,
+		attribute             => $attrname,
+		attribute_spec        => $spec,
+		env                   => $captures,
+		isa                   => $type,
+		coerce                => !!$coerce,
+		generator_for_slot    => sub { $slot },
+		generator_for_get     => sub { $get },
+		generator_for_set     => $set,
+		get_is_lvalue         => $is_simple_get,
+		set_checks_isa        => !$is_simple_set,
+		set_strictly          => $spec->{weak_ref} || $spec->{trigger},
+		generator_for_default => sub {
+			my ( $gen, $handler ) = @_ or die;
+			if ( !$default and $handler ) {
 				return $handler->default_for_reset->();
 			}
-			elsif ($default->[0] eq 'builder') {
-				return sprintf('(%s)->%s', $callbacks->{self}->(), $default->[1]);
+			elsif ( $default->[0] eq 'builder' ) {
+				return sprintf(
+					'(%s)->%s',
+					$gen->generator_for_self->(),
+					$default->[1],
+				);
 			}
-			elsif ($default->[0] eq 'default' and is_CodeRef $default->[1]) {
-				return sprintf('(%s)->$shv_default_for_reset', $callbacks->{self}->());
+			elsif ( $default->[0] eq 'default' and is_CodeRef $default->[1] ) {
+				return sprintf(
+					'(%s)->$shv_default_for_reset',
+					$gen->generator_for_self->(),
+				);
 			}
-			elsif ($default->[0] eq 'default' and is_Undef $default->[1]) {
+			elsif ( $default->[0] eq 'default' and is_Undef $default->[1] ) {
 				return 'undef';
 			}
-			elsif ($default->[0] eq 'default' and is_Str $default->[1]) {
+			elsif ( $default->[0] eq 'default' and is_Str $default->[1] ) {
 				require B;
-				return B::perlstring($default->[1]);
+				return B::perlstring( $default->[1] );
 			}
-			else {
-				die 'lolwut?';
-			}
+			return;
 		},
-	};
+	);
 }
 
-sub _make_callbacks_role {
+sub _code_generator_for_role_attribute {
 	my ($me, $target, $attrname) = (shift, @_);
 	
 	if (ref $attrname) {
@@ -301,42 +280,50 @@ sub _make_callbacks_role {
 	if (is_CodeRef $default->[1]) {
 		$captures->{'$shv_default_for_reset'} = \$default->[1];
 	}
-
-	return {
-		%standard_callbacks,
-		is_method      => !!1,
-		slot           => sub { '$_[0]{'.B::perlstring($attrname).'}' }, # icky
-		get            => $get,
-		get_is_lvalue  => !!0,
-		set            => $set,
-		set_checks_isa => !!1,
-		isa            => $type,
-		coerce         => !!$coerce,
-		env            => $captures,
-		be_strict      => !!0,
-		default_for_reset => sub {
-			my ($handler, $callbacks) = @_ or die;
-			if (!$default) {
+	
+	require Sub::HandlesVia::CodeGenerator;
+	return 'Sub::HandlesVia::CodeGenerator'->new(
+		toolkit               => $me,
+		target                => $target,
+		attribute             => $attrname,
+		attribute_spec        => $spec,
+		env                   => $captures,
+		isa                   => $type,
+		coerce                => !!$coerce,
+		generator_for_slot    => sub { '$_[0]{'.B::perlstring($attrname).'}' }, # icky
+		generator_for_get     => $get,
+		generator_for_set     => $set,
+		get_is_lvalue         => !!0,
+		set_checks_isa        => !!1,
+		set_strictly          => !!0,
+		generator_for_default => sub {
+			my ( $gen, $handler ) = @_ or die;
+			if ( !$default and $handler ) {
 				return $handler->default_for_reset->();
 			}
-			elsif ($default->[0] eq 'builder') {
-				return sprintf('(%s)->%s', $callbacks->{self}->(), $default->[1]);
+			elsif ( $default->[0] eq 'builder' ) {
+				return sprintf(
+					'(%s)->%s',
+					$gen->generator_for_self->(),
+					$default->[1],
+				);
 			}
-			elsif ($default->[0] eq 'default' and is_CodeRef $default->[1]) {
-				return sprintf('(%s)->$shv_default_for_reset', $callbacks->{self}->());
+			elsif ( $default->[0] eq 'default' and is_CodeRef $default->[1] ) {
+				return sprintf(
+					'(%s)->$shv_default_for_reset',
+					$gen->generator_for_self->(),
+				);
 			}
-			elsif ($default->[0] eq 'default' and is_Undef $default->[1]) {
+			elsif ( $default->[0] eq 'default' and is_Undef $default->[1] ) {
 				return 'undef';
 			}
-			elsif ($default->[0] eq 'default' and is_Str $default->[1]) {
+			elsif ( $default->[0] eq 'default' and is_Str $default->[1] ) {
 				require B;
-				return B::perlstring($default->[1]);
+				return B::perlstring( $default->[1] );
 			}
-			else {
-				die 'lolwut?';
-			}
+			return;
 		},
-	};
+	);
 }
 
 1;

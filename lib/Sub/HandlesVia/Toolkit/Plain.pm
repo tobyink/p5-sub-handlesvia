@@ -12,7 +12,7 @@ our @ISA = 'Sub::HandlesVia::Toolkit';
 
 use Types::Standard qw( is_CodeRef is_Str );
 
-sub make_callbacks {
+sub code_generator_for_attribute {
 	my ($me, $target, $attr) = (shift, @_);
 	
 	my ($get_slot, $set_slot, $default) = @$attr;
@@ -63,59 +63,39 @@ sub make_callbacks {
 		$captures->{'$shv_default_for_reset'} = \$default;
 	}
 
-	my %callbacks = (
-		args => sub {
-			'@_[1..$#_]';
-		},
-		arg => sub {
-			@_==1 or die;
-			my $n = shift;
-			"\$_[$n]";
-		},
-		argc => sub {
-			'(@_-1)';
-		},
-		curry => sub {
-			@_==1 or die;
-			my $arr = shift;
-			"splice(\@_,1,0,$arr);";
-		},
-		usage_string => sub {
-			@_==2 or die;
-			my $method_name = shift;
-			my $guts = shift;
-			"\$instance->$method_name($guts)";
-		},
-		self => sub {
-			'$_[0]';
-		},
-		is_method      => !!1,
-		get            => $get,
-		get_is_lvalue  => $get_is_lvalue,
-		set            => $set,
-		set_checks_isa => !!1,
-		coerce         => !!0,
-		env            => $captures,
-		be_strict      => !!1,
-		default_for_reset => sub {
-			my ($handler, $callbacks) = @_ or die;
-			if (!$default) {
+	require Sub::HandlesVia::CodeGenerator;
+	return 'Sub::HandlesVia::CodeGenerator'->new(
+		target                => $target,
+		attribute             => $attr,
+		env                   => $captures,
+		coerce                => !!0,
+		generator_for_get     => $get,
+		generator_for_set     => $set,
+		get_is_lvalue         => $get_is_lvalue,
+		set_checks_isa        => !!1,
+		set_strictly          => !!1,
+		generator_for_default => sub {
+			my ( $gen, $handler ) = @_ or die;
+			if ( !$default and $handler ) {
 				return $handler->default_for_reset->();
 			}
-			elsif (is_CodeRef $default) {
-				return sprintf('(%s)->$shv_default_for_reset', $callbacks->{self}->());
+			elsif ( is_CodeRef $default ) {
+				return sprintf(
+					'(%s)->$shv_default_for_reset',
+					$gen->generator_for_self->(),
+				);
 			}
-			elsif (is_Str $default) {
+			elsif ( is_Str $default ) {
 				require B;
-				return sprintf('(%s)->${\ %s }', $callbacks->{self}->(), B::perlstring($default));
+				return sprintf(
+					'(%s)->${\ %s }',
+					$gen->generator_for_self->(),
+					B::perlstring( $default ),
+				);
 			}
-			else {
-				die 'lolwut?';
-			}
+			return;
 		},
 	);
-	
-	\%callbacks;
 }
 
 1;

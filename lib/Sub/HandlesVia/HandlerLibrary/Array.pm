@@ -43,74 +43,85 @@ sub _type_inspector {
 
 my $additional_validation_for_push_and_unshift = sub {
 	my $self = CORE::shift;
-	my ($sig_was_checked, $callbacks) = @_;
-	my $ti = __PACKAGE__->_type_inspector($callbacks->{isa});
+	my ($sig_was_checked, $gen) = @_;
+	my $ti = __PACKAGE__->_type_inspector($gen->isa);
+	
 	if ($ti and $ti->{trust_mutated} eq 'always') {
-		return ('1;', {});
+		return { code => '1;', env => {} };
 	}
+	
 	if ($ti and $ti->{trust_mutated} eq 'maybe') {
-		my $coercion = ($callbacks->{coerce} && $ti->{value_type}->has_coercion);
-		my @rv = $coercion
-			? (
-				$self->_process_template(
-					'my @shv_values = map $shv_type_for_values->assert_coerce($_), @ARG;',
-					%$callbacks,
-				),
-				{ '$shv_type_for_values' => \$ti->{value_type} },
+		my $coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
+		my $code = $coercion
+			? sprintf(
+				'my @shv_values = map $shv_type_for_values->assert_coerce($_), %s;',
+				$gen->generate_args,
 			)
-			: (
-				$self->_process_template(
-					sprintf(
-						'my @shv_values = @ARG; for my $shv_value (@shv_values) { %s }',
-						$ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
-					),
-					%$callbacks,
-				),
-				{ '$shv_type_for_values' => \$ti->{value_type} },
+			: sprintf(
+				'my @shv_values = %s; for my $shv_value (@shv_values) { %s }',
+				$gen->generate_args,
+				$ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
 			);
-		$callbacks->{'arg'}  = sub { "\$shv_values[($_[0])-1]" };
-		$callbacks->{'args'} = sub { '@shv_values' };
-		return @rv;
+		return {
+			code      => $code,
+			env       => { '$shv_type_for_values' => \$ti->{value_type} },
+			arg       => sub { CORE::shift; "\$shv_values[($_[0])-1]" },
+			args      => sub { CORE::shift; '@shv_values' },
+			argc      => sub { CORE::shift; 'scalar(@shv_values)' },
+		};
 	}
 	return;
 };
 
 my $additional_validation_for_set_and_insert = sub {
 	my $self = CORE::shift;
-	my ($sig_was_checked, $callbacks) = @_;
-	my $ti = __PACKAGE__->_type_inspector($callbacks->{isa});
+	my ($sig_was_checked, $gen) = @_;
+	my $ti = __PACKAGE__->_type_inspector($gen->isa);
+	
 	if ($ti and $ti->{trust_mutated} eq 'always') {
-		return ('1;', {});
+		return { code => '1;', env => {} };
 	}
+	
+	my ( $arg, $code, $env );
+	
 	if ($ti and $ti->{trust_mutated} eq 'maybe') {
-		my $coercion = ($callbacks->{coerce} && $ti->{value_type}->has_coercion);
-		my $orig = $callbacks->{'arg'};
-		$callbacks->{'arg'} = sub {
+		my $coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
+		$arg = sub {
+			CORE::shift;
 			return '$shv_index' if $_[0]=='1';
 			return '$shv_value' if $_[0]=='2';
-			goto &$orig;
+			$gen->generate_arg( @_ );
 		};
-		return (
-			$self->_process_template(sprintf(
-				'my($shv_index,$shv_value)=@ARG; %s;',
+		if ( $sig_was_checked ) {
+			$code = sprintf(
+				'my($shv_index,$shv_value)=%s; %s;',
+				$gen->generate_args,
 				$coercion
 					? '$shv_value=$shv_type_for_values->assert_coerce($shv_value)'
 					: $ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
-			), %$callbacks),
-			{ '$shv_type_for_values' => \$ti->{value_type} },
-		) if $sig_was_checked;
-		return (
-			$self->_process_template(sprintf(
-				'my($shv_index,$shv_value)=@ARG; %s; %s;',
+			);
+			$env = { '$shv_type_for_values' => \$ti->{value_type} };
+		}
+		else {
+			$code = sprintf(
+				'my($shv_index,$shv_value)=%s; %s; %s;',
+				$gen->generate_args,
 				Int->inline_assert('$shv_index', '$Types_Standard_Int'),
 				$coercion
 					? '$shv_value=$shv_type_for_values->assert_coerce($shv_value)'
 					: $ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
-			), %$callbacks),
-			{ '$Types_Standard_Int' => \(Int), '$shv_type_for_values' => \$ti->{value_type} },
-		);
+			);
+			$env = {
+				'$Types_Standard_Int' => \(Int),
+				'$shv_type_for_values' => \$ti->{value_type},
+			};
+		}
 	}
-	return;
+	return {
+		code      => $code,
+		env       => $env,
+		arg       => $arg,
+	};
 };
 
 sub count {
@@ -387,40 +398,49 @@ sub accessor {
 		lvalue_template => '(#ARG == 1) ? ($GET)->[ $ARG[1] ] : (($GET)->[ $ARG[1] ] = $ARG[2])',
 		additional_validation => sub {
 			my $self = CORE::shift;
-			my ($sig_was_checked, $callbacks) = @_;
-			my $ti = __PACKAGE__->_type_inspector($callbacks->{isa});
+			my ($sig_was_checked, $gen) = @_;
+			my $ti = __PACKAGE__->_type_inspector($gen->isa);
 			if ($ti and $ti->{trust_mutated} eq 'always') {
-				return ('1;', {});
+				return { code => '1;', env => {} };
 			}
+			my ( $code, $env, $arg );
 			if ($ti and $ti->{trust_mutated} eq 'maybe') {
-				my $coercion = ($callbacks->{coerce} && $ti->{value_type}->has_coercion);
-				my $orig = $callbacks->{'arg'};
-				$callbacks->{'arg'} = sub {
+				my $coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
+				$arg = sub {
+					CORE::shift;
 					return '$shv_index' if $_[0]=='1';
 					return '$shv_value' if $_[0]=='2';
-					goto &$orig;
+					$gen->generate_arg( @_ );
 				};
-				return (
-					$self->_process_template(sprintf(
-						'my($shv_index,$shv_value)=@ARG; if (#ARG>1) { %s };',
+				if ( $sig_was_checked ) {
+					$code = sprintf(
+						'my($shv_index,$shv_value)=%s; if (%s>1) { %s };',
+						$gen->generate_args,
+						$gen->generate_argc,
 						$coercion
 							? '$shv_value=$shv_type_for_values->assert_coerce($shv_value)'
 							: $ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
-					), %$callbacks),
-					{ '$shv_type_for_values' => \$ti->{value_type} },
-				) if $sig_was_checked;
-				return (
-					$self->_process_template(sprintf(
-						'my($shv_index,$shv_value)=@ARG; %s; if (#ARG>1) { %s };',
+					);
+					$env = { '$shv_type_for_values' => \$ti->{value_type} };
+				}
+				else {
+					$code = sprintf(
+						'my($shv_index,$shv_value)=%s; %s; if (%s>1) { %s };',
+						$gen->generate_args,
 						Int->inline_assert('$shv_index', '$Types_Standard_Int'),
+						$gen->generate_argc,
 						$coercion
 							? '$shv_value=$shv_type_for_values->assert_coerce($shv_value)'
 							: $ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
-					), %$callbacks),
-					{ '$Types_Standard_Int' => \(Int), '$shv_type_for_values' => \$ti->{value_type} },
-				);
+					);
+					$env = { '$Types_Standard_Int' => \(Int), '$shv_type_for_values' => \$ti->{value_type} };
+				}
 			}
-			return;
+			return {
+				code => $code,
+				env => $env,
+				arg => $arg,
+			};
 		},
 	documentation => 'Acts like C<get> if given one argument, or C<set> if given two arguments.',
 	_examples => sub {
@@ -605,35 +625,38 @@ sub splice {
 		lvalue_template => 'my ($shv_index, $shv_length, @shv_values) = @ARG;'.$checks.';splice(@{$GET}, $shv_index, $shv_length, @shv_values)',
 		additional_validation => sub {
 			my $self = CORE::shift;
-			my ($sig_was_checked, $callbacks) = @_;
-			my $ti = __PACKAGE__->_type_inspector($callbacks->{isa});
+			my ($sig_was_checked, $gen) = @_;
+			my $ti = __PACKAGE__->_type_inspector($gen->isa);
 			if ($ti and $ti->{trust_mutated} eq 'always') {
-				return ('1;', {});
+				return { code => '1;', env => {} };
 			}
 			if ($ti and $ti->{trust_mutated} eq 'maybe') {
-				my $coercion = ($callbacks->{coerce} && $ti->{value_type}->has_coercion);
-				my @rv = $coercion
-					? (
-						$self->_process_template(
-							'my @shv_unprocessed=@ARG;my @shv_processed=splice(@shv_unprocessed,0,2); push @shv_processed, map $shv_type_for_values->assert_coerce($_), @shv_unprocessed;',
-							%$callbacks,
-						),
-						{ '$shv_type_for_values' => \$ti->{value_type} },
-					)
-					: (
-						$self->_process_template(
-							sprintf(
-								'my @shv_unprocessed=@ARG;my @shv_processed=splice(@shv_unprocessed,0,2);for my $shv_value (@shv_unprocessed) { %s };push @shv_processed, @shv_unprocessed;',
-								$ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
-							),
-							%$callbacks,
-						),
-						{ '$shv_type_for_values' => \$ti->{value_type} },
+				my ( $code, $env );
+				my $coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
+				if ( $coercion ) {
+					$code = sprintf(
+						'my @shv_unprocessed=%s;my @shv_processed=splice(@shv_unprocessed,0,2); push @shv_processed, map $shv_type_for_values->assert_coerce($_), @shv_unprocessed;',
+						$gen->generate_args,
 					);
-				$callbacks->{'arg'}  = sub { "\$shv_processed[($_[0])-1]" };
-				$callbacks->{'args'} = sub { '@shv_processed' };
-				return @rv;
+					$env = { '$shv_type_for_values' => \$ti->{value_type} };
+				}
+				else {
+					$code = sprintf(
+						'my @shv_unprocessed=%s;my @shv_processed=splice(@shv_unprocessed,0,2);for my $shv_value (@shv_unprocessed) { %s };push @shv_processed, @shv_unprocessed;',
+						$gen->generate_args,
+						$ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
+					);
+					$env = { '$shv_type_for_values' => \$ti->{value_type} };
+				}
+				return {
+					code => $code,
+					env => $env,
+					arg => sub { CORE::shift; "\$shv_processed[($_[0])-1]" },
+					args => sub { CORE::shift; '@shv_processed' },
+					argc => sub { CORE::shift; 'scalar(@shv_processed)' },
+				};
 			}
+			return;
 		},
 		documentation => 'Like C<splice> from L<perlfunc>.',
 }

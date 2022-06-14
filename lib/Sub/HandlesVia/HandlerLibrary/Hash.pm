@@ -43,32 +43,43 @@ sub _type_inspector {
 
 my $additional_validation_for_set_and_insert = sub {
 	my $self = CORE::shift;
-	my ($sig_was_checked, $callbacks) = @_;
-	my $ti = __PACKAGE__->_type_inspector($callbacks->{isa});
+	my ($sig_was_checked, $gen) = @_;
+	my $ti = __PACKAGE__->_type_inspector($gen->isa);
+	
 	if ($ti and $ti->{trust_mutated} eq 'always') {
-		return ('1;', {});
+		return { code => '1;', env => {} };
 	}
 	if ($ti and $ti->{trust_mutated} eq 'maybe') {
-		my $key_coercion   = ($callbacks->{coerce} && $ti->{key_type}->has_coercion);
-		my $value_coercion = ($callbacks->{coerce} && $ti->{value_type}->has_coercion);
-		my $orig = $callbacks->{'arg'};
-		$callbacks->{'arg'} = sub {
+		my ( $env, $code, $arg );
+		my $key_coercion   = ($gen->coerce && $ti->{key_type}->has_coercion);
+		my $value_coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
+		$arg = sub {
+			shift;
 			return '$shv_key'   if $_[0]=='1';
 			return '$shv_value' if $_[0]=='2';
-			goto &$orig;
+			$gen->generate_arg( @_ );
 		};
-		return (
-			$self->_process_template(sprintf(
-				'my($shv_key,$shv_value)=@ARG; if (#ARG>0) { %s }; if (#ARG>1) { %s };',
-				$key_coercion
-					? '$shv_key=$shv_key_tc->assert_coerce($shv_key)'
-					: $ti->{key_type}->inline_assert('$shv_key', '$shv_key_tc'),
-				$value_coercion
-					? '$shv_value=$shv_value_tc->assert_coerce($shv_value)'
-					: $ti->{value_type}->inline_assert('$shv_value', '$shv_value_tc'),
-			), %$callbacks),
-			{ '$shv_key_tc' => \($ti->{key_type} || Str), '$shv_value_tc' => \$ti->{value_type} },
+		$code = sprintf(
+			'my($shv_key,$shv_value)=%s; if (%s>0) { %s }; if (%s>1) { %s };',
+			$gen->generate_args,
+			$gen->generate_argc,
+			$key_coercion
+				? '$shv_key=$shv_key_tc->assert_coerce($shv_key)'
+				: $ti->{key_type}->inline_assert('$shv_key', '$shv_key_tc'),
+			$gen->generate_argc,
+			$value_coercion
+				? '$shv_value=$shv_value_tc->assert_coerce($shv_value)'
+				: $ti->{value_type}->inline_assert('$shv_value', '$shv_value_tc'),
 		);
+		$env = {
+			'$shv_key_tc' => \($ti->{key_type} || Str),
+			'$shv_value_tc' => \$ti->{value_type},
+		};
+		return {
+			code => $code,
+			env => $env,
+			arg => $arg,
+		};
 	}
 	return;
 };
@@ -315,24 +326,24 @@ sub set {
 			'wantarray ? @{$GET}{@shv_params[@shv_keys_idx]} : ($GET)->{$shv_params[$shv_keys_idx[0]]}' ),
 		additional_validation => sub {
 			my $self = CORE::shift;
-			my ($sig_was_checked, $callbacks) = @_;
-			my $ti = __PACKAGE__->_type_inspector($callbacks->{isa});
+			my ($sig_was_checked, $gen) = @_;
+			my $ti = __PACKAGE__->_type_inspector($gen->isa);
 			if ($ti and $ti->{trust_mutated} eq 'always') {
 				# still need to check keys are strings
-				return (
-					sprintf(
+				return {
+					code => sprintf(
 						'for my $shv_tmp (@shv_keys_idx) { %s };',
 						Str->inline_assert('$shv_params[$shv_tmp]', '$Types_Standard_Str'),
 					),
-					{ '$Types_Standard_Str' => \(Str) },
-					'LATER!',
-				);
+					env => { '$Types_Standard_Str' => \(Str) },
+					add_later => 1,
+				};
 			}
 			if ($ti and $ti->{trust_mutated} eq 'maybe') {
-				my $key_coercion   = ($callbacks->{coerce} && $ti->{key_type}->has_coercion);
-				my $value_coercion = ($callbacks->{coerce} && $ti->{value_type}->has_coercion);
-				return (
-					sprintf(
+				my $key_coercion   = ($gen->coerce && $ti->{key_type}->has_coercion);
+				my $value_coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
+				return {
+					code => sprintf(
 						'for my $shv_tmp (@shv_keys_idx) { %s }; for my $shv_tmp (@shv_values_idx) { %s };',
 						$key_coercion
 							? '$shv_params[$shv_tmp] = $shv_key_tc->assert_coerce($shv_params[$shv_tmp])'
@@ -341,9 +352,9 @@ sub set {
 							? '$shv_params[$shv_tmp] = $shv_value_tc->assert_coerce($shv_params[$shv_tmp])'
 							: $ti->{value_type}->inline_assert('$shv_params[$shv_tmp]', '$shv_value_tc'),
 					),
-					{ '$shv_key_tc' => \($ti->{key_type}), '$shv_value_tc' => \($ti->{value_type}) },
-					'LATER!',
-				);
+					env => { '$shv_key_tc' => \($ti->{key_type}), '$shv_value_tc' => \($ti->{value_type}) },
+					add_later => 1,
+				};
 			}
 			return;
 		},

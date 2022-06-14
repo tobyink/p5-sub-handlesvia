@@ -159,219 +159,23 @@ sub lookup {
 	return $handler;
 }
 
-sub _process_template {
-	my ($self, $template, %callbacks) = @_;
-	
-	my $wrapper;
-	
-	my $getter = $callbacks{get}->();
-	if ($getter !~ /^
-		\$                 # scalar access
-		[^\W0-9]\w*        # normal-looking variable name (including $_)
-		(?:                # then...
-			(?:\-\>)?       #     dereference maybe
-			[\[\{]          #     opening [ or {
-			[\'\"]?         #     quote maybe
-			\w+             #     word characters (includes digits)
-			[\'\"]?         #     quote maybe
-			[\]\}]          #     closing ] or }
-		){0,3}             # ... up to thrice
-		$/x
-		and $template =~ /\$GET/
-		and $self->allow_getter_shortcuts) {
-		# Getter is kind of complex (maybe includes function calls, etc
-		# So only do it once.
-		$getter =~ s/%/%%/g;
-		$wrapper = "do { my \$shv_real_invocant = $getter; %s }";
-		$getter  = '$shv_real_invocant';
-	}
-	$template =~ s/\$GET/$getter/g;
-	$template =~ s/\$ARG\[([0-9]+)\]/$callbacks{arg}->($1)/eg;
-	$template =~ s/\$ARG/$callbacks{arg}->(1)/eg;
-	$template =~ s/\$SELF/$callbacks{self}->()/eg;
-	$template =~ s/\$SLOT/$callbacks{slot}->()/eg;
-	$template =~ s/\#ARG/$callbacks{argc}->()/eg;
-	$template =~ s/\@ARG/$callbacks{args}->()/eg;
-	$template =~ s/«(.+?)»/$callbacks{set}->($1)/eg;
-	$template =~ s/\$DEFAULT/$callbacks{default_for_reset}->($self, \%callbacks)/eg;
-	
-	$wrapper ? sprintf($wrapper, $template) : $template;
-}
-
-sub _coderef {
-	my ($self, %callbacks) = @_;
-	my $env = { %{$callbacks{env}||{}} };
-	my $min_args = $self->has_min_args ? $self->min_args : 0;
-	my $max_args = $self->max_args;
-	
-	my @code = ('sub {');
-	
-	push @code, sprintf('package %s::__SANDBOX__;', __PACKAGE__);
-	
-	my $sig_was_checked = 0;
-	if (@{ $self->signature || [] }) {
-		require Type::Params;
-		unshift @code, 'my $__sigcheck;';
-		$env->{'@__sig'} = $self->signature;
-		push @code, '$__sigcheck||=Type::Params::compile(1, @__sig);@_=&$__sigcheck;';
-		++$sig_was_checked;
-	}
-	else {
-		my $usg = sprintf(
-			'do { require Carp; Carp::croak("Wrong number of parameters; usage: ".%s) }',
-			B::perlstring( $callbacks{usage_string}->($callbacks{method_name}, $self->usage) ),
-		);
-		
-		if (defined $min_args and defined $max_args and $min_args==$max_args) {
-			push @code, sprintf('@_==%d or %s;', $min_args + 1, $usg);
-		}
-		elsif (defined $min_args and defined $max_args) {
-			push @code, sprintf('(@_ >= %d and @_ <= %d) or %s;', $min_args + 1, $max_args + 1, $usg);
-		}
-		elsif (defined $min_args) {
-			push @code, sprintf('@_ >= %d or %s;', $min_args + 1, $usg);
-		}
-	}
-	
-	if (my $curried = $self->curried) {
-		if (grep ref, @$curried) {
-			$env->{'@curry'} = $curried;
-			push @code, $callbacks{curry}->('@curry');
-		} else {
-			require B;
-			push @code, $callbacks{curry}->(sprintf('(%s)', join ',', map { defined($_) ? B::perlstring($_) : 'undef' } @$curried));
-		}
-	}
-	
-	my $something_can_go_wrong = $self->is_mutator && !!ref($callbacks{isa});
-	
-	if ($self->no_validation_needed) {
-		$something_can_go_wrong = 0;
-	}
-	
-	if ($self->name =~ /^(Array|Hash):/) {
-		my $getter = $callbacks{get}->();
-		if ($getter !~ /^
-			\$                 # scalar access
-			[^\W0-9]\w*        # normal-looking variable name (including $_)
-			(?:                # then...
-				(?:\-\>)?       #     dereference maybe
-				[\[\{]          #     opening [ or {
-				[\'\"]?         #     quote maybe
-				\w+             #     word characters (includes digits)
-				[\'\"]?         #     quote maybe
-				[\]\}]          #     closing ] or }
-			){0,3}             # ... up to thrice
-			$/x) {
-			push @code, "my \$shv_ref_invocant = do { $getter };";
-			$callbacks{get} = sub { '$shv_ref_invocant' };
-			$callbacks{get_is_lvalue} = 1;
-		}
-	}
-	
-	my $add_later;
-	if ($something_can_go_wrong and defined $self->additional_validation) {
-		my ($add_code, $add_env, $later) = $self->_real_additional_validation->($self, $sig_was_checked, \%callbacks);
-		if ($later) {
-			$add_later = $add_code;
-			$env->{$_} = $add_env->{$_} for keys %$add_env;
-			$something_can_go_wrong = 0;
-		}
-		elsif ($add_code) {
-			push @code, $add_code;
-			$env->{$_} = $add_env->{$_} for keys %$add_env;
-			$something_can_go_wrong = 0;
-		}
-	}
-	
-	if (!$something_can_go_wrong
-	and !$callbacks{be_strict}
-	and $callbacks{set_checks_isa}
-	and defined $callbacks{simple_set}) {
-		$callbacks{set} = $callbacks{simple_set};
-	}
-
-	if ($something_can_go_wrong and not $callbacks{set_checks_isa}) {
-		my $orig_set = delete $callbacks{set};
-		$callbacks{get_is_lvalue} = 0;
-		$callbacks{set} = sub {
-			my $value = shift;
-			$orig_set->(sprintf(
-				'do { my $unchecked = %s; %s }',
-				$value,
-				$callbacks{isa}->inline_assert('$unchecked', '$finaltype'),
-			));
-		};
-		$env->{'$finaltype'} = \$callbacks{isa};
-		$something_can_go_wrong = 0;
-	}
-	
-	my $template = $self->template;
-	if ($callbacks{get_is_lvalue} and !$callbacks{be_strict} and !$something_can_go_wrong) {
-		$template = $self->lvalue_template if $self->lvalue_template;
-	}
-	
-	my $body = $self->_process_template($template, %callbacks);
-	$body =~ s/\"?____VALIDATION_HERE____\"?/$add_later/ if defined $add_later;
-	
-	push @code, $body;
-	
-	push @code, ';'.$callbacks{self}->() if $self->is_chainable;
-	push @code, "}";
-	
-	return (
-		source      => \@code,
-		environment => $env,
-		description => sprintf("%s=%s", $callbacks{method_name}||'__ANON__', $self->name),
-	);
-}
-
-sub coderef {
-	my ($self, %callbacks) = @_;
-	my %eval = $self->_coderef(%callbacks);
-#	warn join("\n", @{$eval{source}});
-#	for my $key (sort keys %{$eval{environment}}) {
-#		warn ">> $key : ".ref($eval{environment}{$key});
-#		if ( ref($eval{environment}{$key}) eq 'REF' and ref(${$eval{environment}{$key}}) eq 'CODE' ) {
-#			require B::Deparse;
-#			warn B::Deparse->new->coderef2text(${$eval{environment}{$key}});
-#		}
-#	}
-	require Eval::TypeTiny;
-	Eval::TypeTiny::eval_closure(%eval);
-}
-
 sub install_method {
-	my ($self, %callbacks) = @_;
-	my $target  = $callbacks{target} or die;
-	my $name    = $callbacks{method_name} or die;
-	my $coderef = $self->coderef(is_method => 1, %callbacks);
+	my ( $self, %arg ) = @_;
+	my $gen = $arg{code_generator} or die;
 	
-	if ( eval { require Sub::Util }) {
-		$coderef = Sub::Util::set_subname("$target\::$name", $coderef);
-	}
-	elsif ( eval { require Sub::Name }) {
-		$coderef = Sub::Name::subname("$target\::$name", $coderef);
-	}
+	$gen->generate_and_install_method( $arg{method_name}, $self );
 	
-	if ($callbacks{install_method}) {
-		$callbacks{install_method}->($name, $coderef);
-	}
-	elsif ($callbacks{install_method_fq}) {
-		$callbacks{install_method}->("$target\::$name", $coderef);
-	}
-	else {
-		no strict 'refs';
-		*{"$target\::$name"} = $coderef;
-	}
+	return;
 }
 
 sub code_as_string {
-	my ($self, %callbacks) = @_;
-	my %eval = $self->_coderef(%callbacks);
-	my $code = join "\n", @{$eval{source}};
-	if ($callbacks{method_name}) {
-		$code =~ s/sub/sub $callbacks{method_name}/xs;
+	my ($self, %arg ) = @_;
+	my $gen = $arg{code_generator} or die;
+
+	my $eval = $gen->_generate_ec_args_for_handler( $arg{method_name}, $self );
+	my $code = join "\n", @{$eval->{source}};
+	if ($arg{method_name}) {
+		$code =~ s/sub/sub $arg{method_name}/xs;
 	}
 	if (eval { require Perl::Tidy }) {
 		my $tidy = '';
@@ -405,7 +209,7 @@ sub BUILD {
 }
 
 sub _coderef {
-	my ($self, %callbacks) = @_;
+	my ($self, $method_name, $gen) = @_;
 	
 	my @code = 'sub {';
 	push @code, sprintf('package %s::__SANDBOX__;', __PACKAGE__);
@@ -415,25 +219,35 @@ sub _coderef {
 	if (my $curried = $self->curried) {
 		if (grep ref, @$curried) {
 			$env->{'@curry'} = $curried;
-			push @code, $callbacks{curry}->('@curry');
+			push @code, $gen->generate_currying( '@curry' );
 		} else {
 			require B;
-			push @code, $callbacks{curry}->(sprintf('(%s)', join ',', map { defined($_) ? B::perlstring($_) : 'undef' } @$curried));
+			my $values = join ',', map { defined($_) ? B::perlstring($_) : 'undef' } @$curried;
+			push @code, $gen->generate_currying( "($values)" );
 		}
 	}
 	
 	require B;
 	my $q_name = B::perlstring($self->name);
-	push @code, $self->_process_template('($GET)->${\\ '.$q_name.'}(@ARG)', %callbacks);
+	push @code, sprintf(
+		'do{ %s }->${\\ '.$q_name.'}(%s)',
+		$gen->generate_get,
+		$gen->generate_args,
+	);
 	
-	push @code, ';'.$callbacks{self}->() if $self->is_chainable;
+	push @code, ';' . $gen->generate_self
+		if $self->is_chainable;
 	push @code, '}';
 		
-	return (
+	return {
 		source      => \@code,
 		environment => $env,
-		description => sprintf("%s=%s", $callbacks{method_name}||'__ANON__', $self->name),
-	);
+		description => sprintf(
+			"%s=%s",
+			$method_name||'__ANON__',
+			$self->name,
+		),
+	};
 }
 
 package Sub::HandlesVia::Handler::CodeRef;
@@ -450,7 +264,7 @@ sub BUILD {
 }
 
 sub _coderef {
-	my ($self, %callbacks) = @_;
+	my ($self, $method_name, $gen) = @_;
 	
 	my @code = 'sub {';
 	push @code, sprintf('package %s::__SANDBOX__;', __PACKAGE__);
@@ -460,23 +274,33 @@ sub _coderef {
 	if (my $curried = $self->curried) {
 		if (grep ref, @$curried) {
 			$env->{'@curry'} = $curried;
-			push @code, $callbacks{curry}->('@curry');
+			push @code, $gen->generate_currying( '@curry' );
 		} else {
 			require B;
-			push @code, $callbacks{curry}->(sprintf('(%s)', join ',', map { defined($_) ? B::perlstring($_) : 'undef' } @$curried));
+			my $values = join ',', map { defined($_) ? B::perlstring($_) : 'undef' } @$curried;
+			push @code, $gen->generate_currying( "($values)" );
 		}
 	}
 	
-	push @code, $self->_process_template('$shv_callback->($GET, @ARG)', %callbacks);
+	push @code, sprintf(
+		'$shv_callback->(do { %s }, %s)',
+		$gen->generate_get,
+		$gen->generate_args,
+	);
 	
-	push @code, ';'.$callbacks{self}->() if $self->is_chainable;
+	push @code, ';' . $gen->generate_self
+		if $self->is_chainable;
 	push @code, '}';
 	
-	return (
+	return {
 		source      => \@code,
 		environment => $env,
-		description => sprintf("%s=%s", $callbacks{method_name}||'__ANON__', '__ANON__'),
-	);
+		description => sprintf(
+			"%s=%s",
+			$method_name || '__ANON__',
+			'__ANON__',
+		),
+	};
 }
 
 1;
