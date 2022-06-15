@@ -196,26 +196,60 @@ sub generate_coderef_for_handler {
 sub _generate_ec_args_for_handler {
 	my ( $self, $method_name, $handler ) = @_;
 	
+	# Later on, we might need to override the generators for
+	# arg, argc, args, set, etc.
+	#
 	my $guard = $self->_start_overriding_generators;
 	
-	# COPY of $self->env
+	# Make a COPY of $self->env!
+	#
 	my $env = { %{$self->env} };
 	
+	# Preamble code.
+	#
 	my $code = [
 		'sub {',
 		sprintf( 'package %s::__SANDBOX__;', __PACKAGE__ ),
 	];
 	
-	my $state = {};
+	# Need to maintain state between method calls. A proper object
+	# might be nice, but a hashref will do for now.
+	#
+	my $state = {
+		signature_check_needed  => 1,     # hasn't been done yet
+		final_type_check_needed => $handler->is_mutator,
+		getter                  => undef, # figure it out later
+		getter_is_lvalue        => undef, # ditto
+		template_wrapper        => undef, # nothing yet
+		add_later               => undef, # nothing yet
+	};
 	
+#	use Hash::Util qw( lock_ref_keys );
+#	lock_ref_keys( $state );
+	
+	my @arguments = (
+		$method_name,  # Intended name for the coderef being generated
+		$handler,      # Info about the functionality being delegated
+		$env,          # Variables which need to be closed over
+		$code,         # Lines of code in the method
+		$state,        # Shared state while building method. (Minimal!)
+	);
 	$self
-		->__process_sigcheck( $method_name, $handler, $env, $code, $state )
-		->__process_currying( $method_name, $handler, $env, $code, $state )
-		->__process_handler_template( $method_name, $handler, $env, $code, $state )
-		->__process_chaining( $method_name, $handler, $env, $code, $state );
+		->_handle_sigcheck( @arguments )
+		->_handle_currying( @arguments )
+		->_handle_additional_validation( @arguments )
+		->_handle_getter_code( @arguments )
+		->_handle_setter_code( @arguments )
+		->_handle_template( @arguments )
+		->_handle_chaining( @arguments );
 	
+	# Postamble code. Can't really do much here because the template
+	# might want to be able to return something.
+	#
 	push @$code, "}";
 	
+	# Allow the handler to inject variables into the environment.
+	#
 	$handler->_tweak_env( $env );
 	
 	return {
@@ -229,27 +263,44 @@ sub _generate_ec_args_for_handler {
 	};
 }
 
-# Insert code into method for signature validation.
-#
-sub __process_sigcheck {
+sub _handle_sigcheck {
 	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
-	$state->{signature_check_needed} = 1;
 
+	# If there's a proper signature for the method...
+	#
 	if ( @{ $handler->signature || [] } ) {
+		
+		# Generate code using Type::Params to check the signature.
+		# We also need to close over the signature.
+		#
 		require Type::Params;
 		unshift @$code, 'my $__sigcheck;';
 		$env->{'@__sig'} = $handler->signature;
 		push @$code, '$__sigcheck||=Type::Params::compile(1, @__sig);@_=&$__sigcheck;';
+		
+		# As we've now inserted a signature check, we can stop worrying
+		# about signature checks.
+		#
 		$state->{signature_check_needed} = 0;
 	}
+	# There is no proper signature, but there's still check the
+	# arity of the method.
+	#
 	else {
-		my $min_args = $handler->has_min_args ? $handler->min_args : 0;
+		# What is the arity?
+		#
+		my $min_args = $handler->min_args || 0;
 		my $max_args = $handler->max_args;
+		
+		# What usage message do we want to print if wrong arity?
+		#
 		my $usg = sprintf(
 			'do { require Carp; Carp::croak("Wrong number of parameters; usage: ".%s) }',
 			B::perlstring( $self->generate_usage_string( $method_name, $handler->usage ) ),
 		);
 		
+		# Insert the check into the code.
+		#
 		if (defined $min_args and defined $max_args and $min_args==$max_args) {
 			push @$code, sprintf('@_==%d or %s;', $min_args + 1, $usg);
 		}
@@ -259,6 +310,12 @@ sub __process_sigcheck {
 		elsif (defined $min_args) {
 			push @$code, sprintf('@_ >= %d or %s;', $min_args + 1, $usg);
 		}
+		
+		# We are still lacking a proper signature check though, so note
+		# that in the state. The information can be used by
+		# additional_validation coderefs.
+		#
+		$state->{signature_check_needed} = 1;
 	}
 	
 	return $self;
@@ -266,14 +323,25 @@ sub __process_sigcheck {
 
 # Insert code into method for currying.
 #
-sub __process_currying {
+sub _handle_currying {
 	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 	
 	if ( my $curried = $handler->curried ) {
+		
+		# If the curried values are non-simple, we close over an array
+		# called @curry.
+		#
 		if ( grep ref, @$curried ) {
-			$env->{'@curry'} = $curried;
+			
+			# Note that generate_currying will generate code that unshifts whatever
+			# parameters it is given onto @_.
 			push @$code, $self->generate_currying('@curry');
-		} else {
+			$env->{'@curry'} = $curried;
+		}
+		# If it's just strings, numbers, and undef, it should be pretty
+		# trivial to hard-code the values into the generated Perl string.
+		#
+		else {
 			require B;
 			my $values = join(
 				',',
@@ -286,83 +354,83 @@ sub __process_currying {
 	return $self;
 }
 
-sub __process_handler_template {
+sub _handle_additional_validation {
 	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 	
-	# If the handler is a mutator, then a type check will be
-	# needed later when setting the new value.
+	# If the handler specifies no validation needed, or the attribute
+	# simply has no type check, we don't need to check the type of the
+	# final attribute value.
 	#
-	$state->{return_type_check_needed} = $handler->is_mutator;
 	if ( $handler->no_validation_needed or not $self->isa ) {
-		$state->{return_type_check_needed} = 0;
+		$state->{final_type_check_needed} = 0;
 	}
-	
-	$self
-		->__process_additional_validation( $method_name, $handler, $env, $code, $state )
-		->__process_getter_code( $method_name, $handler, $env, $code, $state )
-		->__process_setter_code( $method_name, $handler, $env, $code, $state );
-	
-	my $template = $self->__choose_template( $method_name, $handler, $env, $code, $state );
-	
-	$template =~ s/\$SELF/$self->generate_self()/eg;
-	$template =~ s/\$SLOT/$self->generate_slot()/eg;
-	$template =~ s/\$GET/$state->{getter}/g;
-	$template =~ s/\$ARG\[([0-9]+)\]/$self->generate_arg($1)/eg;
-	$template =~ s/\$ARG/$self->generate_arg(1)/eg;
-	$template =~ s/\#ARG/$self->generate_argc()/eg;
-	$template =~ s/\@ARG/$self->generate_args()/eg;
-	$template =~ s/«(.+?)»/$self->generate_set($1)/eg;
-	$template =~ s/\$DEFAULT/$self->generate_default($self, $handler)/eg;
-	
-	# Apply wrapper
-	$template = sprintf( $state->{template_wrapper}, $template )
-		if $state->{template_wrapper};
-	
-	# If validation needs to be added late...
-	$template =~ s/\"?____VALIDATION_HERE____\"?/$state->{add_later}/
-		if defined $state->{add_later};
-	
-	push @$code, $template;
-	
-	return $self;
-}
-
-sub __process_additional_validation {
-	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 	
 	# The handler can define some additional validation to be performed
 	# on arguments either now or later, such that if this additional
 	# validation is performed, the type check we were planning later
 	# will be known to be unnecessary.
 	#
-	my $additional_validation_opts;
-	if ( $state->{return_type_check_needed} and defined $handler->additional_validation ) {
-		$additional_validation_opts = $handler->_real_additional_validation->(
-			$handler,
-			!$state->{signature_check_needed},
-			$self,
-		) || {};
+	# An example for this is that is the attribute value is already an
+	# arrayref of numbers, and we're pushing a new value onto it, by checking
+	# up front that the INCOMING value is a number, it becomes unnecessary
+	# to check the whole arrayref contains numbers after the push.
+	#
+	# Not all handlers define an additional_validation coderef to do
+	# this, because in many cases it doesn't make sense to.
+	#
+	# Also if we've already decided a final type check isn't needed, we
+	# can skip this step.
+	#
+	if ( $state->{final_type_check_needed}
+	and  defined $handler->additional_validation ) {
 		
-		$self->_add_generator_override( %$additional_validation_opts );
+		my $real_av_method = $handler->_real_additional_validation;
 		
-		if ($additional_validation_opts->{add_later}) {
-			$state->{add_later} = $additional_validation_opts->{code};
-			$env->{$_} = $additional_validation_opts->{env}{$_}
-				for keys %{ $additional_validation_opts->{env} };
-			$state->{return_type_check_needed} = 0;
-		}
-		elsif ($additional_validation_opts->{code}) {
-			push @$code, $additional_validation_opts->{code};
-			$env->{$_} = $additional_validation_opts->{env}{$_}
-				for keys %{ $additional_validation_opts->{env} };
-			$state->{return_type_check_needed} = 0;
+		# The additional_validation coderef is called as a method and takes
+		# two additional parameters:
+		#
+		my $opt = $handler->$real_av_method(
+			!$state->{signature_check_needed},  # $sig_was_checked
+			$self,                              # $gen
+		);
+		$opt ||= {}; # can return undef
+		
+		# The additional_validation coderef will often generate code which
+		# coerces incoming data, thus moving it from @_ to some other array.
+		# This means that the generators for @ARG, $ARG, etc will need to
+		# need to be overridden to point to the new array.
+		#
+		$self->_add_generator_override( %$opt );
+		
+		# The additional_validation coderef may supply extra variables
+		# to close over.
+		#
+		$env->{$_} = $opt->{env}{$_}
+			for keys %{ $opt->{env} || {} };
+		
+		# The additional_validation coderef will normally generate
+		# new code.
+		#
+		if ( defined $opt->{code} ) {
+			
+			# Code can be inserted into the generated method straight away,
+			# or may need to be inserted in a special placeholder position
+			# later.
+			#
+			$opt->{add_later}
+				? ( $state->{add_later} = $opt->{code} )
+				: push( @$code, $opt->{code} );
+			
+			# It is assumed that a final type check is no longer needed.
+			#
+			$state->{final_type_check_needed} = 0;
 		}
 	}
 	
 	return $self;
 }
 
-sub __process_getter_code {
+sub _handle_getter_code {
 	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 	
 	$state->{getter} = $self->generate_get();
@@ -385,7 +453,7 @@ sub __process_getter_code {
 		
 		# Alternatively, unless the handler doesn't want us to, or the template
 		# doesn't want to get the attribute value anyway, then we'll do something
-		# similar.
+		# similar. Here it can't be used as an lvalue though.
 		#
 		elsif ( $handler->allow_getter_shortcuts
 		and $handler->template.($handler->lvalue_template||'') =~ /\$GET/ ) {
@@ -398,16 +466,16 @@ sub __process_getter_code {
 	return $self;
 }
 
-# Possibly add a type check to the setter.
-#
-sub __process_setter_code {
+sub _handle_setter_code {
 	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 	
 	# If a type check is needed, but the setter doesn't do type checks,
 	# then override the setter. Now the setter does the type check, so
-	# we no longer need to.
+	# we no longer need to worry about it.
 	#
-	if ( $state->{return_type_check_needed} and not $self->set_checks_isa ) {
+	# XXX: I don't think any of the tests currently exercise this.
+	#
+	if ( $state->{final_type_check_needed} and not $self->set_checks_isa ) {
 		$self->_add_generator_override( set => sub {
 			my ( $me, $value_code ) = @_;
 			$me->generate_set( sprintf(
@@ -417,14 +485,25 @@ sub __process_setter_code {
 			) );
 		} );
 		$env->{'$shv_final_type'} = \( $self->isa );
+		
+		# In this case we can no longer use the getter as an lvalue, if we
+		# ever could.
+		#
 		$state->{getter_is_lvalue} = 0;
-		$state->{return_type_check_needed} = 0;
+		
+		# Stop worrying about the final type check. The setter does that now.
+		#
+		$state->{final_type_check_needed} = 0;
 	}
+	
+	return $self;
 }
 
-sub __choose_template {
+sub _handle_template {
 	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
-
+	
+	my $template;
+	
 	# If the getter is an lvalue, the handler has a special template
 	# for lvalues, we haven't been told to set strictly, and we have taken
 	# care of any type checks, then use the special lvalue template.
@@ -432,14 +511,42 @@ sub __choose_template {
 	if ( $state->{getter_is_lvalue}
 	and  $handler->lvalue_template
 	and  !$self->set_strictly
-	and  !$state->{return_type_check_needed} ) {
-		return $handler->lvalue_template;
+	and  !$state->{final_type_check_needed} ) {
+		$template = $handler->lvalue_template;
+	}
+	else {
+		$template = $handler->template;
 	}
 	
-	return $handler->template;
+	# Perform substitutions of special codes in the template string.
+	#
+	$template =~ s/\$SELF/$self->generate_self()/eg;
+	$template =~ s/\$SLOT/$self->generate_slot()/eg;
+	$template =~ s/\$GET/$state->{getter}/g;
+	$template =~ s/\$ARG\[([0-9]+)\]/$self->generate_arg($1)/eg;
+	$template =~ s/\$ARG/$self->generate_arg(1)/eg;
+	$template =~ s/\#ARG/$self->generate_argc()/eg;
+	$template =~ s/\@ARG/$self->generate_args()/eg;
+	$template =~ s/«(.+?)»/$self->generate_set($1)/eg;
+	$template =~ s/\$DEFAULT/$self->generate_default($self, $handler)/eg;
+	
+	# Apply wrapper (if any). This wrapper is given
+	# by _handle_getter_code (sometimes).
+	#
+	$template = sprintf( $state->{template_wrapper}, $template )
+		if $state->{template_wrapper};
+	
+	# If validation needs to be added late...
+	#
+	$template =~ s/\"?____VALIDATION_HERE____\"?/$state->{add_later}/
+		if defined $state->{add_later};
+	
+	push @$code, $template;
+	
+	return $self;
 }
 
-sub __process_chaining {
+sub _handle_chaining {
 	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 	
 	push @$code, ';' . $self->generate_self,
