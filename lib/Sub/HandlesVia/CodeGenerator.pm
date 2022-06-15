@@ -549,6 +549,8 @@ sub _handle_template {
 sub _handle_chaining {
 	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 	
+	# Will just insert a string like ';$_[0]' at the end
+	#
 	push @$code, ';' . $self->generate_self,
 		if $handler->is_chainable;
 	
