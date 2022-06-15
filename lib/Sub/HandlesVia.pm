@@ -133,6 +133,10 @@ One ring to rule them all, so to speak.
 Also, unlike L<MooX::HandlesVia>, it honours type constraints, plus it
 doesn't have the limitation that it can't mutate non-reference values.
 
+Note: as Sub::HandlesVia needs to detect whether you're using Moo, Moose,
+or Mouse, and often needs to detect whether your package is a class or a
+role, it needs to be loaded I<after> Moo/Moose/Mouse.
+
 =head2 Using with Moo
 
 You should be able to use it as a drop-in replacement for L<MooX::HandlesVia>.
