@@ -54,7 +54,7 @@ my $additional_validation_for_set_and_insert = sub {
 		my $key_coercion   = ($gen->coerce && $ti->{key_type}->has_coercion);
 		my $value_coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
 		$arg = sub {
-			shift;
+			my $gen = shift;
 			return '$shv_key'   if $_[0]=='1';
 			return '$shv_value' if $_[0]=='2';
 			$gen->generate_arg( @_ );

@@ -87,7 +87,7 @@ my $additional_validation_for_set_and_insert = sub {
 	if ($ti and $ti->{trust_mutated} eq 'maybe') {
 		my $coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
 		$arg = sub {
-			CORE::shift;
+			my $gen = CORE::shift;
 			return '$shv_index' if $_[0]=='1';
 			return '$shv_value' if $_[0]=='2';
 			$gen->generate_arg( @_ );
@@ -407,7 +407,7 @@ sub accessor {
 			if ($ti and $ti->{trust_mutated} eq 'maybe') {
 				my $coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
 				$arg = sub {
-					CORE::shift;
+					my $gen = CORE::shift;
 					return '$shv_index' if $_[0]=='1';
 					return '$shv_value' if $_[0]=='2';
 					$gen->generate_arg( @_ );

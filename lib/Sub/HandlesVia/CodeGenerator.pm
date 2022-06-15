@@ -7,6 +7,7 @@ package Sub::HandlesVia::CodeGenerator;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.022';
 
+use Scope::Guard ();
 use Class::Tiny (
 	qw(
 		toolkit
@@ -20,6 +21,7 @@ use Class::Tiny (
 		isa
 		coerce
 		method_installer
+		_override
 	),
 	{
 		env => sub {
@@ -77,19 +79,64 @@ use Class::Tiny (
 	},
 );
 
+my $REASONABLE_SCALAR = qr/^
+	\$                 # scalar access
+	[^\W0-9]\w*        # normal-looking variable name (including $_)
+	(?:                # then...
+		(?:\-\>)?       #     dereference maybe
+		[\[\{]          #     opening [ or {
+		[\'\"]?         #     quote maybe
+		\w+             #     word characters (includes digits)
+		[\'\"]?         #     quote maybe
+		[\]\}]          #     closing ] or }
+	){0,3}             # ... up to thrice
+	$/x;
+
 my @generatable_things = qw(
 	slot get set default arg args argc currying usage_string self
 );
+
 for my $thing ( @generatable_things ) {
 	my $generator = "generator_for_$thing";
 	my $method_name = "generate_$thing";
 	my $method = sub {
 		my $gen = shift;
 		local ${^GENERATOR} = $gen;
+		
+		if ( @{ $gen->_override->{$thing} || [] } ) {
+			my $coderef = pop @{ $gen->_override->{$thing} };
+			my $guard   = Scope::Guard::scope_guard( sub {
+				push @{ $gen->_override->{$thing} ||= [] }, $coderef;
+			} );
+			return $gen->$coderef( @_ );
+		}
+		
 		return $gen->$generator->( @_ );
 	};
 	no strict 'refs';
 	*$method_name = $method;
+}
+
+sub _start_overriding_generators {
+	my $self = shift;
+	$self->_override( {} );
+	return Scope::Guard::scope_guard( sub {
+		$self->_override( {} );
+	} );
+}
+
+{
+	my %generatable_thing = map +( $_ => 1 ), @generatable_things;
+	
+	sub _add_generator_override {
+		my ( $self, %overrides ) = @_;
+		while ( my ( $key, $value ) = each %overrides ) {
+			next if !defined $value;
+			next if !$generatable_thing{$key};
+			push @{ $self->_override->{$key} ||= [] }, $value;
+		}
+		return $self;
+	}
 }
 
 sub generate_and_install_method {
@@ -149,6 +196,8 @@ sub generate_coderef_for_handler {
 sub _generate_ec_args_for_handler {
 	my ( $self, $method_name, $handler ) = @_;
 	
+	my $guard = $self->_start_overriding_generators;
+	
 	# COPY of $self->env
 	my $env = { %{$self->env} };
 	
@@ -157,19 +206,13 @@ sub _generate_ec_args_for_handler {
 		sprintf( 'package %s::__SANDBOX__;', __PACKAGE__ ),
 	];
 	
-	my $sig_was_checked = $self->__process_sigcheck(
-		$method_name, $handler, $env, $code,
-	);
-	$self->__process_currying(
-		$method_name, $handler, $env, $code,
-	);
-	$self->__process_handler_template(
-		$method_name, $handler, $env, $code,
-		$sig_was_checked,
-	);
-	$self->__process_chaining(
-		$method_name, $handler, $env, $code,
-	);
+	my $state = {};
+	
+	$self
+		->__process_sigcheck( $method_name, $handler, $env, $code, $state )
+		->__process_currying( $method_name, $handler, $env, $code, $state )
+		->__process_handler_template( $method_name, $handler, $env, $code, $state )
+		->__process_chaining( $method_name, $handler, $env, $code, $state );
 	
 	push @$code, "}";
 	
@@ -189,15 +232,15 @@ sub _generate_ec_args_for_handler {
 # Insert code into method for signature validation.
 #
 sub __process_sigcheck {
-	my ( $self, $method_name, $handler, $env, $code ) = @_;
-	my $sig_was_checked = 0;
+	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
+	$state->{signature_check_needed} = 1;
 
 	if ( @{ $handler->signature || [] } ) {
 		require Type::Params;
 		unshift @$code, 'my $__sigcheck;';
 		$env->{'@__sig'} = $handler->signature;
 		push @$code, '$__sigcheck||=Type::Params::compile(1, @__sig);@_=&$__sigcheck;';
-		++$sig_was_checked;
+		$state->{signature_check_needed} = 0;
 	}
 	else {
 		my $min_args = $handler->has_min_args ? $handler->min_args : 0;
@@ -218,13 +261,13 @@ sub __process_sigcheck {
 		}
 	}
 	
-	return $sig_was_checked;
+	return $self;
 }
 
 # Insert code into method for currying.
 #
 sub __process_currying {
-	my ( $self, $method_name, $handler, $env, $code ) = @_;
+	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 	
 	if ( my $curried = $handler->curried ) {
 		if ( grep ref, @$curried ) {
@@ -240,187 +283,169 @@ sub __process_currying {
 		}
 	}
 	
-	return;
-}
-
-sub __getter_code {
-	my ( $self, $method_name, $handler, $env, $code ) = @_;
-	
-	my $wrapper;
-	my $getter = $self->generate_get();
-	my $getter_is_lvalue = $self->get_is_lvalue;
-	
-	# If the getter is known to be a reference, but there's a complicated
-	# way to fetch it (perhaps involving a lazy builder) then get it
-	# straight away, and store it in $shv_ref_invocant so we dont' have
-	# to keep doing the complicated thing.
-	#
-	if ($handler->name =~ /^(Array|Hash):/) {
-		if ($getter !~ /^
-			\$                 # scalar access
-			[^\W0-9]\w*        # normal-looking variable name (including $_)
-			(?:                # then...
-				(?:\-\>)?       #     dereference maybe
-				[\[\{]          #     opening [ or {
-				[\'\"]?         #     quote maybe
-				\w+             #     word characters (includes digits)
-				[\'\"]?         #     quote maybe
-				[\]\}]          #     closing ] or }
-			){0,3}             # ... up to thrice
-			$/x) {
-			push @$code, "my \$shv_ref_invocant = do { $getter };";
-			$getter = '$shv_ref_invocant';
-			$getter_is_lvalue = 1;
-		}
-	}
-	elsif ($getter !~ /^
-		\$                 # scalar access
-		[^\W0-9]\w*        # normal-looking variable name (including $_)
-		(?:                # then...
-			(?:\-\>)?       #     dereference maybe
-			[\[\{]          #     opening [ or {
-			[\'\"]?         #     quote maybe
-			\w+             #     word characters (includes digits)
-			[\'\"]?         #     quote maybe
-			[\]\}]          #     closing ] or }
-		){0,3}             # ... up to thrice
-		$/x
-		and ( $handler->template.($handler->lvalue_template||'') =~ /\$GET/ )
-		and $handler->allow_getter_shortcuts) {
-		# Getter is kind of complex (maybe includes function calls, etc
-		# So only do it once.
-		$getter =~ s/%/%%/g;
-		$wrapper = "do { my \$shv_real_invocant = $getter; %s }";
-		$getter  = '$shv_real_invocant';
-	}
-	
-	return ( $getter, $getter_is_lvalue, $wrapper );
-}
-
-# Figure out which method to use to generate a setter.
-#
-sub __generate_set_method {
-	my ( $self, $method_name, $handler, $env, $code, $type_check_needed, $getter_is_lvalue ) = @_;
-	
-	my $return = 'generate_set';
-	
-	# If a type check is needed, but the setter doesn't do type checks,
-	# then wrap the setter. Now the setter does the type check, so
-	# we no longer need to.
-	#
-	if ( $$type_check_needed and not $self->set_checks_isa ) {
-		my $orig_set = $return;
-		$$getter_is_lvalue = 0;
-		$return = sub {
-			my ( $me, $value_code ) = @_;
-			$me->$orig_set( sprintf(
-				'do { my $unchecked = %s; %s }',
-				$value_code,
-				$me->isa->inline_assert( '$unchecked', '$finaltype' ),
-			) );
-		};
-		$env->{'$finaltype'} = \( $self->isa );
-		$$type_check_needed = 0;
-	}
-	
-	return $return;
+	return $self;
 }
 
 sub __process_handler_template {
-	my ( $self, $method_name, $handler, $env, $code, $sig_was_checked ) = @_;
+	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 	
 	# If the handler is a mutator, then a type check will be
 	# needed later when setting the new value.
 	#
-	my $type_check_needed = $handler->is_mutator;
+	$state->{return_type_check_needed} = $handler->is_mutator;
 	if ( $handler->no_validation_needed or not $self->isa ) {
-		$type_check_needed = 0;
+		$state->{return_type_check_needed} = 0;
 	}
+	
+	$self
+		->__process_additional_validation( $method_name, $handler, $env, $code, $state )
+		->__process_getter_code( $method_name, $handler, $env, $code, $state )
+		->__process_setter_code( $method_name, $handler, $env, $code, $state );
+	
+	my $template = $self->__choose_template( $method_name, $handler, $env, $code, $state );
+	
+	$template =~ s/\$SELF/$self->generate_self()/eg;
+	$template =~ s/\$SLOT/$self->generate_slot()/eg;
+	$template =~ s/\$GET/$state->{getter}/g;
+	$template =~ s/\$ARG\[([0-9]+)\]/$self->generate_arg($1)/eg;
+	$template =~ s/\$ARG/$self->generate_arg(1)/eg;
+	$template =~ s/\#ARG/$self->generate_argc()/eg;
+	$template =~ s/\@ARG/$self->generate_args()/eg;
+	$template =~ s/«(.+?)»/$self->generate_set($1)/eg;
+	$template =~ s/\$DEFAULT/$self->generate_default($self, $handler)/eg;
+	
+	# Apply wrapper
+	$template = sprintf( $state->{template_wrapper}, $template )
+		if $state->{template_wrapper};
+	
+	# If validation needs to be added late...
+	$template =~ s/\"?____VALIDATION_HERE____\"?/$state->{add_later}/
+		if defined $state->{add_later};
+	
+	push @$code, $template;
+	
+	return $self;
+}
+
+sub __process_additional_validation {
+	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 	
 	# The handler can define some additional validation to be performed
 	# on arguments either now or later, such that if this additional
 	# validation is performed, the type check we were planning later
 	# will be known to be unnecessary.
 	#
-	my $add_later;
 	my $additional_validation_opts;
-	if ( $type_check_needed and defined $handler->additional_validation ) {
+	if ( $state->{return_type_check_needed} and defined $handler->additional_validation ) {
 		$additional_validation_opts = $handler->_real_additional_validation->(
 			$handler,
-			$sig_was_checked,
+			!$state->{signature_check_needed},
 			$self,
 		) || {};
+		
+		$self->_add_generator_override( %$additional_validation_opts );
+		
 		if ($additional_validation_opts->{add_later}) {
-			$add_later = $additional_validation_opts->{code};
+			$state->{add_later} = $additional_validation_opts->{code};
 			$env->{$_} = $additional_validation_opts->{env}{$_}
 				for keys %{ $additional_validation_opts->{env} };
-			$type_check_needed = 0;
+			$state->{return_type_check_needed} = 0;
 		}
 		elsif ($additional_validation_opts->{code}) {
 			push @$code, $additional_validation_opts->{code};
 			$env->{$_} = $additional_validation_opts->{env}{$_}
 				for keys %{ $additional_validation_opts->{env} };
-			$type_check_needed = 0;
+			$state->{return_type_check_needed} = 0;
 		}
 	}
 	
-	my ( $getter, $getter_is_lvalue, $getter_wrapper ) =
-		$self->__getter_code( $method_name, $handler, $env, $code );
-	
-	my $generate_set_method = $self->__generate_set_method(
-		$method_name, $handler, $env, $code,
-		\$type_check_needed, \$getter_is_lvalue,
-	);
+	return $self;
+}
 
-	my $generate_arg_method =
-		$additional_validation_opts->{arg}  || 'generate_arg';
-	my $generate_argc_method =
-		$additional_validation_opts->{argc} || 'generate_argc';
-	my $generate_args_method =
-		$additional_validation_opts->{args} || 'generate_args';
+sub __process_getter_code {
+	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 	
-	# Fetch code template for this method.
+	$state->{getter} = $self->generate_get();
+	$state->{getter_is_lvalue} = $self->get_is_lvalue;
+	
+	# If there's a complicated way to fetch the attribute value (perhaps
+	# involving a lazy builder)...
 	#
-	my $template = $handler->template;
+	if ( $state->{getter} !~ $REASONABLE_SCALAR ) {
+		
+		# And if it's definitely a reference anyway, then get it straight away,
+		# and store it in $shv_ref_invocant so we don't have to keep doing the
+		# complicated thing.
+		#
+		if ( $handler->name =~ /^(Array|Hash):/ ) {
+			push @$code, "my \$shv_ref_invocant = do { $state->{getter} };";
+			$state->{getter} = '$shv_ref_invocant';
+			$state->{getter_is_lvalue} = 1;
+		}
+		
+		# Alternatively, unless the handler doesn't want us to, or the template
+		# doesn't want to get the attribute value anyway, then we'll do something
+		# similar.
+		#
+		elsif ( $handler->allow_getter_shortcuts
+		and $handler->template.($handler->lvalue_template||'') =~ /\$GET/ ) {
+			( my $g = $state->{getter} ) =~ s/%/%%/g;
+			$state->{template_wrapper} = "do { my \$shv_real_invocant = $g; %s }";
+			$state->{getter} = '$shv_real_invocant';
+		}
+	}
 	
-	# But if the getter is an lvalue, the handler has a special template
+	return $self;
+}
+
+# Possibly add a type check to the setter.
+#
+sub __process_setter_code {
+	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
+	
+	# If a type check is needed, but the setter doesn't do type checks,
+	# then override the setter. Now the setter does the type check, so
+	# we no longer need to.
+	#
+	if ( $state->{return_type_check_needed} and not $self->set_checks_isa ) {
+		$self->_add_generator_override( set => sub {
+			my ( $me, $value_code ) = @_;
+			$me->generate_set( sprintf(
+				'do { my $shv_final_unchecked = %s; %s }',
+				$value_code,
+				$me->isa->inline_assert( '$shv_final_unchecked', '$shv_final_type' ),
+			) );
+		} );
+		$env->{'$shv_final_type'} = \( $self->isa );
+		$state->{getter_is_lvalue} = 0;
+		$state->{return_type_check_needed} = 0;
+	}
+}
+
+sub __choose_template {
+	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
+
+	# If the getter is an lvalue, the handler has a special template
 	# for lvalues, we haven't been told to set strictly, and we have taken
 	# care of any type checks, then use the special lvalue template.
 	#
-	if ( $getter_is_lvalue
+	if ( $state->{getter_is_lvalue}
 	and  $handler->lvalue_template
 	and  !$self->set_strictly
-	and  !$type_check_needed ) {
-		$template = $handler->lvalue_template;
+	and  !$state->{return_type_check_needed} ) {
+		return $handler->lvalue_template;
 	}
 	
-	$template =~ s/\$SELF/$self->generate_self()/eg;
-	$template =~ s/\$SLOT/$self->generate_slot()/eg;
-	$template =~ s/\$GET/$getter/g;
-	$template =~ s/\$ARG\[([0-9]+)\]/$self->$generate_arg_method($1)/eg;
-	$template =~ s/\$ARG/$self->$generate_arg_method(1)/eg;
-	$template =~ s/\#ARG/$self->$generate_argc_method()/eg;
-	$template =~ s/\@ARG/$self->$generate_args_method()/eg;
-	$template =~ s/«(.+?)»/$self->$generate_set_method($1)/eg;
-	$template =~ s/\$DEFAULT/$self->generate_default($self, $handler)/eg;
-	
-	my $body = $getter_wrapper
-		? sprintf($getter_wrapper, $template)
-		: $template;
-	
-	$body =~ s/\"?____VALIDATION_HERE____\"?/$add_later/
-		if defined $add_later;
-	
-	push @$code, $body;
-	return;
+	return $handler->template;
 }
 
 sub __process_chaining {
-	my ( $self, $method_name, $handler, $env, $code ) = @_;
+	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 	
 	push @$code, ';' . $self->generate_self,
 		if $handler->is_chainable;
-	return;
+	
+	return $self;
 }
 
 1;
