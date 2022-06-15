@@ -178,3 +178,13 @@
 		item "Cleaned up Sub::HandlesVia::Handler and moved a lot of code into a new class Sub::HandlesVia::CodeGenerator, which replaces the big hash of callbacks which was passed around everywhere."^^Change;
 		item "Document Sub::HandlesVia::Handler and Sub::HandlesVia::CodeGenerator."^^Documentation;
 	].
+
+`Sub-HandlesVia 0.023 cpan:TOBYINK`
+	issued  2022-06-14;
+	changeset [
+		item "Major Sub::HandlesVia::CodeGenerator cleanups."^^Change;
+		item "Sub::HandlesVia::CodeGenerator's simple_set concept has been removed; this was vestigial and had no effect."^^Removal;
+		item "Changed minimum required Perl from 5.8.0 to 5.8.1."^^Packaging;
+		item "Minor documentation improvements."^^Documentation;
+		item "Move some code from Sub::HandlesVia::Toolkit::Plain to its base class."^^Change;
+	].
