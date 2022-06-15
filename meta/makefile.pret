@@ -3,7 +3,7 @@
 @prefix : <http://ontologi.es/doap-deps#>.
 
 `Sub-HandlesVia`
-	:runtime-requirement    [ :on "perl 5.008"^^:CpanId ];
+	:runtime-requirement    [ :on "perl 5.008001"^^:CpanId ];
 	:runtime-requirement    [ :on "Types::Standard"^^:CpanId ];
 	:runtime-requirement    [ :on "Eval::TypeTiny"^^:CpanId ];
 	:runtime-requirement    [ :on "Exporter::Shiny"^^:CpanId ];
