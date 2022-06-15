@@ -2,15 +2,16 @@ use 5.008;
 use strict;
 use warnings;
 use Test::More;
-use Test::Fatal;
 
-{ package Local::Dummy1; use Test::Requires 'MooseX::Extended' };
+BEGIN {
+	eval { require MooseX::Extended; 1 }
+		or plan skip_all => 'test requires MooseX::Extended';
+};
 
 BEGIN {
 	package Local::MyClass;
-	use MooseX::Extended
-		types => ['Str'],
-		excludes => [ 'true', 'immutable' ];
+	
+	use MooseX::Extended types => [ 'Str' ];
 	use Sub::HandlesVia;
 	
 	has eg1 => (
@@ -34,8 +35,6 @@ BEGIN {
 		handles_via => 'String',
 		handles => { eg3_append => 'append...' },
 	);
-	
-	__PACKAGE__->meta->make_immutable;
 };
 
 my $obj = Local::MyClass->new(
