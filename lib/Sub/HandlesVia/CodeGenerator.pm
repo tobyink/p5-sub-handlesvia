@@ -211,23 +211,23 @@ sub _generate_ec_args_for_handler {
 		'sub {',
 		sprintf( 'package %s::__SANDBOX__;', __PACKAGE__ ),
 	];
-	
-	# Need to maintain state between method calls. A proper object
-	# might be nice, but a hashref will do for now.
+
+	# Need to maintain state between following method calls. A proper
+	# object might be nice, but a hashref will do for now.
 	#
 	my $state = {
 		signature_check_needed  => 1,     # hasn't been done yet
 		final_type_check_needed => $handler->is_mutator,
-		getter                  => undef, # figure it out later
-		getter_is_lvalue        => undef, # ditto
+		getter                  => $self->generate_get,
+		getter_is_lvalue        => $self->get_is_lvalue,
 		template_wrapper        => undef, # nothing yet
 		add_later               => undef, # nothing yet
 	};
-	
+
 #	use Hash::Util qw( lock_ref_keys );
 #	lock_ref_keys( $state );
 	
-	my @arguments = (
+	my @args = (
 		$method_name,  # Intended name for the coderef being generated
 		$handler,      # Info about the functionality being delegated
 		$env,          # Variables which need to be closed over
@@ -235,13 +235,13 @@ sub _generate_ec_args_for_handler {
 		$state,        # Shared state while building method. (Minimal!)
 	);
 	$self
-		->_handle_sigcheck( @arguments )
-		->_handle_currying( @arguments )
-		->_handle_additional_validation( @arguments )
-		->_handle_getter_code( @arguments )
-		->_handle_setter_code( @arguments )
-		->_handle_template( @arguments )
-		->_handle_chaining( @arguments );
+		->_handle_sigcheck( @args )               # check method sigs
+		->_handle_currying( @args )               # push curried values to @_
+		->_handle_additional_validation( @args )  # additional type checks
+		->_handle_getter_code( @args )            # optimize calling getter
+		->_handle_setter_code( @args )            # make calling setter safer
+		->_handle_template( @args )               # perform code substitutes
+		->_handle_chaining( @args );              # return $self if requested
 	
 	# Postamble code. Can't really do much here because the template
 	# might want to be able to return something.
@@ -249,6 +249,7 @@ sub _generate_ec_args_for_handler {
 	push @$code, "}";
 	
 	# Allow the handler to inject variables into the environment.
+	# Rarely needed.
 	#
 	$handler->_tweak_env( $env );
 	
@@ -307,7 +308,7 @@ sub _handle_sigcheck {
 		elsif (defined $min_args and defined $max_args) {
 			push @$code, sprintf('(@_ >= %d and @_ <= %d) or %s;', $min_args + 1, $max_args + 1, $usg);
 		}
-		elsif (defined $min_args) {
+		elsif (defined $min_args and $min_args > 0) {
 			push @$code, sprintf('@_ >= %d or %s;', $min_args + 1, $usg);
 		}
 		
@@ -432,9 +433,6 @@ sub _handle_additional_validation {
 
 sub _handle_getter_code {
 	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
-	
-	$state->{getter} = $self->generate_get();
-	$state->{getter_is_lvalue} = $self->get_is_lvalue;
 	
 	# If there's a complicated way to fetch the attribute value (perhaps
 	# involving a lazy builder)...
