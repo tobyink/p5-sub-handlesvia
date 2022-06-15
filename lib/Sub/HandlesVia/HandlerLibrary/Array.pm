@@ -52,23 +52,30 @@ my $additional_validation_for_push_and_unshift = sub {
 	
 	if ($ti and $ti->{trust_mutated} eq 'maybe') {
 		my $coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
-		my $code = $coercion
-			? sprintf(
+		if ( $coercion ) {
+			my $code = sprintf(
 				'my @shv_values = map $shv_type_for_values->assert_coerce($_), %s;',
 				$gen->generate_args,
-			)
-			: sprintf(
-				'my @shv_values = %s; for my $shv_value (@shv_values) { %s }',
+			);
+			return {
+				code      => $code,
+				env       => { '$shv_type_for_values' => \$ti->{value_type} },
+				arg       => sub { CORE::shift; "\$shv_values[($_[0])-1]" },
+				args      => sub { CORE::shift; '@shv_values' },
+				argc      => sub { CORE::shift; 'scalar(@shv_values)' },
+			};
+		}
+		else {
+			my $code = sprintf(
+				'for my $shv_value (%s) { %s }',
 				$gen->generate_args,
 				$ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
 			);
-		return {
-			code      => $code,
-			env       => { '$shv_type_for_values' => \$ti->{value_type} },
-			arg       => sub { CORE::shift; "\$shv_values[($_[0])-1]" },
-			args      => sub { CORE::shift; '@shv_values' },
-			argc      => sub { CORE::shift; 'scalar(@shv_values)' },
-		};
+			return {
+				code      => $code,
+				env       => { '$shv_type_for_values' => \$ti->{value_type} },
+			};
+		}
 	}
 	return;
 };
