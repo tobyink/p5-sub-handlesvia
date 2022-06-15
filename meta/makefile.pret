@@ -20,6 +20,7 @@
 	:test-recommendation    [ :on "Moo"^^:CpanId ];
 	:test-recommendation    [ :on "MooX::TypeTiny"^^:CpanId ];
 	:test-recommendation    [ :on "Class::Tiny"^^:CpanId ];
+	:test-recommendation    [ :on "MooseX::Extended 0.22"^^:CpanId ];
 	:test-requirement       [ :on "Test::More 0.96"^^:CpanId ];
 	:test-requirement       [ :on "Test::Fatal"^^:CpanId ];
 	:test-requirement       [ :on "Try::Tiny"^^:CpanId ];
