@@ -189,7 +189,7 @@
 		item "Move some code from Sub::HandlesVia::Toolkit::Plain to its base class."^^Change;
 	].
 
-`Sub-HandlesVia 0.023 cpan:TOBYINK`
+`Sub-HandlesVia 0.024 cpan:TOBYINK`
 	issued  2022-06-15;
 	changeset [
 		item "Explicitly document that Sub::HandlesVia needs to be imported AFTER Moo/Moose/Mouse so that it can detect the class/role builder being used."^^Documentation;
