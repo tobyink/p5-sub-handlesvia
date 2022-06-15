@@ -78,21 +78,26 @@ sub code_generator_for_attribute {
 		$coerce = 1;
 	}
 	
-	my ($slot) = $maker->generate_simple_get('$_[0]', $attrname, $spec);
+	my ($slot) = $maker->generate_simple_get('$SELF', $attrname, $spec);
 	
 	my ($is_simple_get, $get, $captures) = $maker->is_simple_get($attrname, $spec)
-		? (1, $maker->generate_simple_get('$_[0]', $attrname, $spec))
-		: (0, $maker->_generate_get($attrname, $spec), delete($maker->{captures})||{});
+		? (1,
+			$maker->generate_simple_get('$SELF', $attrname, $spec)
+		)
+		: (0,
+			$maker->_generate_use_default('$SELF', $attrname, $spec, $maker->_generate_simple_has('$SELF', $attrname, $spec)),
+			delete($maker->{captures})||{}
+		);
 	my ($is_simple_set, $set) = $maker->is_simple_set($attrname, $spec)
 		? (1, sub {
 			my ($var) = @_;
-			$maker->_generate_simple_set('$_[0]', $attrname, $spec, $var);
+			$maker->_generate_simple_set('$SELF', $attrname, $spec, $var);
 		})
 		: (0, sub { # that allows us to avoid going down this yucky code path
 			my ($var) = @_;
 			my $code = $maker->_generate_set($attrname, $spec);
 			$captures = { %$captures, %{ delete($maker->{captures}) or {} } };  # merge environments
-			$code = "do { local \@_ = (\$_[0], $var); $code }";
+			$code = "do { local \@_ = (\$SELF, $var); $code }";
 			$code;
 		});
 	
@@ -205,8 +210,8 @@ sub _code_generator_for_role_attribute {
 	
 	if (defined $reader_name) {
 		$get = ($reader_name =~ /^[\W0-9]\w*$/s)
-			? sub { sprintf "\$_[0]->%s", $reader_name }
-			: sub { sprintf "\$_[0]->\${\\ %s }", B::perlstring($reader_name) };
+			? sub { sprintf "\$SELF->%s", $reader_name }
+			: sub { sprintf "\$SELF->\${\\ %s }", B::perlstring($reader_name) };
 	}
 	else {
 		my ($default, $default_literal) = (undef, 0);
@@ -234,14 +239,14 @@ sub _code_generator_for_role_attribute {
 			$instance->{$attrname};
 		};
 		$captures->{'$shv_reader'} = \$dammit_i_need_to_build_a_reader;
-		$get = sub { '$_[0]->$shv_reader()' };
+		$get = sub { '$SELF->$shv_reader()' };
 	}
 	
 	
 	if (defined $writer_name) {
 		$set = $writer_name =~ /^[\W0-9]\w*$/s
-			? sub { my $val = shift; sprintf "\$_[0]->%s(%s)", $writer_name, $val }
-			: sub { my $val = shift; sprintf "\$_[0]->\${\\ %s }(%s)", B::perlstring($writer_name), $val };
+			? sub { my $val = shift; sprintf "\$SELF->%s(%s)", $writer_name, $val }
+			: sub { my $val = shift; sprintf "\$SELF->\${\\ %s }(%s)", B::perlstring($writer_name), $val };
 	}
 	else {
 		my $trigger;
@@ -266,7 +271,7 @@ sub _code_generator_for_role_attribute {
 			$instance->{$attrname};
 		};
 		$captures->{'$shv_writer'} = \$dammit_i_need_to_build_a_writer;
-		$set = sub { my $val = shift; "\$_[0]->\$shv_writer($val)" };
+		$set = sub { my $val = shift; "\$SELF->\$shv_writer($val)" };
 	}
 
 	my $default;
@@ -290,7 +295,7 @@ sub _code_generator_for_role_attribute {
 		env                   => $captures,
 		isa                   => $type,
 		coerce                => !!$coerce,
-		generator_for_slot    => sub { '$_[0]{'.B::perlstring($attrname).'}' }, # icky
+		generator_for_slot    => sub { '$SELF->{'.B::perlstring($attrname).'}' }, # icky
 		generator_for_get     => $get,
 		generator_for_set     => $set,
 		get_is_lvalue         => !!0,

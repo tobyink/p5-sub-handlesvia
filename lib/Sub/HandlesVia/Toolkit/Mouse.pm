@@ -55,27 +55,27 @@ sub code_generator_for_attribute {
 	if (!$spec->{lazy} and !$spec->{traits} and !$spec->{auto_deref}) {
 		require B;
 		my $slot = B::perlstring($attrname);
-		$get = sub { "\$_[0]{$slot}" };
+		$get = sub { "\$SELF->{$slot}" };
 		++$get_is_lvalue;
 	}
 	elsif ($attr->has_read_method) {
 		my $read_method = $attr->reader || $attr->accessor;
-		$get = sub { "scalar(\$_[0]->$read_method)" };
+		$get = sub { "scalar(\$SELF->$read_method)" };
 	}
 	else {
 		my $read_method = $attr->get_read_method_ref;
 		$captures->{'$shv_read_method'} = \$read_method;
-		$get = sub { 'scalar($_[0]->$shv_read_method)' };
+		$get = sub { 'scalar($SELF->$shv_read_method)' };
 	}
 	if ($attr->has_write_method) {
 		my $write_method = $attr->writer || $attr->accessor;
-		$set = sub { my $val = shift; "\$_[0]->$write_method\($val)" };
+		$set = sub { my $val = shift; "\$SELF->$write_method\($val)" };
 		++$set_checks_isa;
 	}
 	else {
 		my $write_method = $attr->get_write_method_ref;
 		$captures->{'$shv_write_method'} = \$write_method;
-		$set = sub { my $val = shift; '$_[0]->$shv_write_method('.$val.')' };
+		$set = sub { my $val = shift; '$SELF->$shv_write_method('.$val.')' };
 		++$set_checks_isa;
 	}
 
@@ -100,7 +100,7 @@ sub code_generator_for_attribute {
 		env                   => $captures,
 		isa                   => Types::TypeTiny::to_TypeTiny($attr->type_constraint),
 		coerce                => !!$spec->{coerce},
-		generator_for_slot    => sub { '$_[0]{'.B::perlstring($attrname).'}' }, # icky
+		generator_for_slot    => sub { '$SELF->{'.B::perlstring($attrname).'}' }, # icky
 		generator_for_get     => $get,
 		generator_for_set     => $set,
 		get_is_lvalue         => $get_is_lvalue,

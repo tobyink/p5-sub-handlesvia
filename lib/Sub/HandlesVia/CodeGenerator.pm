@@ -111,7 +111,7 @@ for my $thing ( @generatable_things ) {
 			return $gen->$coderef( @_ );
 		}
 		
-		return $gen->$generator->( @_ );
+		return $gen->$generator->( $gen, @_ );
 	};
 	no strict 'refs';
 	*$method_name = $method;
@@ -236,6 +236,7 @@ sub _generate_ec_args_for_handler {
 	);
 	$self
 		->_handle_sigcheck( @args )               # check method sigs
+		->_handle_shiftself( @args )              # $self = shift
 		->_handle_currying( @args )               # push curried values to @_
 		->_handle_additional_validation( @args )  # additional type checks
 		->_handle_getter_code( @args )            # optimize calling getter
@@ -262,6 +263,45 @@ sub _generate_ec_args_for_handler {
 			$handler->name,
 		),
 	};
+}
+
+sub _handle_shiftself {
+	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
+	
+	push @$code, 'my $shv_self=shift;';
+	
+	$self->_add_generator_override(
+		arg  => sub { my ($gen, $n) = @_; $gen->generate_arg( $n - 1 ) },
+		args => sub { '@_' },
+		argc => sub { 'scalar(@_)' },
+		self => sub { '$shv_self' },
+		get  => sub {
+			my $gen = shift;
+			my $r = $gen->generate_get;
+			$r =~ s/\$SELF/\$shv_self/g;
+			$r;
+		},
+		slot => sub {
+			my $gen = shift;
+			my $r = $gen->generate_slot;
+			$r =~ s/\$SELF/\$shv_self/g;
+			$r;
+		},
+		set => sub {
+			my $gen = shift;
+			my $r = $gen->generate_set( @_ );
+			$r =~ s/\$SELF/\$shv_self/g;
+			$r;
+		},
+		currying => sub {
+			my ($gen, $list) = @_;
+			"CORE::unshift(\@_, $list);";
+		},
+	);
+	
+	$state->{getter} = $self->generate_get;
+	
+	return $self;
 }
 
 sub _handle_sigcheck {
@@ -518,7 +558,6 @@ sub _handle_template {
 	
 	# Perform substitutions of special codes in the template string.
 	#
-	$template =~ s/\$SELF/$self->generate_self()/eg;
 	$template =~ s/\$SLOT/$self->generate_slot()/eg;
 	$template =~ s/\$GET/$state->{getter}/g;
 	$template =~ s/\$ARG\[([0-9]+)\]/$self->generate_arg($1)/eg;
@@ -527,6 +566,7 @@ sub _handle_template {
 	$template =~ s/\@ARG/$self->generate_args()/eg;
 	$template =~ s/«(.+?)»/$self->generate_set($1)/eg;
 	$template =~ s/\$DEFAULT/$self->generate_default($self, $handler)/eg;
+	$template =~ s/\$SELF/$self->generate_self()/eg; # do this last
 	
 	# Apply wrapper (if any). This wrapper is given
 	# by _handle_getter_code (sometimes).

@@ -51,7 +51,7 @@ sub code_generator_for_attribute {
 
 	my $captures = {};
 	
-	my $slot = $meta->get_meta_instance->inline_slot_access('$_[0]', $attrname);
+	my $slot = $meta->get_meta_instance->inline_slot_access('$SELF', $attrname);
 	
 	my ($get, $set, $get_is_lvalue, $set_checks_isa);
 	if (!$spec->{lazy} and !$spec->{traits} and !$spec->{auto_deref}) {
@@ -60,18 +60,18 @@ sub code_generator_for_attribute {
 	}
 	elsif ($attr->has_read_method) {
 		my $read_method = $attr->get_read_method;
-		$get = sub { "scalar(\$_[0]->$read_method)" };
+		$get = sub { "scalar(\$SELF->$read_method)" };
 	}
 	else {
 		my $read_method = $attr->get_read_method_ref;
 		eval { $read_method = $read_method->{body} };  # Moose docs lie!
 		$captures->{'$shv_read_method'} = \$read_method;
-		$get = sub { 'scalar($_[0]->$shv_read_method)' };
+		$get = sub { 'scalar($SELF->$shv_read_method)' };
 	}
 	
 	if ($attr->has_write_method) {
 		my $write_method = $attr->get_write_method;
-		$set = sub { my $val = shift; "\$_[0]->$write_method\($val)" };
+		$set = sub { my $val = shift; "\$SELF->$write_method\($val)" };
 		++$set_checks_isa;
 	}
 	else {
@@ -80,7 +80,7 @@ sub code_generator_for_attribute {
 				? sub { $attr->set_value(@_) }
 				: sub { my ($instance, $value) = @_; $instance->meta->get_attribute($attrname)->set_value($instance, $value) }
 		);
-		$set = sub { my $val = shift; '$_[0]->$shv_write_method('.$val.')' };
+		$set = sub { my $val = shift; '$SELF->$shv_write_method('.$val.')' };
 		++$set_checks_isa;
 	}
 
