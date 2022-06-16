@@ -46,8 +46,8 @@ use Class::Tiny (
 		},
 		generator_for_arg => sub {
 			return sub {
-				@_==1 or die;
-				my $n = shift;
+				@_==2 or die;
+				my $n = pop;
 				"\$_[$n]";
 			};
 		},
@@ -58,14 +58,15 @@ use Class::Tiny (
 		},
 		generator_for_currying => sub {
 			return sub {
-				@_==1 or die;
-				my $arr = shift;
+				@_==2 or die;
+				my $arr = pop;
 				"splice(\@_,1,0,$arr);";
 			};
 		},
 		generator_for_usage_string => sub {
 			return sub {
-				@_==2 or die;
+				@_==3 or die;
+				shift;
 				my $method_name = shift;
 				my $guts = shift;
 				"\$instance->$method_name($guts)";
@@ -111,7 +112,7 @@ for my $thing ( @generatable_things ) {
 			return $gen->$coderef( @_ );
 		}
 		
-		return $gen->$generator->( @_ );
+		return $gen->$generator->( $gen, @_ );
 	};
 	no strict 'refs';
 	*$method_name = $method;
@@ -218,7 +219,7 @@ sub _generate_ec_args_for_handler {
 	my $state = {
 		signature_check_needed  => 1,     # hasn't been done yet
 		final_type_check_needed => $handler->is_mutator,
-		getter                  => $self->generate_get,
+		getter                  => scalar($self->generate_get),
 		getter_is_lvalue        => $self->get_is_lvalue,
 		template_wrapper        => undef, # nothing yet
 		add_later               => undef, # nothing yet
@@ -526,7 +527,7 @@ sub _handle_template {
 	$template =~ s/\#ARG/$self->generate_argc()/eg;
 	$template =~ s/\@ARG/$self->generate_args()/eg;
 	$template =~ s/«(.+?)»/$self->generate_set($1)/eg;
-	$template =~ s/\$DEFAULT/$self->generate_default($self, $handler)/eg;
+	$template =~ s/\$DEFAULT/$self->generate_default($handler)/eg;
 	
 	# Apply wrapper (if any). This wrapper is given
 	# by _handle_getter_code (sometimes).

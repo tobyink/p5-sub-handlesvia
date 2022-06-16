@@ -51,27 +51,34 @@ sub code_generator_for_attribute {
 
 	my $captures = {};
 	
-	my $slot = $meta->get_meta_instance->inline_slot_access('$_[0]', $attrname);
+	my $slot = sub {
+		my $gen = shift;
+		$meta->get_meta_instance->inline_slot_access($gen->generate_self, $attrname);
+	};
 	
 	my ($get, $set, $get_is_lvalue, $set_checks_isa);
 	if (!$spec->{lazy} and !$spec->{traits} and !$spec->{auto_deref}) {
-		$get = sub { $slot };
+		$get = $slot;
 		++$get_is_lvalue;
 	}
 	elsif ($attr->has_read_method) {
 		my $read_method = $attr->get_read_method;
-		$get = sub { "scalar(\$_[0]->$read_method)" };
+		$get = sub { my $self = shift->generate_self; "scalar($self\->$read_method)" };
 	}
 	else {
 		my $read_method = $attr->get_read_method_ref;
 		eval { $read_method = $read_method->{body} };  # Moose docs lie!
 		$captures->{'$shv_read_method'} = \$read_method;
-		$get = sub { 'scalar($_[0]->$shv_read_method)' };
+		$get = sub { my $self = shift->generate_self; "scalar($self\->\$shv_read_method)" };
 	}
 	
 	if ($attr->has_write_method) {
 		my $write_method = $attr->get_write_method;
-		$set = sub { my $val = shift; "\$_[0]->$write_method\($val)" };
+		$set = sub {
+			my ($gen, $val) = @_;
+			my $self = $gen->generate_self;
+			"$self\->$write_method\($val)"
+		};
 		++$set_checks_isa;
 	}
 	else {
@@ -80,7 +87,11 @@ sub code_generator_for_attribute {
 				? sub { $attr->set_value(@_) }
 				: sub { my ($instance, $value) = @_; $instance->meta->get_attribute($attrname)->set_value($instance, $value) }
 		);
-		$set = sub { my $val = shift; '$_[0]->$shv_write_method('.$val.')' };
+		$set = sub {
+			my ($gen, $val) = @_;
+			my $self = $gen->generate_self;
+			$self.'->$shv_write_method('.$val.')';
+		};
 		++$set_checks_isa;
 	}
 
@@ -105,7 +116,7 @@ sub code_generator_for_attribute {
 		env                   => $captures,
 		isa                   => Types::TypeTiny::to_TypeTiny($attr->type_constraint),
 		coerce                => !!$spec->{coerce},
-		generator_for_slot    => sub { $slot },
+		generator_for_slot    => $slot,
 		generator_for_get     => $get,
 		generator_for_set     => $set,
 		get_is_lvalue         => $get_is_lvalue,
@@ -120,14 +131,14 @@ sub code_generator_for_attribute {
 			elsif ( $default->[0] eq 'builder' ) {
 				return sprintf(
 					'(%s)->%s',
-					$gen->generator_for_self->(),
+					$gen->generate_self,
 					$default->[1],
 				);
 			}
 			elsif ( $default->[0] eq 'default' and ref $default->[1] eq 'CODE' ) {
 				return sprintf(
 					'(%s)->$shv_default_for_reset',
-					$gen->generator_for_self->(),
+					$gen->generate_self,
 				);
 			}
 			elsif ( $default->[0] eq 'default' and !defined $default->[1] ) {

@@ -117,44 +117,61 @@ sub code_generator_for_attribute {
 	$set_slot = $get_slot if @$attr < 2;
 	
 	my $captures = {};
-	my ($get, $set, $get_is_lvalue) = (undef, undef, 0);
+	my ($get, $set, $slot, $get_is_lvalue) = (undef, undef, undef, 0);
 	
 	require B;
 	
 	if (ref $get_slot) {
-		$get = sub { '$_[0]->$shv_reader' };
+		$get = sub { shift->generate_self . '->$shv_reader' };
 		$captures->{'$shv_reader'} = \$get_slot;
 	}
 	elsif ($get_slot =~ /\A \[ ([0-9]+) \] \z/sx) {
 		my $index = $1;
-		$get = sub { "\$_[0][$index]" };
+		$get = sub { shift->generate_self . "->[$index]" };
+		$slot = $get;
 		++$get_is_lvalue;
 	}
 	elsif ($get_slot =~ /\A \{ (.+) \} \z/sx) {
 		my $key = B::perlstring($1);
-		$get = sub { "\$_[0]{$key}" };
+		$get = sub { shift->generate_self . "->{$key}" };
+		$slot = $get;
 		++$get_is_lvalue;
 	}
 	else {
 		my $method = B::perlstring($get_slot);
-		$get = sub { "\$_[0]->\${\\ $method}" };
+		$get = sub { shift->generate_self . "->\${\\ $method}" };
 	}
 	
 	if (ref $set_slot) {
-		$set = sub { my $val = shift or die; "\$_[0]->\$shv_writer($val)" };
+		$set = sub {
+			my ($gen, $val) = @_;
+			$gen->generate_self . "->\$shv_writer($val)";
+		};
 		$captures->{'$shv_writer'} = \$set_slot;
 	}
 	elsif ($set_slot =~ /\A \[ ([0-9]+) \] \z/sx) {
 		my $index = $1;
-		$set = sub { my $val = shift or die; "(\$_[0][$index] = $val)" };
+		$set = sub {
+			my ($gen, $val) = @_;
+			my $self = $gen->generate_self;
+			"($self\->[$index] = $val)";
+		};
 	}
 	elsif ($set_slot =~ /\A \{ (.+) \} \z/sx) {
 		my $key = B::perlstring($1);
-		$set = sub { my $val = shift or die; "(\$_[0]{$key} = $val)" };
+		$set = sub {
+			my ($gen, $val) = @_;
+			my $self = $gen->generate_self;
+			"($self\->{$key} = $val)";
+		};
 	}
 	else {
 		my $method = B::perlstring($set_slot);
-		$set = sub { my $val = shift or die; "\$_[0]->\${\\ $method}($val)" };
+		$set = sub {
+			my ($gen, $val) = @_;
+			my $self = $gen->generate_self;
+			"$self\->\${\\ $method}($val)";
+		};
 	}
 	
 	if (is_CodeRef $default) {
@@ -181,19 +198,20 @@ sub code_generator_for_attribute {
 			elsif ( is_CodeRef $default ) {
 				return sprintf(
 					'(%s)->$shv_default_for_reset',
-					$gen->generator_for_self->(),
+					$gen->generate_self,
 				);
 			}
 			elsif ( is_Str $default ) {
 				require B;
 				return sprintf(
 					'(%s)->${\ %s }',
-					$gen->generator_for_self->(),
+					$gen->generate_self,
 					B::perlstring( $default ),
 				);
 			}
 			return;
 		},
+		( $slot ? ( generator_for_slot => $slot ) : () ),
 	);
 }
 
