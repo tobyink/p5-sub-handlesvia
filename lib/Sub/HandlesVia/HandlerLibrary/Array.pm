@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::HandlerLibrary::Array;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.024';
+our $VERSION   = '0.025';
 
 use Sub::HandlesVia::HandlerLibrary;
 our @ISA = 'Sub::HandlesVia::HandlerLibrary';
@@ -247,6 +247,7 @@ sub push {
 		usage     => '@values',
 		template  => 'my @shv_tmp = @{$GET}; my $shv_return = push(@shv_tmp, @ARG); «\\@shv_tmp»; $shv_return',
 		lvalue_template => 'push(@{$GET}, @ARG)',
+		prefer_shift_self => 1,
 		additional_validation => $additional_validation_for_push_and_unshift,
 		documentation => 'Adds elements to the end of the array.',
 		_examples => sub {
@@ -286,6 +287,7 @@ sub unshift {
 		usage     => '@values',
 		template  => 'my @shv_tmp = @{$GET}; my $shv_return = unshift(@shv_tmp, @ARG); «\\@shv_tmp»; $shv_return',
 		lvalue_template => 'unshift(@{$GET}, @ARG)',
+		prefer_shift_self => 1,
 		additional_validation => $additional_validation_for_push_and_unshift,
 		documentation => 'Adds an element to the start of the array.',
 		_examples => sub {

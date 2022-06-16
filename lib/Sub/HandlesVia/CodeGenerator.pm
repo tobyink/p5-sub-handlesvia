@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::CodeGenerator;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.024';
+our $VERSION   = '0.025';
 
 use Scope::Guard ();
 use Class::Tiny (
@@ -270,40 +270,50 @@ sub _generate_ec_args_for_handler {
 
 sub _handle_shiftself {
 	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
-	
+
+	# Handlers which use @ARG will benefit from shifting $self
+	# off @_, but for other handlers, this will just slow compilation
+	# down (but not much).
+	#
+	return $self
+		unless $handler->curried || $handler->prefer_shift_self;
+
+	# Shift off the invocant.
+	#
 	push @$code, 'my $shv_self=shift;';
 	
 	$self->_add_generator_override(
+	
+		# Override $ARG[$n] because the array has been reindexed.
+		#
 		arg  => sub { my ($gen, $n) = @_; $gen->generate_arg( $n - 1 ) },
+		
+		# Overrride @ARG to point to the whole array. This is the
+		# real speed-up!
+		#
 		args => sub { '@_' },
+		
+		# Override #ARG to no longer subtract 1.
+		#
 		argc => sub { 'scalar(@_)' },
+		
+		# $SELF is now '$shv_self'.
+		#
 		self => sub { '$shv_self' },
-		get  => sub {
-			my $gen = shift;
-			my $r = $gen->generate_get;
-			$r =~ s/\$SELF/\$shv_self/g;
-			$r;
-		},
-		slot => sub {
-			my $gen = shift;
-			my $r = $gen->generate_slot;
-			$r =~ s/\$SELF/\$shv_self/g;
-			$r;
-		},
-		set => sub {
-			my $gen = shift;
-			my $r = $gen->generate_set( @_ );
-			$r =~ s/\$SELF/\$shv_self/g;
-			$r;
-		},
+		
+		# The default currying callback will splice the list into
+		# @_ at index 1. Instead unshift the list at the start of @_.
+		#
 		currying => sub {
 			my ($gen, $list) = @_;
 			"CORE::unshift(\@_, $list);";
 		},
 	);
 	
-	$state->{shifted_self} = 1;
+	# Getter was cached in $state and needs update.
+	#
 	$state->{getter} = $self->generate_get;
+	$state->{shifted_self} = 1;
 	
 	return $self;
 }

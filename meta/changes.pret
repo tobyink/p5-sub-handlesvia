@@ -195,3 +195,9 @@
 		item "Explicitly document that Sub::HandlesVia needs to be imported AFTER Moo/Moose/Mouse so that it can detect the class/role builder being used."^^Documentation;
 		item "Test that Sub::HandlesVia works okay with MooseX::Extended."^^Tests;
 	].
+
+`Sub-HandlesVia 0.025 cpan:TOBYINK`
+	issued  2022-06-16;
+	changeset [
+		item "Internally shift off the method invocant sometimes as benchmarking shows that to be faster."^^Change;
+	].

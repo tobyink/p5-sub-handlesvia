@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::HandlerLibrary::Hash;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.024';
+our $VERSION   = '0.025';
 
 use Sub::HandlesVia::HandlerLibrary;
 our @ISA = 'Sub::HandlesVia::HandlerLibrary';
@@ -208,6 +208,7 @@ sub get {
 		name      => 'Hash:get',
 		min_args  => 1,
 		usage     => '$key',
+		prefer_shift_self => 1,
 		template  => '#ARG>1 ? @{$GET}{@ARG} : ($GET)->{$ARG}',
 		documentation => 'Returns a value from the hashref by its key.',
 		_examples => sub {
@@ -261,6 +262,7 @@ sub delete {
 		usage     => '$key',
 		template  => 'my %shv_tmp = %{$GET}; my @shv_return = delete @shv_tmp{@ARG}; «\%shv_tmp»; wantarray ? @shv_return : $shv_return[-1]',
 		lvalue_template  => 'delete(@{$GET}{@ARG})',
+		prefer_shift_self => 1,
 		additional_validation => 'no incoming values',
 		documentation => 'Removes a value from the hashref by its key.',
 		_examples => sub {
@@ -306,6 +308,7 @@ sub set {
 		name      => 'Hash:set',
 		min_args  => 2,
 		usage     => '$key, $value, ...',
+		prefer_shift_self => 1,
 		template  => (
 			'my (@shv_params) = @ARG; ' .
 			'scalar(@shv_params) % 2 and do { require Carp; Carp::croak("Wrong number of parameters; expected even-sized list of keys and values") };' .

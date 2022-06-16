@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::Handler;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.024';
+our $VERSION   = '0.025';
 
 use Class::Tiny (
 	qw(
@@ -21,6 +21,7 @@ use Class::Tiny (
 		default_for_reset
 		documentation
 		_examples
+		prefer_shift_self
 	),
 	{
 		is_mutator   => sub { defined $_[0]{lvalue_template} or $_[0]{template} =~ /«/ },
@@ -202,7 +203,7 @@ sub _generate_handler {
 package Sub::HandlesVia::Handler::Traditional;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.024';
+our $VERSION   = '0.025';
 
 BEGIN { our @ISA = 'Sub::HandlesVia::Handler' };
 
@@ -224,7 +225,7 @@ sub template {
 package Sub::HandlesVia::Handler::CodeRef;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.024';
+our $VERSION   = '0.025';
 
 BEGIN { our @ISA = 'Sub::HandlesVia::Handler' };
 
@@ -356,6 +357,11 @@ Whether to do less validation of input data.
 If this handler has to "reset" an attribute value to its default,
 and the attribute doesn't have a default, this string of Perl code
 is evaluated to provide a default. An example might be C<< "[]" >>.
+
+=head2 C<< prefer_shift_self >> B<Bool>
+
+Indicates this handler would prefer the code generator to shift
+C<< $self >> off C<< @_ >>.
 
 =head2 C<< documentation >> B<< Maybe[Str] >>
 
