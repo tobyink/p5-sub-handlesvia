@@ -223,6 +223,7 @@ sub _generate_ec_args_for_handler {
 		getter_is_lvalue        => $self->get_is_lvalue,
 		template_wrapper        => undef, # nothing yet
 		add_later               => undef, # nothing yet
+		shifted_self            => 0,
 	};
 
 #	use Hash::Util qw( lock_ref_keys );
@@ -278,7 +279,12 @@ sub _handle_sigcheck {
 		require Type::Params;
 		unshift @$code, 'my $__sigcheck;';
 		$env->{'@__sig'} = $handler->signature;
-		push @$code, '$__sigcheck||=Type::Params::compile(1, @__sig);@_=&$__sigcheck;';
+		if ( $state->{shifted_self} ) {
+			push @$code, '$__sigcheck||=Type::Params::compile(@__sig);@_=&$__sigcheck;';
+		}
+		else {
+			push @$code, '$__sigcheck||=Type::Params::compile(1, @__sig);@_=&$__sigcheck;';
+		}
 		
 		# As we've now inserted a signature check, we can stop worrying
 		# about signature checks.
@@ -293,6 +299,11 @@ sub _handle_sigcheck {
 		#
 		my $min_args = $handler->min_args || 0;
 		my $max_args = $handler->max_args;
+		
+		if ( $state->{shifted_self} ) {
+			--$min_args;
+			--$max_args;
+		}
 		
 		# What usage message do we want to print if wrong arity?
 		#
@@ -519,7 +530,6 @@ sub _handle_template {
 	
 	# Perform substitutions of special codes in the template string.
 	#
-	$template =~ s/\$SELF/$self->generate_self()/eg;
 	$template =~ s/\$SLOT/$self->generate_slot()/eg;
 	$template =~ s/\$GET/$state->{getter}/g;
 	$template =~ s/\$ARG\[([0-9]+)\]/$self->generate_arg($1)/eg;
@@ -528,6 +538,7 @@ sub _handle_template {
 	$template =~ s/\@ARG/$self->generate_args()/eg;
 	$template =~ s/«(.+?)»/$self->generate_set($1)/eg;
 	$template =~ s/\$DEFAULT/$self->generate_default($handler)/eg;
+	$template =~ s/\$SELF/$self->generate_self()/eg;
 	
 	# Apply wrapper (if any). This wrapper is given
 	# by _handle_getter_code (sometimes).
