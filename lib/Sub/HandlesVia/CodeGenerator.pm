@@ -181,6 +181,7 @@ sub generate_coderef_for_handler {
 	
 	my $ec_args = $self->_generate_ec_args_for_handler( $method_name, $handler );
 	
+#	warn "#### $method_name";
 #	warn join("\n", @{$ec_args->{source}});
 #	for my $key (sort keys %{$ec_args->{environment}}) {
 #		warn ">> $key : ".ref($ec_args->{environment}{$key});
@@ -238,6 +239,7 @@ sub _generate_ec_args_for_handler {
 	);
 	$self
 		->_handle_sigcheck( @args )               # check method sigs
+		->_handle_shiftself( @args )              # $self = shift
 		->_handle_currying( @args )               # push curried values to @_
 		->_handle_additional_validation( @args )  # additional type checks
 		->_handle_getter_code( @args )            # optimize calling getter
@@ -300,6 +302,7 @@ sub _handle_shiftself {
 		},
 	);
 	
+	$state->{shifted_self} = 1;
 	$state->{getter} = $self->generate_get;
 	
 	return $self;
@@ -339,9 +342,9 @@ sub _handle_sigcheck {
 		my $min_args = $handler->min_args || 0;
 		my $max_args = $handler->max_args;
 		
+		my $plus = 1;
 		if ( $state->{shifted_self} ) {
-			--$min_args;
-			--$max_args;
+			$plus = 0;
 		}
 		
 		# What usage message do we want to print if wrong arity?
@@ -354,13 +357,13 @@ sub _handle_sigcheck {
 		# Insert the check into the code.
 		#
 		if (defined $min_args and defined $max_args and $min_args==$max_args) {
-			push @$code, sprintf('@_==%d or %s;', $min_args + 1, $usg);
+			push @$code, sprintf('@_==%d or %s;', $min_args + $plus, $usg);
 		}
 		elsif (defined $min_args and defined $max_args) {
-			push @$code, sprintf('(@_ >= %d and @_ <= %d) or %s;', $min_args + 1, $max_args + 1, $usg);
+			push @$code, sprintf('(@_ >= %d and @_ <= %d) or %s;', $min_args + $plus, $max_args + $plus, $usg);
 		}
 		elsif (defined $min_args and $min_args > 0) {
-			push @$code, sprintf('@_ >= %d or %s;', $min_args + 1, $usg);
+			push @$code, sprintf('@_ >= %d or %s;', $min_args + $plus, $usg);
 		}
 		
 		# We are still lacking a proper signature check though, so note

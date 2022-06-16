@@ -95,7 +95,13 @@ sub code_generator_for_attribute {
 		})
 		: (0,	sub {
 			my $gen = shift;
-			my ($return) = $maker->_generate_get($attrname, $spec);
+			my $selfvar = $gen ? $gen->generate_self : '$_[0]';
+			my ($return) = $maker->_generate_use_default(
+				$selfvar,
+				$attrname,
+				$spec,
+				$maker->_generate_simple_has($selfvar, $attrname, $spec),
+			);
 			%$captures = ( %$captures, %{ delete($maker->{captures}) or {} } );
 			$return;
 		});
