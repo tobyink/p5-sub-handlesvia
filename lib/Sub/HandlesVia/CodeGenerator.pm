@@ -266,6 +266,45 @@ sub _generate_ec_args_for_handler {
 	};
 }
 
+sub _handle_shiftself {
+	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
+	
+	push @$code, 'my $shv_self=shift;';
+	
+	$self->_add_generator_override(
+		arg  => sub { my ($gen, $n) = @_; $gen->generate_arg( $n - 1 ) },
+		args => sub { '@_' },
+		argc => sub { 'scalar(@_)' },
+		self => sub { '$shv_self' },
+		get  => sub {
+			my $gen = shift;
+			my $r = $gen->generate_get;
+			$r =~ s/\$SELF/\$shv_self/g;
+			$r;
+		},
+		slot => sub {
+			my $gen = shift;
+			my $r = $gen->generate_slot;
+			$r =~ s/\$SELF/\$shv_self/g;
+			$r;
+		},
+		set => sub {
+			my $gen = shift;
+			my $r = $gen->generate_set( @_ );
+			$r =~ s/\$SELF/\$shv_self/g;
+			$r;
+		},
+		currying => sub {
+			my ($gen, $list) = @_;
+			"CORE::unshift(\@_, $list);";
+		},
+	);
+	
+	$state->{getter} = $self->generate_get;
+	
+	return $self;
+}
+
 sub _handle_sigcheck {
 	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
 
