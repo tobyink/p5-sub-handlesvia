@@ -678,11 +678,14 @@ will install the method. Note that it isn't passed the package to install
 into (which can be found in C<target>), so that would need to be closed
 over.
 
-=head2 C<generator_for_slot> B<< CodeRef >>
+=head2 C<generator_for_self> B<< CodeRef >>
 
 A coderef which if called, generates a string like C<< '$_[0]' >>.
 
 Has a sensible default.
+
+All the C<generator_for_XXX> methods are called as methods, so have
+the code generator object as an invocant.
 
 =head2 C<generator_for_slot> B<< CodeRef >>
 
@@ -701,6 +704,9 @@ C<< "\$_[0]->_set_attrname( $parameter )" >>.
 
 A coderef which if called with a parameter, generates a string like
 C<< 'undef' >> or C<< 'q[]' >> or C<< '{}' >>.
+
+The parameter is a handler object, which offers a C<default_for_reset>
+attribute which might be able to provide a useful fallback.
 
 =head2 C<generator_for_args> B<< CodeRef >>
 
@@ -733,7 +739,8 @@ Has a sensible default.
 The default is this coderef:
 
   sub {
-    @_==2 or die;
+    @_==3 or die;
+    shift;
     my $method_name = shift;
     my $guts = shift;
     return "\$instance->$method_name($guts)";
