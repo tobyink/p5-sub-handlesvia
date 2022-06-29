@@ -44,14 +44,6 @@ sub detect_toolkit {
 sub _detect_framework {
 	my ($me, $target) = (shift, @_);
 	
-	{
-		no strict 'refs';
-		no warnings 'once';
-		if ( ${"$target\::USES_MITE"} ) {
-			return 'Mite';
-		}
-	}
-	
 	if ($INC{'Moo/Role.pm'}
 	and Moo::Role->is_role($target)) {
 		return 'Moo';
@@ -85,6 +77,14 @@ sub _detect_framework {
 	and $target->can('meta')
 	and $target->meta->isa('Mouse::Meta::Class')) {
 		return 'Mouse';
+	}
+	
+	{
+		no strict 'refs';
+		no warnings 'once';
+		if ( ${"$target\::USES_MITE"} ) {
+			return 'Mite';
+		}
 	}
 	
 	return 'Plain';
