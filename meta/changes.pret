@@ -201,3 +201,9 @@
 	changeset [
 		item "Internally shift off the method invocant sometimes as benchmarking shows that to be faster."^^Change;
 	].
+
+`Sub-HandlesVia 0.026 cpan:TOBYINK`
+	issued  2022-06-30;
+	changeset [
+		item "Support classes built with Mite."^^Addition;
+	].
