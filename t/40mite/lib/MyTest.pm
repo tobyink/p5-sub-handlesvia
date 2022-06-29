@@ -1,7 +1,5 @@
 package MyTest;
 
-BEGIN { our $USES_MITE = 1; }
-
 use MyTest::Mite;
 use Sub::HandlesVia;
 
