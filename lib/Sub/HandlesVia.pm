@@ -291,6 +291,27 @@ jump in and handle them before Moose notices!
 (If you have a moose in your kitchen, that might be even worse than
 the mouse.)
 
+=head2 Using with Mite
+
+You should be able to use Sub::HandlesVia with L<Mite> 0.001011 or above.
+Your project will still have a dependency on Sub::HandlesVia.
+
+ package MyApp::Kitchen {
+   use MyApp::Mite;
+   use Sub::HandlesVia;
+   
+   has food => (
+     is          => 'ro',
+     isa         => 'ArrayRef[Str]',
+     handles_via => 'Array',
+     default     => sub { [] },
+     handles     => {
+       'add_food'    => 'push',
+       'find_food'   => 'grep',
+     },
+   );
+ }
+
 =head2 Using with Anything
 
 For Moose and Mouse, Sub::HandlesVia can use their metaobject protocols
