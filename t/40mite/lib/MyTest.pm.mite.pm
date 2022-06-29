@@ -3,7 +3,7 @@ package MyTest;
 our $USES_MITE = 1;
 use strict;
 use warnings;
-
+## skip Test::Tabs
 
 sub new {
     my $class = ref($_[0]) ? ref(shift) : shift;
