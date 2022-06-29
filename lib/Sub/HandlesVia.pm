@@ -46,6 +46,7 @@ sub _detect_framework {
 	
 	{
 		no strict 'refs';
+		no warnings 'once';
 		if ( ${"$target\::USES_MITE"} ) {
 			return 'Mite';
 		}
