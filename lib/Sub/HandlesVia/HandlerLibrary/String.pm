@@ -264,7 +264,7 @@ sub contains_i {
 		name      => 'String:contains_i',
 		args      => 1,
 		signature => [ Str ],
-		usage     => '$tail',
+		usage     => '$str',
 		template  => sprintf( 'index(%s($GET), %s($ARG)) != -1', $fold, $fold ),
 		documentation => "Returns true iff the string contains C<< \$str >> case-insensitvely.",
 }
