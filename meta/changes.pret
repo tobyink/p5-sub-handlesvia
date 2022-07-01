@@ -213,3 +213,10 @@
 	changeset [
 		item "Skip Mite test on Perl < 5.10.1"^^Tests;
 	].
+
+`Sub-HandlesVia 0.028 cpan:TOBYINK`
+	issued  2022-07-02;
+	changeset [
+		item "Support for Mite roles."^^Update;
+		item "Lots more tests for using Sub::HandlesVia with Mite."^^Tests;
+	].
