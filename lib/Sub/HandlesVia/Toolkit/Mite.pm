@@ -25,16 +25,39 @@ sub install_has_wrapper {
 	no warnings 'redefine';
 	
 	my $orig = \&{ "$target\::has" };
+	my $uses_mite = ${ "$target\::USES_MITE" };
+	
 	*{ "$target\::has" } = sub {
 		my ( $names, %spec ) = @_;
 		return $orig->($names, %spec) unless $spec{handles}; # shortcut
 		
+		my @shv;
 		$names = [ $names ] unless ref($names);
 		for my $name ( @$names ) {
 			my $shv = $me->clean_spec( $target, $name, \%spec );
 			$SPECS{$target}{$name} = \%spec;
 			$orig->( $name, %spec );
-			$me->install_delegations( $shv ) if $shv;
+			push @shv, $shv if $shv;
+		}
+		
+		if ( $ENV{MITE_COMPILE} ) {
+			return;
+		}
+		
+		if ( $uses_mite eq 'Mite::Role' ) {
+			require Role::Hooks;
+			'Role::Hooks'->after_apply( $target, sub {
+				my ( $from, $to ) = @_;
+				return if 'Role::Hooks'->is_role( $to );
+				for my $shv ( @shv ) {
+					$me->install_delegations( { %$shv, target => $to } );
+				}
+			} );
+		}
+		else {
+			for my $shv ( @shv ) {
+				$me->install_delegations( $shv );
+			}
 		}
 		
 		return;
