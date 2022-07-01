@@ -7,6 +7,7 @@ package Sub::HandlesVia::Toolkit::Mite;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.027';
 
+use Types::Standard -types, -is;
 use Sub::HandlesVia::Toolkit;
 our @ISA = 'Sub::HandlesVia::Toolkit';
 
