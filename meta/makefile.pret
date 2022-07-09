@@ -4,11 +4,8 @@
 
 `Sub-HandlesVia`
 	:runtime-requirement    [ :on "perl 5.008001"^^:CpanId ];
-	:runtime-requirement    [ :on "Types::Standard"^^:CpanId ];
-	:runtime-requirement    [ :on "Eval::TypeTiny"^^:CpanId ];
 	:runtime-requirement    [ :on "Exporter::Shiny"^^:CpanId ];
-	:runtime-requirement    [ :on "Type::Params 1.004000"^^:CpanId ];
-	:runtime-requirement    [ :on "Types::Standard"^^:CpanId ];
+	:runtime-requirement    [ :on "Type::Tiny 1.004"^^:CpanId ];
 	:runtime-requirement    [ :on "Role::Tiny"^^:CpanId ];
 	:runtime-requirement    [ :on "Role::Hooks"^^:CpanId ];
 	:runtime-requirement    [ :on "Class::Method::Modifiers"^^:CpanId ];
