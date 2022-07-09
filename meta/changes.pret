@@ -224,5 +224,11 @@
 `Sub-HandlesVia 0.029 cpan:TOBYINK`
 	issued  2022-07-09;
 	changeset [
-		item "Use Mite internally, dropping the dependency on Class::Tiny."^^Change;
+		item "Use Mite internally, dropping the dependency on Class::Tiny."^^Packaging;
+	].
+
+`Sub-HandlesVia 0.030 cpan:TOBYINK`
+	issued  2022-07-09;
+	changeset [
+		item "Drop dependency on Scope::Guard."^^Packaging;
 	].
