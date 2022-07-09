@@ -10,7 +10,6 @@
 	:runtime-requirement    [ :on "Role::Hooks"^^:CpanId ];
 	:runtime-requirement    [ :on "Class::Method::Modifiers"^^:CpanId ];
 	:runtime-requirement    [ :on "List::Util 1.54"^^:CpanId ];
-	:runtime-requirement    [ :on "Scope::Guard"^^:CpanId ];
 	:runtime-recommendation [ :on "Sub::Util"^^:CpanId ];
 	:test-recommendation    [ :on "Moose"^^:CpanId ];
 	:test-recommendation    [ :on "Mouse"^^:CpanId ];
