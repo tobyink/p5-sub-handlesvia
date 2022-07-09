@@ -232,3 +232,9 @@
 	changeset [
 		item "Drop dependency on Scope::Guard."^^Packaging;
 	].
+
+`Sub-HandlesVia 0.031 cpan:TOBYINK`
+	issued  2022-07-09;
+	changeset [
+		item "Add dependencies on MRO::Compat and Devel::GlobalDestruction, but only on very old Perls."^^Packaging;
+	].
