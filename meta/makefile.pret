@@ -11,7 +11,6 @@
 	:runtime-requirement    [ :on "Types::Standard"^^:CpanId ];
 	:runtime-requirement    [ :on "Role::Tiny"^^:CpanId ];
 	:runtime-requirement    [ :on "Role::Hooks"^^:CpanId ];
-	:runtime-requirement    [ :on "Class::Tiny"^^:CpanId ];
 	:runtime-requirement    [ :on "Class::Method::Modifiers"^^:CpanId ];
 	:runtime-requirement    [ :on "List::Util 1.54"^^:CpanId ];
 	:runtime-requirement    [ :on "Scope::Guard"^^:CpanId ];
@@ -26,6 +25,7 @@
 	:test-requirement       [ :on "Test::Fatal"^^:CpanId ];
 	:test-requirement       [ :on "Try::Tiny"^^:CpanId ];
 	:test-requirement       [ :on "Test::Requires"^^:CpanId ];
+	:develop-requirement    [ :on "Mite 0.006001"^^:CpanId ];
 	:develop-recommendation [ :on "Dist::Inkt 0.001"^^:CpanId ];
 	.
 
