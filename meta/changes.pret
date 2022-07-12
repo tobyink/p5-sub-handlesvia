@@ -238,3 +238,9 @@
 	changeset [
 		item "Add dependencies on MRO::Compat and Devel::GlobalDestruction, but only on very old Perls."^^Packaging;
 	].
+
+`Sub-HandlesVia 0.032 cpan:TOBYINK`
+	issued  2022-07-12;
+	changeset [
+		item "Require newer version of Role::Hooks."^^Packaging;
+	].
