@@ -7,7 +7,7 @@
 	:runtime-requirement    [ :on "Exporter::Shiny"^^:CpanId ];
 	:runtime-requirement    [ :on "Type::Tiny 1.004"^^:CpanId ];
 	:runtime-requirement    [ :on "Role::Tiny"^^:CpanId ];
-	:runtime-requirement    [ :on "Role::Hooks"^^:CpanId ];
+	:runtime-requirement    [ :on "Role::Hooks 0.008"^^:CpanId ];
 	:runtime-requirement    [ :on "Class::Method::Modifiers"^^:CpanId ];
 	:runtime-requirement    [ :on "List::Util 1.54"^^:CpanId ];
 	:runtime-recommendation [ :on "Sub::Util"^^:CpanId ];
