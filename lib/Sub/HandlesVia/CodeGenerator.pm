@@ -36,8 +36,10 @@ has coerce => (
 );
 
 has env => (
-	is => rw,
+	is => ro,
+	isa => 'HashRef',
 	default => \ '{}',
+	default_is_trusted => true,
 );
 
 has [ 'generator_for_slot', 'generator_for_get', 'generator_for_set', 'generator_for_default' ] => (
@@ -46,17 +48,18 @@ has [ 'generator_for_slot', 'generator_for_get', 'generator_for_set', 'generator
 );
 
 has generator_for_args => (
-	is => lazy,
+	is => ro,
 	isa => 'CodeRef',
 	builder => sub {
 		return sub {
 			'@_[1..$#_]';
 		};
 	},
+	default_is_trusted => true,
 );
 
 has generator_for_arg => (
-	is => lazy,
+	is => ro,
 	isa => 'CodeRef',
 	builder => sub {
 		return sub {
@@ -65,20 +68,22 @@ has generator_for_arg => (
 			"\$_[$n]";
 		};
 	},
+	default_is_trusted => true,
 );
 
 has generator_for_argc => (
-	is => lazy,
+	is => ro,
 	isa => 'CodeRef',
 	builder => sub {
 		return sub {
 			'(@_-1)';
 		};
 	},
+	default_is_trusted => true,
 );
 
 has generator_for_currying => (
-	is => lazy,
+	is => ro,
 	isa => 'CodeRef',
 	builder => sub {
 		return sub {
@@ -87,10 +92,11 @@ has generator_for_currying => (
 			"splice(\@_,1,0,$arr);";
 		};
 	},
+	default_is_trusted => true,
 );
 
 has generator_for_usage_string => (
-	is => lazy,
+	is => ro,
 	isa => 'CodeRef',
 	builder => sub {
 		return sub {
@@ -101,20 +107,22 @@ has generator_for_usage_string => (
 			"\$instance->$method_name($guts)";
 		};
 	},
+	default_is_trusted => true,
 );
 
 has generator_for_self => (
-	is => lazy,
+	is => ro,
 	isa => 'CodeRef',
 	builder => sub {
 		return sub {
 			'$_[0]';
 		};
 	},
+	default_is_trusted => true,
 );
 
 has method_installer => (
-	is => rw,
+	is => ro,
 	isa => 'CodeRef',
 );
 
@@ -124,22 +132,22 @@ has _override => (
 );
 
 has is_method => (
-	is => rw,
+	is => ro,
 	default => true,
 );
 
 has get_is_lvalue => (
-	is => rw,
+	is => ro,
 	default => false,
 );
 
 has set_checks_isa => (
-	is => rw,
+	is => ro,
 	default => false,
 );
 
 has set_strictly => (
-	is => rw,
+	is => ro,
 	default => true,
 );
 

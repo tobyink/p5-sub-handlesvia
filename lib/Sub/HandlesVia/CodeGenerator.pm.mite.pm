@@ -87,12 +87,28 @@
             $self->{"coerce"} = $args->{"coerce"};
         }
 
-        # Attribute env
+        # Attribute env (type: HashRef)
         # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 38
-        $self->{"env"} = ( exists( $args->{"env"} ) ? $args->{"env"} : {} );
+        do {
+            my $value = exists( $args->{"env"} )
+              ? (
+                (
+                    do {
+
+                        package Sub::HandlesVia::Mite;
+                        ref( $args->{"env"} ) eq 'HASH';
+                    }
+                ) ? $args->{"env"} : croak(
+                    "Type check failed in constructor: %s should be %s",
+                    "env", "HashRef"
+                )
+              )
+              : {};
+            $self->{"env"} = $value;
+        };
 
         # Attribute generator_for_slot (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 45
         if ( exists $args->{"generator_for_slot"} ) {
             do {
 
@@ -105,7 +121,7 @@
         }
 
         # Attribute generator_for_get (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 45
         if ( exists $args->{"generator_for_get"} ) {
             do {
 
@@ -118,7 +134,7 @@
         }
 
         # Attribute generator_for_set (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 45
         if ( exists $args->{"generator_for_set"} ) {
             do {
 
@@ -131,7 +147,7 @@
         }
 
         # Attribute generator_for_default (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 45
         if ( exists $args->{"generator_for_default"} ) {
             do {
 
@@ -144,87 +160,127 @@
         }
 
         # Attribute generator_for_args (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 56
-        if ( exists $args->{"generator_for_args"} ) {
-            do {
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 58
+        do {
+            my $value = exists( $args->{"generator_for_args"} )
+              ? (
+                (
+                    do {
 
-                package Sub::HandlesVia::Mite;
-                ref( $args->{"generator_for_args"} ) eq 'CODE';
-              }
-              or croak "Type check failed in constructor: %s should be %s",
-              "generator_for_args", "CodeRef";
-            $self->{"generator_for_args"} = $args->{"generator_for_args"};
-        }
+                        package Sub::HandlesVia::Mite;
+                        ref( $args->{"generator_for_args"} ) eq 'CODE';
+                    }
+                ) ? $args->{"generator_for_args"} : croak(
+                    "Type check failed in constructor: %s should be %s",
+                    "generator_for_args", "CodeRef"
+                )
+              )
+              : $self->_build_generator_for_args;
+            $self->{"generator_for_args"} = $value;
+        };
 
         # Attribute generator_for_arg (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 68
-        if ( exists $args->{"generator_for_arg"} ) {
-            do {
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 71
+        do {
+            my $value = exists( $args->{"generator_for_arg"} )
+              ? (
+                (
+                    do {
 
-                package Sub::HandlesVia::Mite;
-                ref( $args->{"generator_for_arg"} ) eq 'CODE';
-              }
-              or croak "Type check failed in constructor: %s should be %s",
-              "generator_for_arg", "CodeRef";
-            $self->{"generator_for_arg"} = $args->{"generator_for_arg"};
-        }
+                        package Sub::HandlesVia::Mite;
+                        ref( $args->{"generator_for_arg"} ) eq 'CODE';
+                    }
+                ) ? $args->{"generator_for_arg"} : croak(
+                    "Type check failed in constructor: %s should be %s",
+                    "generator_for_arg", "CodeRef"
+                )
+              )
+              : $self->_build_generator_for_arg;
+            $self->{"generator_for_arg"} = $value;
+        };
 
         # Attribute generator_for_argc (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 78
-        if ( exists $args->{"generator_for_argc"} ) {
-            do {
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 82
+        do {
+            my $value = exists( $args->{"generator_for_argc"} )
+              ? (
+                (
+                    do {
 
-                package Sub::HandlesVia::Mite;
-                ref( $args->{"generator_for_argc"} ) eq 'CODE';
-              }
-              or croak "Type check failed in constructor: %s should be %s",
-              "generator_for_argc", "CodeRef";
-            $self->{"generator_for_argc"} = $args->{"generator_for_argc"};
-        }
+                        package Sub::HandlesVia::Mite;
+                        ref( $args->{"generator_for_argc"} ) eq 'CODE';
+                    }
+                ) ? $args->{"generator_for_argc"} : croak(
+                    "Type check failed in constructor: %s should be %s",
+                    "generator_for_argc", "CodeRef"
+                )
+              )
+              : $self->_build_generator_for_argc;
+            $self->{"generator_for_argc"} = $value;
+        };
 
         # Attribute generator_for_currying (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 90
-        if ( exists $args->{"generator_for_currying"} ) {
-            do {
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 95
+        do {
+            my $value = exists( $args->{"generator_for_currying"} )
+              ? (
+                (
+                    do {
 
-                package Sub::HandlesVia::Mite;
-                ref( $args->{"generator_for_currying"} ) eq 'CODE';
-              }
-              or croak "Type check failed in constructor: %s should be %s",
-              "generator_for_currying", "CodeRef";
-            $self->{"generator_for_currying"} =
-              $args->{"generator_for_currying"};
-        }
+                        package Sub::HandlesVia::Mite;
+                        ref( $args->{"generator_for_currying"} ) eq 'CODE';
+                    }
+                ) ? $args->{"generator_for_currying"} : croak(
+                    "Type check failed in constructor: %s should be %s",
+                    "generator_for_currying", "CodeRef"
+                )
+              )
+              : $self->_build_generator_for_currying;
+            $self->{"generator_for_currying"} = $value;
+        };
 
         # Attribute generator_for_usage_string (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 104
-        if ( exists $args->{"generator_for_usage_string"} ) {
-            do {
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 110
+        do {
+            my $value = exists( $args->{"generator_for_usage_string"} )
+              ? (
+                (
+                    do {
 
-                package Sub::HandlesVia::Mite;
-                ref( $args->{"generator_for_usage_string"} ) eq 'CODE';
-              }
-              or croak "Type check failed in constructor: %s should be %s",
-              "generator_for_usage_string", "CodeRef";
-            $self->{"generator_for_usage_string"} =
-              $args->{"generator_for_usage_string"};
-        }
+                        package Sub::HandlesVia::Mite;
+                        ref( $args->{"generator_for_usage_string"} ) eq 'CODE';
+                    }
+                ) ? $args->{"generator_for_usage_string"} : croak(
+                    "Type check failed in constructor: %s should be %s",
+                    "generator_for_usage_string", "CodeRef"
+                )
+              )
+              : $self->_build_generator_for_usage_string;
+            $self->{"generator_for_usage_string"} = $value;
+        };
 
         # Attribute generator_for_self (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 114
-        if ( exists $args->{"generator_for_self"} ) {
-            do {
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 121
+        do {
+            my $value = exists( $args->{"generator_for_self"} )
+              ? (
+                (
+                    do {
 
-                package Sub::HandlesVia::Mite;
-                ref( $args->{"generator_for_self"} ) eq 'CODE';
-              }
-              or croak "Type check failed in constructor: %s should be %s",
-              "generator_for_self", "CodeRef";
-            $self->{"generator_for_self"} = $args->{"generator_for_self"};
-        }
+                        package Sub::HandlesVia::Mite;
+                        ref( $args->{"generator_for_self"} ) eq 'CODE';
+                    }
+                ) ? $args->{"generator_for_self"} : croak(
+                    "Type check failed in constructor: %s should be %s",
+                    "generator_for_self", "CodeRef"
+                )
+              )
+              : $self->_build_generator_for_self;
+            $self->{"generator_for_self"} = $value;
+        };
 
         # Attribute method_installer (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 116
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 124
         if ( exists $args->{"method_installer"} ) {
             do {
 
@@ -237,26 +293,26 @@
         }
 
         # Attribute is_method
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 126
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 134
         $self->{"is_method"} =
           ( exists( $args->{"is_method"} ) ? $args->{"is_method"} : "1" );
 
         # Attribute get_is_lvalue
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 131
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 139
         $self->{"get_is_lvalue"} = (
             exists( $args->{"get_is_lvalue"} )
             ? $args->{"get_is_lvalue"}
             : "" );
 
         # Attribute set_checks_isa
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 136
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 144
         $self->{"set_checks_isa"} = (
             exists( $args->{"set_checks_isa"} )
             ? $args->{"set_checks_isa"}
             : "" );
 
         # Attribute set_strictly
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 141
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 149
         $self->{"set_strictly"} =
           ( exists( $args->{"set_strictly"} ) ? $args->{"set_strictly"} : "1" );
 
@@ -341,7 +397,7 @@
       && eval { require Class::XSAccessor; Class::XSAccessor->VERSION("1.19") };
 
     # Accessors for _override
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 121
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 129
     if ($__XS) {
         Class::XSAccessor->import(
             chained     => 1,
@@ -409,99 +465,90 @@
     # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 38
     if ($__XS) {
         Class::XSAccessor->import(
-            chained     => 1,
-            "accessors" => { "env" => "env" },
+            chained   => 1,
+            "getters" => { "env" => "env" },
         );
     }
     else {
         *env = sub {
-            @_ > 1 ? do { $_[0]{"env"} = $_[1]; $_[0]; } : ( $_[0]{"env"} );
+            @_ > 1
+              ? croak("env is a read-only attribute of @{[ref $_[0]]}")
+              : $_[0]{"env"};
         };
     }
 
     # Accessors for generator_for_arg
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 68
-    sub generator_for_arg {
-        @_ > 1
-          ? croak(
-            "generator_for_arg is a read-only attribute of @{[ref $_[0]]}")
-          : (
-            exists( $_[0]{"generator_for_arg"} ) ? $_[0]{"generator_for_arg"}
-            : (
-                $_[0]{"generator_for_arg"} = do {
-                    my $default_value = $_[0]->_build_generator_for_arg;
-                    ( ref($default_value) eq 'CODE' )
-                      or croak( "Type check failed in default: %s should be %s",
-                        "generator_for_arg", "CodeRef" );
-                    $default_value;
-                }
-            )
-          );
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 71
+    if ($__XS) {
+        Class::XSAccessor->import(
+            chained   => 1,
+            "getters" => { "generator_for_arg" => "generator_for_arg" },
+        );
+    }
+    else {
+        *generator_for_arg = sub {
+            @_ > 1
+              ? croak(
+                "generator_for_arg is a read-only attribute of @{[ref $_[0]]}")
+              : $_[0]{"generator_for_arg"};
+        };
     }
 
     # Accessors for generator_for_argc
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 78
-    sub generator_for_argc {
-        @_ > 1
-          ? croak(
-            "generator_for_argc is a read-only attribute of @{[ref $_[0]]}")
-          : (
-            exists( $_[0]{"generator_for_argc"} ) ? $_[0]{"generator_for_argc"}
-            : (
-                $_[0]{"generator_for_argc"} = do {
-                    my $default_value = $_[0]->_build_generator_for_argc;
-                    ( ref($default_value) eq 'CODE' )
-                      or croak( "Type check failed in default: %s should be %s",
-                        "generator_for_argc", "CodeRef" );
-                    $default_value;
-                }
-            )
-          );
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 82
+    if ($__XS) {
+        Class::XSAccessor->import(
+            chained   => 1,
+            "getters" => { "generator_for_argc" => "generator_for_argc" },
+        );
+    }
+    else {
+        *generator_for_argc = sub {
+            @_ > 1
+              ? croak(
+                "generator_for_argc is a read-only attribute of @{[ref $_[0]]}")
+              : $_[0]{"generator_for_argc"};
+        };
     }
 
     # Accessors for generator_for_args
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 56
-    sub generator_for_args {
-        @_ > 1
-          ? croak(
-            "generator_for_args is a read-only attribute of @{[ref $_[0]]}")
-          : (
-            exists( $_[0]{"generator_for_args"} ) ? $_[0]{"generator_for_args"}
-            : (
-                $_[0]{"generator_for_args"} = do {
-                    my $default_value = $_[0]->_build_generator_for_args;
-                    ( ref($default_value) eq 'CODE' )
-                      or croak( "Type check failed in default: %s should be %s",
-                        "generator_for_args", "CodeRef" );
-                    $default_value;
-                }
-            )
-          );
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 58
+    if ($__XS) {
+        Class::XSAccessor->import(
+            chained   => 1,
+            "getters" => { "generator_for_args" => "generator_for_args" },
+        );
+    }
+    else {
+        *generator_for_args = sub {
+            @_ > 1
+              ? croak(
+                "generator_for_args is a read-only attribute of @{[ref $_[0]]}")
+              : $_[0]{"generator_for_args"};
+        };
     }
 
     # Accessors for generator_for_currying
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 90
-    sub generator_for_currying {
-        @_ > 1
-          ? croak(
-            "generator_for_currying is a read-only attribute of @{[ref $_[0]]}")
-          : (
-            exists( $_[0]{"generator_for_currying"} )
-            ? $_[0]{"generator_for_currying"}
-            : (
-                $_[0]{"generator_for_currying"} = do {
-                    my $default_value = $_[0]->_build_generator_for_currying;
-                    ( ref($default_value) eq 'CODE' )
-                      or croak( "Type check failed in default: %s should be %s",
-                        "generator_for_currying", "CodeRef" );
-                    $default_value;
-                }
-            )
-          );
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 95
+    if ($__XS) {
+        Class::XSAccessor->import(
+            chained   => 1,
+            "getters" =>
+              { "generator_for_currying" => "generator_for_currying" },
+        );
+    }
+    else {
+        *generator_for_currying = sub {
+            @_ > 1
+              ? croak(
+"generator_for_currying is a read-only attribute of @{[ref $_[0]]}"
+              )
+              : $_[0]{"generator_for_currying"};
+        };
     }
 
     # Accessors for generator_for_default
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 45
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -519,7 +566,7 @@
     }
 
     # Accessors for generator_for_get
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 45
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -536,27 +583,24 @@
     }
 
     # Accessors for generator_for_self
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 114
-    sub generator_for_self {
-        @_ > 1
-          ? croak(
-            "generator_for_self is a read-only attribute of @{[ref $_[0]]}")
-          : (
-            exists( $_[0]{"generator_for_self"} ) ? $_[0]{"generator_for_self"}
-            : (
-                $_[0]{"generator_for_self"} = do {
-                    my $default_value = $_[0]->_build_generator_for_self;
-                    ( ref($default_value) eq 'CODE' )
-                      or croak( "Type check failed in default: %s should be %s",
-                        "generator_for_self", "CodeRef" );
-                    $default_value;
-                }
-            )
-          );
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 121
+    if ($__XS) {
+        Class::XSAccessor->import(
+            chained   => 1,
+            "getters" => { "generator_for_self" => "generator_for_self" },
+        );
+    }
+    else {
+        *generator_for_self = sub {
+            @_ > 1
+              ? croak(
+                "generator_for_self is a read-only attribute of @{[ref $_[0]]}")
+              : $_[0]{"generator_for_self"};
+        };
     }
 
     # Accessors for generator_for_set
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 45
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -573,7 +617,7 @@
     }
 
     # Accessors for generator_for_slot
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 45
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -590,60 +634,54 @@
     }
 
     # Accessors for generator_for_usage_string
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 104
-    sub generator_for_usage_string {
-        @_ > 1
-          ? croak(
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 110
+    if ($__XS) {
+        Class::XSAccessor->import(
+            chained   => 1,
+            "getters" =>
+              { "generator_for_usage_string" => "generator_for_usage_string" },
+        );
+    }
+    else {
+        *generator_for_usage_string = sub {
+            @_ > 1
+              ? croak(
 "generator_for_usage_string is a read-only attribute of @{[ref $_[0]]}"
-          )
-          : (
-            exists( $_[0]{"generator_for_usage_string"} )
-            ? $_[0]{"generator_for_usage_string"}
-            : (
-                $_[0]{"generator_for_usage_string"} = do {
-                    my $default_value =
-                      $_[0]->_build_generator_for_usage_string;
-                    ( ref($default_value) eq 'CODE' )
-                      or croak(
-                        "Type check failed in default: %s should be %s",
-                        "generator_for_usage_string",
-                        "CodeRef"
-                      );
-                    $default_value;
-                }
-            )
-          );
+              )
+              : $_[0]{"generator_for_usage_string"};
+        };
     }
 
     # Accessors for get_is_lvalue
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 131
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 139
     if ($__XS) {
         Class::XSAccessor->import(
-            chained     => 1,
-            "accessors" => { "get_is_lvalue" => "get_is_lvalue" },
+            chained   => 1,
+            "getters" => { "get_is_lvalue" => "get_is_lvalue" },
         );
     }
     else {
         *get_is_lvalue = sub {
             @_ > 1
-              ? do { $_[0]{"get_is_lvalue"} = $_[1]; $_[0]; }
-              : ( $_[0]{"get_is_lvalue"} );
+              ? croak(
+                "get_is_lvalue is a read-only attribute of @{[ref $_[0]]}")
+              : $_[0]{"get_is_lvalue"};
         };
     }
 
     # Accessors for is_method
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 126
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 134
     if ($__XS) {
         Class::XSAccessor->import(
-            chained     => 1,
-            "accessors" => { "is_method" => "is_method" },
+            chained   => 1,
+            "getters" => { "is_method" => "is_method" },
         );
     }
     else {
         *is_method = sub {
             @_ > 1
-              ? do { $_[0]{"is_method"} = $_[1]; $_[0]; }
-              : ( $_[0]{"is_method"} );
+              ? croak("is_method is a read-only attribute of @{[ref $_[0]]}")
+              : $_[0]{"is_method"};
         };
     }
 
@@ -664,48 +702,52 @@
     }
 
     # Accessors for method_installer
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 116
-    sub method_installer {
-        @_ > 1
-          ? do {
-            ( ref( $_[1] ) eq 'CODE' )
-              or croak( "Type check failed in %s: value should be %s",
-                "accessor", "CodeRef" );
-            $_[0]{"method_installer"} = $_[1];
-            $_[0];
-          }
-          : ( $_[0]{"method_installer"} );
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 124
+    if ($__XS) {
+        Class::XSAccessor->import(
+            chained   => 1,
+            "getters" => { "method_installer" => "method_installer" },
+        );
+    }
+    else {
+        *method_installer = sub {
+            @_ > 1
+              ? croak(
+                "method_installer is a read-only attribute of @{[ref $_[0]]}")
+              : $_[0]{"method_installer"};
+        };
     }
 
     # Accessors for set_checks_isa
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 136
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 144
     if ($__XS) {
         Class::XSAccessor->import(
-            chained     => 1,
-            "accessors" => { "set_checks_isa" => "set_checks_isa" },
+            chained   => 1,
+            "getters" => { "set_checks_isa" => "set_checks_isa" },
         );
     }
     else {
         *set_checks_isa = sub {
             @_ > 1
-              ? do { $_[0]{"set_checks_isa"} = $_[1]; $_[0]; }
-              : ( $_[0]{"set_checks_isa"} );
+              ? croak(
+                "set_checks_isa is a read-only attribute of @{[ref $_[0]]}")
+              : $_[0]{"set_checks_isa"};
         };
     }
 
     # Accessors for set_strictly
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 141
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 149
     if ($__XS) {
         Class::XSAccessor->import(
-            chained     => 1,
-            "accessors" => { "set_strictly" => "set_strictly" },
+            chained   => 1,
+            "getters" => { "set_strictly" => "set_strictly" },
         );
     }
     else {
         *set_strictly = sub {
             @_ > 1
-              ? do { $_[0]{"set_strictly"} = $_[1]; $_[0]; }
-              : ( $_[0]{"set_strictly"} );
+              ? croak("set_strictly is a read-only attribute of @{[ref $_[0]]}")
+              : $_[0]{"set_strictly"};
         };
     }
 
