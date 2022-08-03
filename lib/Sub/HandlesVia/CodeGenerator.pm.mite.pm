@@ -6,7 +6,7 @@
 
     our $USES_MITE    = "Mite::Class";
     our $MITE_SHIM    = "Sub::HandlesVia::Mite";
-    our $MITE_VERSION = "0.006011";
+    our $MITE_VERSION = "0.008002";
 
     BEGIN {
         require Scalar::Util;
@@ -24,6 +24,7 @@
         *true    = \&Sub::HandlesVia::Mite::true;
     }
 
+    # Standard Moose/Moo-style constructor
     sub new {
         my $class = ref( $_[0] ) ? ref(shift) : shift;
         my $meta  = ( $Mite::META{$class} ||= $class->__META__ );
@@ -34,22 +35,26 @@
           : { ( @_ == 1 ) ? %{ $_[0] } : @_ };
         my $no_build = delete $args->{__no_BUILD__};
 
-        # Attribute: toolkit
+        # Attribute toolkit
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 12
         if ( exists $args->{"toolkit"} ) {
             $self->{"toolkit"} = $args->{"toolkit"};
         }
 
-        # Attribute: target
+        # Attribute target
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 16
         if ( exists $args->{"target"} ) {
             $self->{"target"} = $args->{"target"};
         }
 
-        # Attribute: attribute
+        # Attribute attribute
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 20
         if ( exists $args->{"attribute"} ) {
             $self->{"attribute"} = $args->{"attribute"};
         }
 
-        # Attribute: attribute_spec
+        # Attribute attribute_spec (type: HashRef)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 24
         if ( exists $args->{"attribute_spec"} ) {
             do {
 
@@ -61,10 +66,12 @@
             $self->{"attribute_spec"} = $args->{"attribute_spec"};
         }
 
-        # Attribute: isa
+        # Attribute isa
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 29
         if ( exists $args->{"isa"} ) { $self->{"isa"} = $args->{"isa"}; }
 
-        # Attribute: coerce
+        # Attribute coerce (type: Bool)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 33
         if ( exists $args->{"coerce"} ) {
             do {
 
@@ -80,10 +87,12 @@
             $self->{"coerce"} = $args->{"coerce"};
         }
 
-        # Attribute: env
+        # Attribute env
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 38
         $self->{"env"} = ( exists( $args->{"env"} ) ? $args->{"env"} : {} );
 
-        # Attribute: generator_for_slot
+        # Attribute generator_for_slot (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
         if ( exists $args->{"generator_for_slot"} ) {
             do {
 
@@ -95,7 +104,8 @@
             $self->{"generator_for_slot"} = $args->{"generator_for_slot"};
         }
 
-        # Attribute: generator_for_get
+        # Attribute generator_for_get (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
         if ( exists $args->{"generator_for_get"} ) {
             do {
 
@@ -107,7 +117,8 @@
             $self->{"generator_for_get"} = $args->{"generator_for_get"};
         }
 
-        # Attribute: generator_for_set
+        # Attribute generator_for_set (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
         if ( exists $args->{"generator_for_set"} ) {
             do {
 
@@ -119,7 +130,8 @@
             $self->{"generator_for_set"} = $args->{"generator_for_set"};
         }
 
-        # Attribute: generator_for_default
+        # Attribute generator_for_default (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
         if ( exists $args->{"generator_for_default"} ) {
             do {
 
@@ -131,7 +143,8 @@
             $self->{"generator_for_default"} = $args->{"generator_for_default"};
         }
 
-        # Attribute: generator_for_args
+        # Attribute generator_for_args (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 56
         if ( exists $args->{"generator_for_args"} ) {
             do {
 
@@ -143,7 +156,8 @@
             $self->{"generator_for_args"} = $args->{"generator_for_args"};
         }
 
-        # Attribute: generator_for_arg
+        # Attribute generator_for_arg (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 68
         if ( exists $args->{"generator_for_arg"} ) {
             do {
 
@@ -155,7 +169,8 @@
             $self->{"generator_for_arg"} = $args->{"generator_for_arg"};
         }
 
-        # Attribute: generator_for_argc
+        # Attribute generator_for_argc (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 78
         if ( exists $args->{"generator_for_argc"} ) {
             do {
 
@@ -167,7 +182,8 @@
             $self->{"generator_for_argc"} = $args->{"generator_for_argc"};
         }
 
-        # Attribute: generator_for_currying
+        # Attribute generator_for_currying (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 90
         if ( exists $args->{"generator_for_currying"} ) {
             do {
 
@@ -180,7 +196,8 @@
               $args->{"generator_for_currying"};
         }
 
-        # Attribute: generator_for_usage_string
+        # Attribute generator_for_usage_string (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 104
         if ( exists $args->{"generator_for_usage_string"} ) {
             do {
 
@@ -193,7 +210,8 @@
               $args->{"generator_for_usage_string"};
         }
 
-        # Attribute: generator_for_self
+        # Attribute generator_for_self (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 114
         if ( exists $args->{"generator_for_self"} ) {
             do {
 
@@ -205,7 +223,8 @@
             $self->{"generator_for_self"} = $args->{"generator_for_self"};
         }
 
-        # Attribute: method_installer
+        # Attribute method_installer (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 116
         if ( exists $args->{"method_installer"} ) {
             do {
 
@@ -217,27 +236,34 @@
             $self->{"method_installer"} = $args->{"method_installer"};
         }
 
-        # Attribute: is_method
+        # Attribute is_method
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 126
         $self->{"is_method"} =
           ( exists( $args->{"is_method"} ) ? $args->{"is_method"} : "1" );
 
-        # Attribute: get_is_lvalue
+        # Attribute get_is_lvalue
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 131
         $self->{"get_is_lvalue"} = (
             exists( $args->{"get_is_lvalue"} )
             ? $args->{"get_is_lvalue"}
             : "" );
 
-        # Attribute: set_checks_isa
+        # Attribute set_checks_isa
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 136
         $self->{"set_checks_isa"} = (
             exists( $args->{"set_checks_isa"} )
             ? $args->{"set_checks_isa"}
             : "" );
 
-        # Attribute: set_strictly
+        # Attribute set_strictly
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 141
         $self->{"set_strictly"} =
           ( exists( $args->{"set_strictly"} ) ? $args->{"set_strictly"} : "1" );
 
-        # Enforce strict constructor
+        # Call BUILD methods
+        $self->BUILDALL($args) if ( !$no_build and @{ $meta->{BUILD} || [] } );
+
+        # Unrecognized parameters
         my @unknown = grep not(
 /\A(?:attribute(?:_spec)?|coerce|env|ge(?:nerator_for_(?:arg[cs]?|currying|default|get|s(?:e(?:lf|t)|lot)|usage_string)|t_is_lvalue)|is(?:_method|a)|method_installer|set_(?:checks_isa|strictly)|t(?:arget|oolkit))\z/
         ), keys %{$args};
@@ -245,18 +271,17 @@
           and croak(
             "Unexpected keys in constructor: " . join( q[, ], sort @unknown ) );
 
-        # Call BUILD methods
-        $self->BUILDALL($args) if ( !$no_build and @{ $meta->{BUILD} || [] } );
-
         return $self;
     }
 
+    # Used by constructor to call BUILD methods
     sub BUILDALL {
         my $class = ref( $_[0] );
         my $meta  = ( $Mite::META{$class} ||= $class->__META__ );
         $_->(@_) for @{ $meta->{BUILD} || [] };
     }
 
+    # Destructor should call DEMOLISH methods
     sub DESTROY {
         my $self  = shift;
         my $class = ref($self) || $self;
@@ -277,6 +302,7 @@
         return;
     }
 
+    # Gather metadata for constructor and destructor
     sub __META__ {
         no strict 'refs';
         no warnings 'once';
@@ -297,6 +323,7 @@
         };
     }
 
+    # See UNIVERSAL
     sub DOES {
         my ( $self, $role ) = @_;
         our %DOES;
@@ -305,6 +332,7 @@
         return $self->SUPER::DOES($role);
     }
 
+    # Alias for Moose/Moo-compatibility
     sub does {
         shift->DOES(@_);
     }
@@ -313,6 +341,7 @@
       && eval { require Class::XSAccessor; Class::XSAccessor->VERSION("1.19") };
 
     # Accessors for _override
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 121
     if ($__XS) {
         Class::XSAccessor->import(
             chained     => 1,
@@ -328,6 +357,7 @@
     }
 
     # Accessors for attribute
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 20
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -343,6 +373,7 @@
     }
 
     # Accessors for attribute_spec
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 24
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -359,6 +390,7 @@
     }
 
     # Accessors for coerce
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 33
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -374,6 +406,7 @@
     }
 
     # Accessors for env
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 38
     if ($__XS) {
         Class::XSAccessor->import(
             chained     => 1,
@@ -387,6 +420,7 @@
     }
 
     # Accessors for generator_for_arg
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 68
     sub generator_for_arg {
         @_ > 1
           ? croak(
@@ -406,6 +440,7 @@
     }
 
     # Accessors for generator_for_argc
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 78
     sub generator_for_argc {
         @_ > 1
           ? croak(
@@ -425,6 +460,7 @@
     }
 
     # Accessors for generator_for_args
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 56
     sub generator_for_args {
         @_ > 1
           ? croak(
@@ -444,6 +480,7 @@
     }
 
     # Accessors for generator_for_currying
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 90
     sub generator_for_currying {
         @_ > 1
           ? croak(
@@ -464,6 +501,7 @@
     }
 
     # Accessors for generator_for_default
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -481,6 +519,7 @@
     }
 
     # Accessors for generator_for_get
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -497,6 +536,7 @@
     }
 
     # Accessors for generator_for_self
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 114
     sub generator_for_self {
         @_ > 1
           ? croak(
@@ -516,6 +556,7 @@
     }
 
     # Accessors for generator_for_set
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -532,6 +573,7 @@
     }
 
     # Accessors for generator_for_slot
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -548,6 +590,7 @@
     }
 
     # Accessors for generator_for_usage_string
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 104
     sub generator_for_usage_string {
         @_ > 1
           ? croak(
@@ -573,6 +616,7 @@
     }
 
     # Accessors for get_is_lvalue
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 131
     if ($__XS) {
         Class::XSAccessor->import(
             chained     => 1,
@@ -588,6 +632,7 @@
     }
 
     # Accessors for is_method
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 126
     if ($__XS) {
         Class::XSAccessor->import(
             chained     => 1,
@@ -603,6 +648,7 @@
     }
 
     # Accessors for isa
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 29
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -618,6 +664,7 @@
     }
 
     # Accessors for method_installer
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 116
     sub method_installer {
         @_ > 1
           ? do {
@@ -631,6 +678,7 @@
     }
 
     # Accessors for set_checks_isa
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 136
     if ($__XS) {
         Class::XSAccessor->import(
             chained     => 1,
@@ -646,6 +694,7 @@
     }
 
     # Accessors for set_strictly
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 141
     if ($__XS) {
         Class::XSAccessor->import(
             chained     => 1,
@@ -661,6 +710,7 @@
     }
 
     # Accessors for target
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 16
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -676,6 +726,7 @@
     }
 
     # Accessors for toolkit
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 12
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
