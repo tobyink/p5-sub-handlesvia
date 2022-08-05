@@ -5,7 +5,7 @@ use warnings;
 
 our $USES_MITE = "Mite::Role";
 our $MITE_SHIM = "MyTest::Mite";
-our $MITE_VERSION = "0.008002";
+our $MITE_VERSION = "0.008003";
 # Gather metadata for constructor and destructor
 sub __META__ {
     no strict 'refs';

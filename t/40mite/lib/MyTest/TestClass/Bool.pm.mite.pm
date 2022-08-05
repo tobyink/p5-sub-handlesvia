@@ -5,7 +5,7 @@ use warnings;
 
 our $USES_MITE = "Mite::Class";
 our $MITE_SHIM = "MyTest::Mite";
-our $MITE_VERSION = "0.008002";
+our $MITE_VERSION = "0.008003";
 
 # Standard Moose/Moo-style constructor
 sub new {
@@ -101,9 +101,9 @@ if ( $__XS ) {
     );
 }
 else {
-    *attr = sub { @_ > 1 ? MyTest::Mite::croak( "attr is a read-only attribute of @{[ref $_[0]]}" ) : $_[0]{"attr"} };
+    *attr = sub { @_ == 1 or MyTest::Mite::croak( 'Reader "attr" usage: $self->attr()' ); $_[0]{"attr"} };
 }
-sub _set_attr { (!ref $_[1] and (!defined $_[1] or $_[1] eq q() or $_[1] eq '0' or $_[1] eq '1')) or MyTest::Mite::croak( "Type check failed in %s: value should be %s", "writer", "Bool" ); $_[0]{"attr"} = $_[1]; $_[0]; }
+sub _set_attr { @_ == 2 or MyTest::Mite::croak( 'Writer "_set_attr" usage: $self->_set_attr( $newvalue )' ); (!ref $_[1] and (!defined $_[1] or $_[1] eq q() or $_[1] eq '0' or $_[1] eq '1')) or MyTest::Mite::croak( "Type check failed in %s: value should be %s", "writer", "Bool" ); $_[0]{"attr"} = $_[1]; $_[0]; }
 
 
 1;

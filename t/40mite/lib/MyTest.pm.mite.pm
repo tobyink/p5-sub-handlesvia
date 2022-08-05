@@ -5,7 +5,7 @@ use warnings;
 
 our $USES_MITE = "Mite::Class";
 our $MITE_SHIM = "MyTest::Mite";
-our $MITE_VERSION = "0.008002";
+our $MITE_VERSION = "0.008003";
 
 # Standard Moose/Moo-style constructor
 sub new {
@@ -101,7 +101,7 @@ if ( $__XS ) {
     );
 }
 else {
-    *list = sub { @_ > 1 ? MyTest::Mite::croak( "list is a read-only attribute of @{[ref $_[0]]}" ) : $_[0]{"list"} };
+    *list = sub { @_ == 1 or MyTest::Mite::croak( 'Reader "list" usage: $self->list()' ); $_[0]{"list"} };
 }
 
 
