@@ -244,3 +244,10 @@
 	changeset [
 		item "Require newer version of Role::Hooks."^^Packaging;
 	].
+
+`Sub-HandlesVia 0.033 cpan:TOBYINK`
+	issued  2022-07-12;
+	changeset [
+		item "Recompile with newer Mite."^^Update;
+		item "Optimizations to Sub::HandlesVia::CodeGenerator."^^Change;
+	].
