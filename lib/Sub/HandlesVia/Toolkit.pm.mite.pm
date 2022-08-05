@@ -6,7 +6,7 @@
 
     our $USES_MITE    = "Mite::Class";
     our $MITE_SHIM    = "Sub::HandlesVia::Mite";
-    our $MITE_VERSION = "0.008002";
+    our $MITE_VERSION = "0.008003";
 
     # Standard Moose/Moo-style constructor
     sub new {

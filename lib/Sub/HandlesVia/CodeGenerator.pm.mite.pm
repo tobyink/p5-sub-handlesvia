@@ -6,10 +6,11 @@
 
     our $USES_MITE    = "Mite::Class";
     our $MITE_SHIM    = "Sub::HandlesVia::Mite";
-    our $MITE_VERSION = "0.008002";
+    our $MITE_VERSION = "0.008003";
 
     BEGIN {
         require Scalar::Util;
+        *STRICT  = \&Sub::HandlesVia::Mite::STRICT;
         *bare    = \&Sub::HandlesVia::Mite::bare;
         *blessed = \&Scalar::Util::blessed;
         *carp    = \&Sub::HandlesVia::Mite::carp;
@@ -422,9 +423,8 @@
     }
     else {
         *attribute = sub {
-            @_ > 1
-              ? croak("attribute is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"attribute"};
+            @_ == 1 or croak('Reader "attribute" usage: $self->attribute()');
+            $_[0]{"attribute"};
         };
     }
 
@@ -438,10 +438,10 @@
     }
     else {
         *attribute_spec = sub {
-            @_ > 1
-              ? croak(
-                "attribute_spec is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"attribute_spec"};
+            @_ == 1
+              or
+              croak('Reader "attribute_spec" usage: $self->attribute_spec()');
+            $_[0]{"attribute_spec"};
         };
     }
 
@@ -455,9 +455,8 @@
     }
     else {
         *coerce = sub {
-            @_ > 1
-              ? croak("coerce is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"coerce"};
+            @_ == 1 or croak('Reader "coerce" usage: $self->coerce()');
+            $_[0]{"coerce"};
         };
     }
 
@@ -471,9 +470,8 @@
     }
     else {
         *env = sub {
-            @_ > 1
-              ? croak("env is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"env"};
+            @_ == 1 or croak('Reader "env" usage: $self->env()');
+            $_[0]{"env"};
         };
     }
 
@@ -487,10 +485,10 @@
     }
     else {
         *generator_for_arg = sub {
-            @_ > 1
-              ? croak(
-                "generator_for_arg is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"generator_for_arg"};
+            @_ == 1
+              or croak(
+                'Reader "generator_for_arg" usage: $self->generator_for_arg()');
+            $_[0]{"generator_for_arg"};
         };
     }
 
@@ -504,10 +502,11 @@
     }
     else {
         *generator_for_argc = sub {
-            @_ > 1
-              ? croak(
-                "generator_for_argc is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"generator_for_argc"};
+            @_ == 1
+              or croak(
+                'Reader "generator_for_argc" usage: $self->generator_for_argc()'
+              );
+            $_[0]{"generator_for_argc"};
         };
     }
 
@@ -521,10 +520,11 @@
     }
     else {
         *generator_for_args = sub {
-            @_ > 1
-              ? croak(
-                "generator_for_args is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"generator_for_args"};
+            @_ == 1
+              or croak(
+                'Reader "generator_for_args" usage: $self->generator_for_args()'
+              );
+            $_[0]{"generator_for_args"};
         };
     }
 
@@ -539,11 +539,11 @@
     }
     else {
         *generator_for_currying = sub {
-            @_ > 1
-              ? croak(
-"generator_for_currying is a read-only attribute of @{[ref $_[0]]}"
-              )
-              : $_[0]{"generator_for_currying"};
+            @_ == 1
+              or croak(
+'Reader "generator_for_currying" usage: $self->generator_for_currying()'
+              );
+            $_[0]{"generator_for_currying"};
         };
     }
 
@@ -557,11 +557,11 @@
     }
     else {
         *generator_for_default = sub {
-            @_ > 1
-              ? croak(
-"generator_for_default is a read-only attribute of @{[ref $_[0]]}"
-              )
-              : $_[0]{"generator_for_default"};
+            @_ == 1
+              or croak(
+'Reader "generator_for_default" usage: $self->generator_for_default()'
+              );
+            $_[0]{"generator_for_default"};
         };
     }
 
@@ -575,10 +575,10 @@
     }
     else {
         *generator_for_get = sub {
-            @_ > 1
-              ? croak(
-                "generator_for_get is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"generator_for_get"};
+            @_ == 1
+              or croak(
+                'Reader "generator_for_get" usage: $self->generator_for_get()');
+            $_[0]{"generator_for_get"};
         };
     }
 
@@ -592,10 +592,11 @@
     }
     else {
         *generator_for_self = sub {
-            @_ > 1
-              ? croak(
-                "generator_for_self is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"generator_for_self"};
+            @_ == 1
+              or croak(
+                'Reader "generator_for_self" usage: $self->generator_for_self()'
+              );
+            $_[0]{"generator_for_self"};
         };
     }
 
@@ -609,10 +610,10 @@
     }
     else {
         *generator_for_set = sub {
-            @_ > 1
-              ? croak(
-                "generator_for_set is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"generator_for_set"};
+            @_ == 1
+              or croak(
+                'Reader "generator_for_set" usage: $self->generator_for_set()');
+            $_[0]{"generator_for_set"};
         };
     }
 
@@ -626,10 +627,11 @@
     }
     else {
         *generator_for_slot = sub {
-            @_ > 1
-              ? croak(
-                "generator_for_slot is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"generator_for_slot"};
+            @_ == 1
+              or croak(
+                'Reader "generator_for_slot" usage: $self->generator_for_slot()'
+              );
+            $_[0]{"generator_for_slot"};
         };
     }
 
@@ -644,11 +646,11 @@
     }
     else {
         *generator_for_usage_string = sub {
-            @_ > 1
-              ? croak(
-"generator_for_usage_string is a read-only attribute of @{[ref $_[0]]}"
-              )
-              : $_[0]{"generator_for_usage_string"};
+            @_ == 1
+              or croak(
+'Reader "generator_for_usage_string" usage: $self->generator_for_usage_string()'
+              );
+            $_[0]{"generator_for_usage_string"};
         };
     }
 
@@ -662,10 +664,9 @@
     }
     else {
         *get_is_lvalue = sub {
-            @_ > 1
-              ? croak(
-                "get_is_lvalue is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"get_is_lvalue"};
+            @_ == 1
+              or croak('Reader "get_is_lvalue" usage: $self->get_is_lvalue()');
+            $_[0]{"get_is_lvalue"};
         };
     }
 
@@ -679,9 +680,8 @@
     }
     else {
         *is_method = sub {
-            @_ > 1
-              ? croak("is_method is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"is_method"};
+            @_ == 1 or croak('Reader "is_method" usage: $self->is_method()');
+            $_[0]{"is_method"};
         };
     }
 
@@ -695,9 +695,8 @@
     }
     else {
         *isa = sub {
-            @_ > 1
-              ? croak("isa is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"isa"};
+            @_ == 1 or croak('Reader "isa" usage: $self->isa()');
+            $_[0]{"isa"};
         };
     }
 
@@ -711,10 +710,10 @@
     }
     else {
         *method_installer = sub {
-            @_ > 1
-              ? croak(
-                "method_installer is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"method_installer"};
+            @_ == 1
+              or croak(
+                'Reader "method_installer" usage: $self->method_installer()');
+            $_[0]{"method_installer"};
         };
     }
 
@@ -728,10 +727,10 @@
     }
     else {
         *set_checks_isa = sub {
-            @_ > 1
-              ? croak(
-                "set_checks_isa is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"set_checks_isa"};
+            @_ == 1
+              or
+              croak('Reader "set_checks_isa" usage: $self->set_checks_isa()');
+            $_[0]{"set_checks_isa"};
         };
     }
 
@@ -745,9 +744,9 @@
     }
     else {
         *set_strictly = sub {
-            @_ > 1
-              ? croak("set_strictly is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"set_strictly"};
+            @_ == 1
+              or croak('Reader "set_strictly" usage: $self->set_strictly()');
+            $_[0]{"set_strictly"};
         };
     }
 
@@ -761,9 +760,8 @@
     }
     else {
         *target = sub {
-            @_ > 1
-              ? croak("target is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"target"};
+            @_ == 1 or croak('Reader "target" usage: $self->target()');
+            $_[0]{"target"};
         };
     }
 
@@ -777,9 +775,8 @@
     }
     else {
         *toolkit = sub {
-            @_ > 1
-              ? croak("toolkit is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"toolkit"};
+            @_ == 1 or croak('Reader "toolkit" usage: $self->toolkit()');
+            $_[0]{"toolkit"};
         };
     }
 

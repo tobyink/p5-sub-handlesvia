@@ -6,10 +6,11 @@
 
     our $USES_MITE    = "Mite::Class";
     our $MITE_SHIM    = "Sub::HandlesVia::Mite";
-    our $MITE_VERSION = "0.008002";
+    our $MITE_VERSION = "0.008003";
 
     BEGIN {
         require Scalar::Util;
+        *STRICT  = \&Sub::HandlesVia::Mite::STRICT;
         *bare    = \&Sub::HandlesVia::Mite::bare;
         *blessed = \&Scalar::Util::blessed;
         *carp    = \&Sub::HandlesVia::Mite::carp;
@@ -550,9 +551,8 @@
     }
     else {
         *_examples = sub {
-            @_ > 1
-              ? croak("_examples is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"_examples"};
+            @_ == 1 or croak('Reader "_examples" usage: $self->_examples()');
+            $_[0]{"_examples"};
         };
     }
 
@@ -566,11 +566,11 @@
     }
     else {
         *additional_validation = sub {
-            @_ > 1
-              ? croak(
-"additional_validation is a read-only attribute of @{[ref $_[0]]}"
-              )
-              : $_[0]{"additional_validation"};
+            @_ == 1
+              or croak(
+'Reader "additional_validation" usage: $self->additional_validation()'
+              );
+            $_[0]{"additional_validation"};
         };
     }
 
@@ -585,11 +585,11 @@
     }
     else {
         *allow_getter_shortcuts = sub {
-            @_ > 1
-              ? croak(
-"allow_getter_shortcuts is a read-only attribute of @{[ref $_[0]]}"
-              )
-              : $_[0]{"allow_getter_shortcuts"};
+            @_ == 1
+              or croak(
+'Reader "allow_getter_shortcuts" usage: $self->allow_getter_shortcuts()'
+              );
+            $_[0]{"allow_getter_shortcuts"};
         };
     }
 
@@ -603,9 +603,8 @@
     }
     else {
         *args = sub {
-            @_ > 1
-              ? croak("args is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"args"};
+            @_ == 1 or croak('Reader "args" usage: $self->args()');
+            $_[0]{"args"};
         };
     }
 
@@ -619,9 +618,8 @@
     }
     else {
         *curried = sub {
-            @_ > 1
-              ? croak("curried is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"curried"};
+            @_ == 1 or croak('Reader "curried" usage: $self->curried()');
+            $_[0]{"curried"};
         };
     }
 
@@ -635,10 +633,10 @@
     }
     else {
         *default_for_reset = sub {
-            @_ > 1
-              ? croak(
-                "default_for_reset is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"default_for_reset"};
+            @_ == 1
+              or croak(
+                'Reader "default_for_reset" usage: $self->default_for_reset()');
+            $_[0]{"default_for_reset"};
         };
     }
 
@@ -652,10 +650,9 @@
     }
     else {
         *documentation = sub {
-            @_ > 1
-              ? croak(
-                "documentation is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"documentation"};
+            @_ == 1
+              or croak('Reader "documentation" usage: $self->documentation()');
+            $_[0]{"documentation"};
         };
     }
 
@@ -669,18 +666,17 @@
     }
     else {
         *is_chainable = sub {
-            @_ > 1
-              ? croak("is_chainable is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"is_chainable"};
+            @_ == 1
+              or croak('Reader "is_chainable" usage: $self->is_chainable()');
+            $_[0]{"is_chainable"};
         };
     }
 
     # Accessors for is_mutator
     # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 70
     sub is_mutator {
-        @_ > 1
-          ? croak("is_mutator is a read-only attribute of @{[ref $_[0]]}")
-          : (
+        @_ == 1 or croak('Reader "is_mutator" usage: $self->is_mutator()');
+        (
             exists( $_[0]{"is_mutator"} ) ? $_[0]{"is_mutator"} : (
                 $_[0]{"is_mutator"} = do {
                     my $default_value = do {
@@ -712,7 +708,7 @@
                     $default_value;
                 }
             )
-          );
+        );
     }
 
     # Accessors for lvalue_template
@@ -725,19 +721,18 @@
     }
     else {
         *lvalue_template = sub {
-            @_ > 1
-              ? croak(
-                "lvalue_template is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"lvalue_template"};
+            @_ == 1
+              or
+              croak('Reader "lvalue_template" usage: $self->lvalue_template()');
+            $_[0]{"lvalue_template"};
         };
     }
 
     # Accessors for max_args
     # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 37
     sub max_args {
-        @_ > 1
-          ? croak("max_args is a read-only attribute of @{[ref $_[0]]}")
-          : (
+        @_ == 1 or croak('Reader "max_args" usage: $self->max_args()');
+        (
             exists( $_[0]{"max_args"} ) ? $_[0]{"max_args"} : (
                 $_[0]{"max_args"} = do {
                     my $default_value = $_[0]->_build_max_args;
@@ -761,15 +756,14 @@
                     $default_value;
                 }
             )
-          );
+        );
     }
 
     # Accessors for min_args
     # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 37
     sub min_args {
-        @_ > 1
-          ? croak("min_args is a read-only attribute of @{[ref $_[0]]}")
-          : (
+        @_ == 1 or croak('Reader "min_args" usage: $self->min_args()');
+        (
             exists( $_[0]{"min_args"} ) ? $_[0]{"min_args"} : (
                 $_[0]{"min_args"} = do {
                     my $default_value = $_[0]->_build_min_args;
@@ -793,7 +787,7 @@
                     $default_value;
                 }
             )
-          );
+        );
     }
 
     # Accessors for name
@@ -806,9 +800,8 @@
     }
     else {
         *name = sub {
-            @_ > 1
-              ? croak("name is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"name"};
+            @_ == 1 or croak('Reader "name" usage: $self->name()');
+            $_[0]{"name"};
         };
     }
 
@@ -822,11 +815,11 @@
     }
     else {
         *no_validation_needed = sub {
-            @_ > 1
-              ? croak(
-"no_validation_needed is a read-only attribute of @{[ref $_[0]]}"
-              )
-              : $_[0]{"no_validation_needed"};
+            @_ == 1
+              or croak(
+'Reader "no_validation_needed" usage: $self->no_validation_needed()'
+              );
+            $_[0]{"no_validation_needed"};
         };
     }
 
@@ -840,10 +833,10 @@
     }
     else {
         *prefer_shift_self = sub {
-            @_ > 1
-              ? croak(
-                "prefer_shift_self is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"prefer_shift_self"};
+            @_ == 1
+              or croak(
+                'Reader "prefer_shift_self" usage: $self->prefer_shift_self()');
+            $_[0]{"prefer_shift_self"};
         };
     }
 
@@ -857,9 +850,8 @@
     }
     else {
         *signature = sub {
-            @_ > 1
-              ? croak("signature is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"signature"};
+            @_ == 1 or croak('Reader "signature" usage: $self->signature()');
+            $_[0]{"signature"};
         };
     }
 
@@ -873,16 +865,16 @@
     }
     else {
         *template = sub {
-            @_ > 1
-              ? croak("template is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"template"};
+            @_ == 1 or croak('Reader "template" usage: $self->template()');
+            $_[0]{"template"};
         };
     }
 
     # Accessors for usage
     # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 48
     sub usage {
-        @_ > 1 ? croak("usage is a read-only attribute of @{[ref $_[0]]}") : (
+        @_ == 1 or croak('Reader "usage" usage: $self->usage()');
+        (
             exists( $_[0]{"usage"} ) ? $_[0]{"usage"} : (
                 $_[0]{"usage"} = do {
                     my $default_value = $_[0]->_build_usage;
@@ -913,10 +905,11 @@
 
     our $USES_MITE    = "Mite::Class";
     our $MITE_SHIM    = "Sub::HandlesVia::Mite";
-    our $MITE_VERSION = "0.008002";
+    our $MITE_VERSION = "0.008003";
 
     BEGIN {
         require Scalar::Util;
+        *STRICT  = \&Sub::HandlesVia::Mite::STRICT;
         *bare    = \&Sub::HandlesVia::Mite::bare;
         *blessed = \&Scalar::Util::blessed;
         *carp    = \&Sub::HandlesVia::Mite::carp;
@@ -1414,9 +1407,8 @@
     }
     else {
         *name = sub {
-            @_ > 1
-              ? croak("name is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"name"};
+            @_ == 1 or croak('Reader "name" usage: $self->name()');
+            $_[0]{"name"};
         };
     }
 
@@ -1430,10 +1422,11 @@
 
     our $USES_MITE    = "Mite::Class";
     our $MITE_SHIM    = "Sub::HandlesVia::Mite";
-    our $MITE_VERSION = "0.008002";
+    our $MITE_VERSION = "0.008003";
 
     BEGIN {
         require Scalar::Util;
+        *STRICT  = \&Sub::HandlesVia::Mite::STRICT;
         *bare    = \&Sub::HandlesVia::Mite::bare;
         *blessed = \&Scalar::Util::blessed;
         *carp    = \&Sub::HandlesVia::Mite::carp;
@@ -1945,10 +1938,10 @@
     }
     else {
         *delegated_coderef = sub {
-            @_ > 1
-              ? croak(
-                "delegated_coderef is a read-only attribute of @{[ref $_[0]]}")
-              : $_[0]{"delegated_coderef"};
+            @_ == 1
+              or croak(
+                'Reader "delegated_coderef" usage: $self->delegated_coderef()');
+            $_[0]{"delegated_coderef"};
         };
     }
 
