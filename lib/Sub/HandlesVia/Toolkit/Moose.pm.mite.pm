@@ -6,7 +6,7 @@
 
     our $USES_MITE    = "Mite::Class";
     our $MITE_SHIM    = "Sub::HandlesVia::Mite";
-    our $MITE_VERSION = "0.008003";
+    our $MITE_VERSION = "0.009000";
 
     BEGIN {
         require Sub::HandlesVia::Toolkit;
