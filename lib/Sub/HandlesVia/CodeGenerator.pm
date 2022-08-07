@@ -289,13 +289,13 @@ sub _generate_ec_args_for_handler {
 	# object might be nice, but a hashref will do for now.
 	#
 	my $state = {
-		signature_check_needed  => 1,     # hasn't been done yet
+		signature_check_needed  => true,  # hasn't been done yet
 		final_type_check_needed => $handler->is_mutator,
 		getter                  => scalar($self->generate_get),
 		getter_is_lvalue        => $self->get_is_lvalue,
 		template_wrapper        => undef, # nothing yet
 		add_later               => undef, # nothing yet
-		shifted_self            => 0,
+		shifted_self            => false,
 	};
 
 #	use Hash::Util qw( lock_ref_keys );
@@ -384,7 +384,7 @@ sub _handle_shiftself {
 	# Getter was cached in $state and needs update.
 	#
 	$state->{getter} = $self->generate_get;
-	$state->{shifted_self} = 1;
+	$state->{shifted_self} = true;
 	
 	return $self;
 }
@@ -451,7 +451,7 @@ sub _handle_sigcheck {
 		# that in the state. The information can be used by
 		# additional_validation coderefs.
 		#
-		$state->{signature_check_needed} = 1;
+		$state->{signature_check_needed} = true;
 	}
 	
 	return $self;
@@ -498,7 +498,7 @@ sub _handle_additional_validation {
 	# final attribute value.
 	#
 	if ( $handler->no_validation_needed or not $self->isa ) {
-		$state->{final_type_check_needed} = 0;
+		$state->{final_type_check_needed} = false;
 	}
 	
 	# The handler can define some additional validation to be performed
@@ -559,7 +559,7 @@ sub _handle_additional_validation {
 			
 			# It is assumed that a final type check is no longer needed.
 			#
-			$state->{final_type_check_needed} = 0;
+			$state->{final_type_check_needed} = false;
 		}
 	}
 	
@@ -581,7 +581,7 @@ sub _handle_getter_code {
 		if ( $handler->name =~ /^(Array|Hash):/ ) {
 			push @$code, "my \$shv_ref_invocant = do { $state->{getter} };";
 			$state->{getter} = '$shv_ref_invocant';
-			$state->{getter_is_lvalue} = 1;
+			$state->{getter_is_lvalue} = true;
 		}
 		
 		# Alternatively, unless the handler doesn't want us to, or the template
@@ -622,11 +622,11 @@ sub _handle_setter_code {
 		# In this case we can no longer use the getter as an lvalue, if we
 		# ever could.
 		#
-		$state->{getter_is_lvalue} = 0;
+		$state->{getter_is_lvalue} = false;
 		
 		# Stop worrying about the final type check. The setter does that now.
 		#
-		$state->{final_type_check_needed} = 0;
+		$state->{final_type_check_needed} = false;
 	}
 	
 	return $self;
