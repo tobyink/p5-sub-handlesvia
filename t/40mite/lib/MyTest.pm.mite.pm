@@ -17,7 +17,7 @@ sub new {
 
     # Attribute list (type: ArrayRef)
     # has declaration, file lib/MyTest.pm, line 41
-    do { my $value = exists( $args->{"list"} ) ? $args->{"list"} : $MyTest::__list_DEFAULT__->( $self ); (ref($value) eq 'ARRAY') or MyTest::Mite::croak "Type check failed in constructor: %s should be %s", "list", "ArrayRef"; $self->{"list"} = $value; }; 
+    do { my $value = exists( $args->{"list"} ) ? $args->{"list"} : [11]; (ref($value) eq 'ARRAY') or MyTest::Mite::croak "Type check failed in constructor: %s should be %s", "list", "ArrayRef"; $self->{"list"} = $value; }; 
 
 
     # Call BUILD methods
