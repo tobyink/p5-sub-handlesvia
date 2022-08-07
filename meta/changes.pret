@@ -251,3 +251,11 @@
 		item "Recompile with newer Mite."^^Update;
 		item "Optimizations to Sub::HandlesVia::CodeGenerator."^^Change;
 	].
+
+`Sub-HandlesVia 0.034 cpan:TOBYINK`
+	issued  2022-08-07;
+	changeset [
+		item "Sub::HandlesVia::CodeGenerator now handles generating code for type assertions and coercions instead of relying on handlers to do it."^^Change;
+		item "Sub::HandlesVia::CodeGenerator now has a configurable sandbox package."^^Change;
+		item "Sub::HandlesVia::Toolkit::Mite supports recent Mite features such as lvalue accessors and new ways of specifying defaults."^^Update;
+	].
