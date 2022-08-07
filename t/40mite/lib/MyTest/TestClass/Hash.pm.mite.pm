@@ -17,7 +17,7 @@ sub new {
 
     # Attribute attr (type: HashRef)
     # has declaration, file lib/MyTest/TestClass/Hash.pm, line 41
-    do { my $value = exists( $args->{"attr"} ) ? $args->{"attr"} : $MyTest::TestClass::Hash::__attr_DEFAULT__->( $self ); (ref($value) eq 'HASH') or MyTest::Mite::croak "Type check failed in constructor: %s should be %s", "attr", "HashRef"; $self->{"attr"} = $value; }; 
+    do { my $value = exists( $args->{"attr"} ) ? $args->{"attr"} : {}; (ref($value) eq 'HASH') or MyTest::Mite::croak "Type check failed in constructor: %s should be %s", "attr", "HashRef"; $self->{"attr"} = $value; }; 
 
 
     # Call BUILD methods

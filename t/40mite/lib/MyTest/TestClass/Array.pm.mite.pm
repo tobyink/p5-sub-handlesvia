@@ -17,7 +17,7 @@ sub new {
 
     # Attribute attr (type: ArrayRef)
     # has declaration, file lib/MyTest/TestClass/Array.pm, line 41
-    do { my $value = exists( $args->{"attr"} ) ? $args->{"attr"} : $MyTest::TestClass::Array::__attr_DEFAULT__->( $self ); (ref($value) eq 'ARRAY') or MyTest::Mite::croak "Type check failed in constructor: %s should be %s", "attr", "ArrayRef"; $self->{"attr"} = $value; }; 
+    do { my $value = exists( $args->{"attr"} ) ? $args->{"attr"} : []; (ref($value) eq 'ARRAY') or MyTest::Mite::croak "Type check failed in constructor: %s should be %s", "attr", "ArrayRef"; $self->{"attr"} = $value; }; 
 
 
     # Call BUILD methods

@@ -17,7 +17,7 @@ sub new {
 
     # Attribute attr (type: Int)
     # has declaration, file lib/MyTest/TestClass/Counter.pm, line 41
-    do { my $value = exists( $args->{"attr"} ) ? $args->{"attr"} : $MyTest::TestClass::Counter::__attr_DEFAULT__->( $self ); (do { my $tmp = $value; defined($tmp) and !ref($tmp) and $tmp =~ /\A-?[0-9]+\z/ }) or MyTest::Mite::croak "Type check failed in constructor: %s should be %s", "attr", "Int"; $self->{"attr"} = $value; }; 
+    do { my $value = exists( $args->{"attr"} ) ? $args->{"attr"} : 0; (do { my $tmp = $value; defined($tmp) and !ref($tmp) and $tmp =~ /\A-?[0-9]+\z/ }) or MyTest::Mite::croak "Type check failed in constructor: %s should be %s", "attr", "Int"; $self->{"attr"} = $value; }; 
 
 
     # Call BUILD methods
