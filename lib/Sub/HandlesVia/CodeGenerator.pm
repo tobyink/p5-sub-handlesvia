@@ -584,9 +584,9 @@ sub _handle_additional_validation {
 				? ( $state->{add_later} = $opt->{code} )
 				: push( @$code, $opt->{code} );
 			
-			# It is assumed that a final type check is no longer needed.
+			# Final type check is often no longer needed.
 			#
-			$state->{final_type_check_needed} = false;
+			$state->{final_type_check_needed} = $opt->{final_type_check_needed} || false;
 		}
 	}
 	

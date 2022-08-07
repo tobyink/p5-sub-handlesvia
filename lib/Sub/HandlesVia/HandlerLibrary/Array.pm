@@ -606,39 +606,36 @@ sub uniqstr_in_place {
 }
 
 sub splice {
-	# luckily Int is fully inlinable because there's no way to
-	# add to %environment from here!!!
-	my $checks = sprintf(
-		'if (#ARG > 0) { %s }; if (#ARG > 1) { %s };',
-		Int->inline_assert('$shv_index'),
-		Int->inline_assert('$shv_length'),
-	);
 	handler
 		name      => 'Array:splice',
 		min_args  => 1,
 		usage     => '$index, $length, @values',
-		template  => 'my @shv_tmp = @{$GET}; my ($shv_index, $shv_length, @shv_values) = @ARG;'.$checks.'defined($shv_index) or $shv_index=0; defined($shv_length) or $shv_length=0; my @shv_return = splice(@shv_tmp, $shv_index, $shv_length, @shv_values); «\\@shv_tmp»; wantarray ? @shv_return : $shv_return[-1]',
-		lvalue_template => 'my ($shv_index, $shv_length, @shv_values) = @ARG;'.$checks.';splice(@{$GET}, $shv_index, $shv_length, @shv_values)',
+		template  => 'my @shv_tmp = @{$GET}; my ($shv_index, $shv_length, @shv_values) = @ARG;defined($shv_index) or $shv_index=0; defined($shv_length) or $shv_length=0; my @shv_return = splice(@shv_tmp, $shv_index, $shv_length, @shv_values); «\\@shv_tmp»; wantarray ? @shv_return : $shv_return[-1]',
+		lvalue_template => 'my ($shv_index, $shv_length, @shv_values) = @ARG;splice(@{$GET}, $shv_index, $shv_length, @shv_values)',
 		additional_validation => sub {
 			my $self = CORE::shift;
 			my ($sig_was_checked, $gen) = @_;
+			my $env = {};
+			my $code = sprintf 'if (%s >= 1) { %s }; if (%s >= 2) { %s };',
+				$gen->generate_argc,
+				$gen->generate_type_assertion( $env, Int, $gen->generate_arg( 1 ) ),
+				$gen->generate_argc,
+				$gen->generate_type_assertion( $env, Int, $gen->generate_arg( 2 ) );
 			my $ti = __PACKAGE__->_type_inspector($gen->isa);
 			if ($ti and $ti->{trust_mutated} eq 'always') {
-				return { code => '1;', env => {} };
+				return { code => $code, env => $env };
 			}
 			if ($ti and $ti->{trust_mutated} eq 'maybe') {
-				my ( $code, $env );
-				$env = {};
 				my $coercion = ( $gen->coerce and $ti->{value_type}->has_coercion );
 				if ( $coercion ) {
-					$code = sprintf(
+					$code .= sprintf(
 						'my @shv_unprocessed=%s;my @shv_processed=splice(@shv_unprocessed,0,2); push @shv_processed, map { my $shv_value = $_; %s } @shv_unprocessed;',
 						$gen->generate_args,
 						$gen->generate_type_assertion( $env, $ti->{value_type}, '$shv_value' ),
 					);
 				}
 				else {
-					$code = sprintf(
+					$code .= sprintf(
 						'my @shv_unprocessed=%s;my @shv_processed=splice(@shv_unprocessed,0,2);for my $shv_value (@shv_unprocessed) { %s };push @shv_processed, @shv_unprocessed;',
 						$gen->generate_args,
 						$gen->generate_type_assertion( $env, $ti->{value_type}, '$shv_value' ),
@@ -646,13 +643,13 @@ sub splice {
 				}
 				return {
 					code => $code,
-					env => $env,
-					arg => sub { CORE::shift; "\$shv_processed[($_[0])-1]" },
-					args => sub { CORE::shift; '@shv_processed' },
-					argc => sub { CORE::shift; 'scalar(@shv_processed)' },
+					env  => $env,
+					arg  => sub { "\$shv_processed[($_[0])-1]" },
+					args => sub { '@shv_processed' },
+					argc => sub { 'scalar(@shv_processed)' },
 				};
 			}
-			return;
+			return { code => $code, env => $env, final_type_check_needed => !!1 };
 		},
 		documentation => 'Like C<splice> from L<perlfunc>.',
 }
