@@ -121,6 +121,33 @@ has generator_for_self => (
 	default_is_trusted => true,
 );
 
+has generator_for_type_assertion => (
+	is => ro,
+	isa => 'CodeRef',
+	builder => sub {
+		return sub {
+			my ( $gen, $env, $type, $varname ) = @_;
+			my $i = 0;
+			my $type_varname = sprintf '$shv_type_constraint_%d', $type->{uniq};
+			$env->{$type_varname} = \$type;
+			if ( $gen->coerce and $type->has_coercion ) {
+				if ( $type->coercion->can_be_inlined ) {
+					return sprintf '%s=%s;%s;',
+						$varname,
+						$type->coercion->inline_coercion($varname),
+						$type->inline_assert( $varname, $type_varname );
+				}
+				else {
+					return sprintf '%s=%s->assert_coerce(%s);',
+						$varname, $type_varname, $varname;
+				}
+			}
+			return $type->inline_assert( $varname, $type_varname );
+		};
+	},
+	default_is_trusted => true,
+);
+
 has method_installer => (
 	is => ro,
 	isa => 'CodeRef',
@@ -165,7 +192,7 @@ my $REASONABLE_SCALAR = qr/^
 	$/x;
 
 my @generatable_things = qw(
-	slot get set default arg args argc currying usage_string self
+	slot get set default arg args argc currying usage_string self type_assertion
 );
 
 for my $thing ( @generatable_things ) {
@@ -614,10 +641,9 @@ sub _handle_setter_code {
 			$me->generate_set( sprintf(
 				'do { my $shv_final_unchecked = %s; %s }',
 				$value_code,
-				$me->isa->inline_assert( '$shv_final_unchecked', '$shv_final_type' ),
+				$me->generate_type_assertion( $env, $me->isa, '$shv_final_unchecked' ),
 			) );
 		} );
-		$env->{'$shv_final_type'} = \( $self->isa );
 		
 		# In this case we can no longer use the getter as an lvalue, if we
 		# ever could.

@@ -51,29 +51,32 @@ my $additional_validation_for_push_and_unshift = sub {
 	}
 	
 	if ($ti and $ti->{trust_mutated} eq 'maybe') {
-		my $coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
+		my $coercion = ( $gen->coerce and $ti->{value_type}->has_coercion );
 		if ( $coercion ) {
+			my $env = {};
 			my $code = sprintf(
-				'my @shv_values = map $shv_type_for_values->assert_coerce($_), %s;',
+				'my @shv_values = map { my $shv_value = $_; %s } %s;',
+				$gen->generate_type_assertion( $env, $ti->{value_type}, '$shv_value' ),
 				$gen->generate_args,
 			);
 			return {
 				code      => $code,
-				env       => { '$shv_type_for_values' => \$ti->{value_type} },
-				arg       => sub { CORE::shift; "\$shv_values[($_[0])-1]" },
-				args      => sub { CORE::shift; '@shv_values' },
-				argc      => sub { CORE::shift; 'scalar(@shv_values)' },
+				env       => $env,
+				arg       => sub { "\$shv_values[($_[0])-1]" },
+				args      => sub { '@shv_values' },
+				argc      => sub { 'scalar(@shv_values)' },
 			};
 		}
 		else {
+			my $env = {};
 			my $code = sprintf(
 				'for my $shv_value (%s) { %s }',
 				$gen->generate_args,
-				$ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
+				$gen->generate_type_assertion( $env, $ti->{value_type}, '$shv_value' ),
 			);
 			return {
 				code      => $code,
-				env       => { '$shv_type_for_values' => \$ti->{value_type} },
+				env       => $env,
 			};
 		}
 	}
@@ -90,9 +93,8 @@ my $additional_validation_for_set_and_insert = sub {
 	}
 	
 	my ( $arg, $code, $env );
-	
+	$env = {};
 	if ($ti and $ti->{trust_mutated} eq 'maybe') {
-		my $coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
 		$arg = sub {
 			my $gen = CORE::shift;
 			return '$shv_index' if $_[0]=='1';
@@ -103,25 +105,16 @@ my $additional_validation_for_set_and_insert = sub {
 			$code = sprintf(
 				'my($shv_index,$shv_value)=%s; %s;',
 				$gen->generate_args,
-				$coercion
-					? '$shv_value=$shv_type_for_values->assert_coerce($shv_value)'
-					: $ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
+				$gen->generate_type_assertion( $env, $ti->{value_type}, '$shv_value' ),
 			);
-			$env = { '$shv_type_for_values' => \$ti->{value_type} };
 		}
 		else {
 			$code = sprintf(
 				'my($shv_index,$shv_value)=%s; %s; %s;',
 				$gen->generate_args,
-				Int->inline_assert('$shv_index', '$Types_Standard_Int'),
-				$coercion
-					? '$shv_value=$shv_type_for_values->assert_coerce($shv_value)'
-					: $ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
+				$gen->generate_type_assertion( $env, Int, '$shv_index' ),
+				$gen->generate_type_assertion( $env, $ti->{value_type}, '$shv_value' ),
 			);
-			$env = {
-				'$Types_Standard_Int' => \(Int),
-				'$shv_type_for_values' => \$ti->{value_type},
-			};
 		}
 	}
 	return {
@@ -413,8 +406,8 @@ sub accessor {
 				return { code => '1;', env => {} };
 			}
 			my ( $code, $env, $arg );
+			$env = {};
 			if ($ti and $ti->{trust_mutated} eq 'maybe') {
-				my $coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
 				$arg = sub {
 					my $gen = CORE::shift;
 					return '$shv_index' if $_[0]=='1';
@@ -426,23 +419,17 @@ sub accessor {
 						'my($shv_index,$shv_value)=%s; if (%s>1) { %s };',
 						$gen->generate_args,
 						$gen->generate_argc,
-						$coercion
-							? '$shv_value=$shv_type_for_values->assert_coerce($shv_value)'
-							: $ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
+						$gen->generate_type_assertion( $env, $ti->{value_type}, '$shv_value' ),
 					);
-					$env = { '$shv_type_for_values' => \$ti->{value_type} };
 				}
 				else {
 					$code = sprintf(
 						'my($shv_index,$shv_value)=%s; %s; if (%s>1) { %s };',
 						$gen->generate_args,
-						Int->inline_assert('$shv_index', '$Types_Standard_Int'),
+						$gen->generate_type_assertion( $env, Int, '$shv_index' ),
 						$gen->generate_argc,
-						$coercion
-							? '$shv_value=$shv_type_for_values->assert_coerce($shv_value)'
-							: $ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
+						$gen->generate_type_assertion( $env, $ti->{value_type}, '$shv_value' ),
 					);
-					$env = { '$Types_Standard_Int' => \(Int), '$shv_type_for_values' => \$ti->{value_type} };
 				}
 			}
 			return {
@@ -641,21 +628,21 @@ sub splice {
 			}
 			if ($ti and $ti->{trust_mutated} eq 'maybe') {
 				my ( $code, $env );
-				my $coercion = ($gen->coerce && $ti->{value_type}->has_coercion);
+				$env = {};
+				my $coercion = ( $gen->coerce and $ti->{value_type}->has_coercion );
 				if ( $coercion ) {
 					$code = sprintf(
-						'my @shv_unprocessed=%s;my @shv_processed=splice(@shv_unprocessed,0,2); push @shv_processed, map $shv_type_for_values->assert_coerce($_), @shv_unprocessed;',
+						'my @shv_unprocessed=%s;my @shv_processed=splice(@shv_unprocessed,0,2); push @shv_processed, map { my $shv_value = $_; %s } @shv_unprocessed;',
 						$gen->generate_args,
+						$gen->generate_type_assertion( $env, $ti->{value_type}, '$shv_value' ),
 					);
-					$env = { '$shv_type_for_values' => \$ti->{value_type} };
 				}
 				else {
 					$code = sprintf(
 						'my @shv_unprocessed=%s;my @shv_processed=splice(@shv_unprocessed,0,2);for my $shv_value (@shv_unprocessed) { %s };push @shv_processed, @shv_unprocessed;',
 						$gen->generate_args,
-						$ti->{value_type}->inline_assert('$shv_value', '$shv_type_for_values'),
+						$gen->generate_type_assertion( $env, $ti->{value_type}, '$shv_value' ),
 					);
-					$env = { '$shv_type_for_values' => \$ti->{value_type} };
 				}
 				return {
 					code => $code,
