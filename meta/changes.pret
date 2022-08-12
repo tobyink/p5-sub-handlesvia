@@ -259,3 +259,9 @@
 		item "Sub::HandlesVia::CodeGenerator now has a configurable sandbox package."^^Change;
 		item "Sub::HandlesVia::Toolkit::Mite supports recent Mite features such as lvalue accessors and new ways of specifying defaults."^^Update;
 	].
+
+`Sub-HandlesVia 0.035 cpan:TOBYINK`
+	issued  2022-08-12;
+	changeset [
+		item "Sub::HandlesVia::CodeGenerator method_installer is now a rw attribute as Sub::Accessor::Small was relying on that."^^Change;
+	].
