@@ -156,7 +156,7 @@ has generator_for_type_assertion => (
 );
 
 has method_installer => (
-	is => ro,
+	is => rw,
 	isa => 'CodeRef',
 );
 
