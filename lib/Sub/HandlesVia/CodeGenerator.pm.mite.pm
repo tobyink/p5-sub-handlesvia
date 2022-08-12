@@ -798,19 +798,16 @@
 
     # Accessors for method_installer
     # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 158
-    if ($__XS) {
-        Class::XSAccessor->import(
-            chained   => 1,
-            "getters" => { "method_installer" => "method_installer" },
-        );
-    }
-    else {
-        *method_installer = sub {
-            @_ == 1
-              or croak(
-                'Reader "method_installer" usage: $self->method_installer()');
-            $_[0]{"method_installer"};
-        };
+    sub method_installer {
+        @_ > 1
+          ? do {
+            ( ref( $_[1] ) eq 'CODE' )
+              or croak( "Type check failed in %s: value should be %s",
+                "accessor", "CodeRef" );
+            $_[0]{"method_installer"} = $_[1];
+            $_[0];
+          }
+          : ( $_[0]{"method_installer"} );
     }
 
     # Accessors for sandboxing_package
