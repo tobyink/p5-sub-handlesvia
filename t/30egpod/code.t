@@ -40,7 +40,7 @@ subtest 'Testing my_execute' => sub {
   my $e = exception {
     my $coderef = sub { 'code' };
     my $object  = My::Class->new( attr => $coderef );
-  
+    
     # Calls: $coderef->( 1, 2, 3 )
     $object->my_execute( 1, 2, 3 );
   };
@@ -56,10 +56,10 @@ subtest 'Testing my_execute_list' => sub {
     my $context;
     my $coderef = sub { $context = wantarray(); 'code' };
     my $object  = My::Class->new( attr => $coderef );
-  
+    
     # Calls: $coderef->( 1, 2, 3 )
     my $result = $object->my_execute_list( 1, 2, 3 );
-  
+    
     is_deeply( $result, [ 'code' ], q{$result deep match} );
     ok( $context, q{$context is true} );
   };
@@ -74,7 +74,7 @@ subtest 'Testing my_execute_method' => sub {
   my $e = exception {
     my $coderef = sub { 'code' };
     my $object  = My::Class->new( attr => $coderef );
-  
+    
     # Calls: $coderef->( $object, 1, 2, 3 )
     $object->my_execute_method( 1, 2, 3 );
   };
@@ -90,10 +90,10 @@ subtest 'Testing my_execute_method_list' => sub {
     my $context;
     my $coderef = sub { $context = wantarray(); 'code' };
     my $object  = My::Class->new( attr => $coderef );
-  
+    
     # Calls: $coderef->( $object, 1, 2, 3 )
     my $result = $object->my_execute_method_list( 1, 2, 3 );
-  
+    
     is_deeply( $result, [ 'code' ], q{$result deep match} );
     ok( $context, q{$context is true} );
   };
@@ -109,10 +109,10 @@ subtest 'Testing my_execute_method_scalar' => sub {
     my $context;
     my $coderef = sub { $context = wantarray(); 'code' };
     my $object  = My::Class->new( attr => $coderef );
-  
+    
     # Calls: $coderef->( $object, 1, 2, 3 )
     my $result = $object->my_execute_method_scalar( 1, 2, 3 );
-  
+    
     is( $result, 'code', q{$result is 'code'} );
     ok( !($context), q{$context is false} );
   };
@@ -128,10 +128,10 @@ subtest 'Testing my_execute_method_void' => sub {
     my $context;
     my $coderef = sub { $context = wantarray(); 'code' };
     my $object  = My::Class->new( attr => $coderef );
-  
+    
     # Calls: $coderef->( $object, 1, 2, 3 )
     my $result = $object->my_execute_method_void( 1, 2, 3 );
-  
+    
     is( $result, undef, q{$result is undef} );
     is( $context, undef, q{$context is undef} );
   };
@@ -147,10 +147,10 @@ subtest 'Testing my_execute_scalar' => sub {
     my $context;
     my $coderef = sub { $context = wantarray(); 'code' };
     my $object  = My::Class->new( attr => $coderef );
-  
+    
     # Calls: $coderef->( 1, 2, 3 )
     my $result = $object->my_execute_scalar( 1, 2, 3 );
-  
+    
     is( $result, 'code', q{$result is 'code'} );
     ok( !($context), q{$context is false} );
   };
@@ -166,10 +166,10 @@ subtest 'Testing my_execute_void' => sub {
     my $context;
     my $coderef = sub { $context = wantarray(); 'code' };
     my $object  = My::Class->new( attr => $coderef );
-  
+    
     # Calls: $coderef->( 1, 2, 3 )
     my $result = $object->my_execute_void( 1, 2, 3 );
-  
+    
     is( $result, undef, q{$result is undef} );
     is( $context, undef, q{$context is undef} );
   };

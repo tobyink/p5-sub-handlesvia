@@ -43,7 +43,8 @@ sub install_has_wrapper {
 			push @shv, $shv if $shv;
 		}
 		
-		if ( $ENV{MITE_COMPILE} or $Mite::COMPILING eq $mite_shim ) {
+		if ( $ENV{MITE_COMPILE}
+		or defined($Mite::COMPILING) && ( $Mite::COMPILING eq $mite_shim  )) {
 			return;
 		}
 		

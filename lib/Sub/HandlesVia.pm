@@ -519,6 +519,7 @@ native traits, and L<MouseX::NativeTraits>.
                   count : SubHV  DataP  Moose  Mouse  
                 defined : SubHV  DataP  Moose  Mouse  
                  delete : SubHV  DataP  Moose  Mouse  
+           delete_where : SubHV                       
                elements : SubHV  DataP  Moose  Mouse  
                  exists : SubHV  DataP  Moose  Mouse  
                   fetch :                      Mouse  (alias: get)

@@ -89,10 +89,10 @@ $all{Hash}{fetch}{info}    = 'alias: get';
 $all{Hash}{store}{info}    = 'alias: set';
 
 for my $category (sort keys %all) {
-	print "  $category ", "="x(48-length $category), "\n";
+	print "  $category ", "="x(51-length $category), "\n";
 	for my $method (sort keys %{$all{$category}}) {
 		printf(
-			"%20s : %5s  %5s  %5s  %5s  %s\n",
+			"%23s : %5s  %5s  %5s  %5s  %s\n",
 			$method,
 			exists($all{$category}{$method}{'Sub::HandlesVia'})       ? 'SubHV' : '',
 			exists($all{$category}{$method}{'Data::Perl'})            ? 'DataP' : '',

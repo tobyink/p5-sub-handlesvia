@@ -37,7 +37,7 @@ Calls the coderef, passing it any arguments.
 
   my $coderef = sub { 'code' };
   my $object  = My::Class->new( attr => $coderef );
-
+  
   # Calls: $coderef->( 1, 2, 3 )
   $object->my_execute( 1, 2, 3 );
 
@@ -48,10 +48,10 @@ Calls the coderef, passing it any arguments, and forcing list context. If called
   my $context;
   my $coderef = sub { $context = wantarray(); 'code' };
   my $object  = My::Class->new( attr => $coderef );
-
+  
   # Calls: $coderef->( 1, 2, 3 )
   my $result = $object->my_execute_list( 1, 2, 3 );
-
+  
   say Dumper( $result );  ## ==> [ 'code' ]
   say $context;           ## ==> true
 
@@ -61,7 +61,7 @@ Calls the coderef as if it were a method, passing any arguments.
 
   my $coderef = sub { 'code' };
   my $object  = My::Class->new( attr => $coderef );
-
+  
   # Calls: $coderef->( $object, 1, 2, 3 )
   $object->my_execute_method( 1, 2, 3 );
 
@@ -72,10 +72,10 @@ Calls the coderef as if it were a method, passing any arguments, and forcing lis
   my $context;
   my $coderef = sub { $context = wantarray(); 'code' };
   my $object  = My::Class->new( attr => $coderef );
-
+  
   # Calls: $coderef->( $object, 1, 2, 3 )
   my $result = $object->my_execute_method_list( 1, 2, 3 );
-
+  
   say Dumper( $result );  ## ==> [ 'code' ]
   say $context;           ## ==> true
 
@@ -86,10 +86,10 @@ Calls the coderef as if it were a method, passing any arguments, and forcing sca
   my $context;
   my $coderef = sub { $context = wantarray(); 'code' };
   my $object  = My::Class->new( attr => $coderef );
-
+  
   # Calls: $coderef->( $object, 1, 2, 3 )
   my $result = $object->my_execute_method_scalar( 1, 2, 3 );
-
+  
   say $result;  ## ==> 'code'
   say $context; ## ==> false
 
@@ -100,10 +100,10 @@ Calls the coderef as if it were a method, passing any arguments, and forcing voi
   my $context;
   my $coderef = sub { $context = wantarray(); 'code' };
   my $object  = My::Class->new( attr => $coderef );
-
+  
   # Calls: $coderef->( $object, 1, 2, 3 )
   my $result = $object->my_execute_method_void( 1, 2, 3 );
-
+  
   say $result;  ## ==> undef
   say $context; ## ==> undef
 
@@ -114,10 +114,10 @@ Calls the coderef, passing it any arguments, and forcing scalar context.
   my $context;
   my $coderef = sub { $context = wantarray(); 'code' };
   my $object  = My::Class->new( attr => $coderef );
-
+  
   # Calls: $coderef->( 1, 2, 3 )
   my $result = $object->my_execute_scalar( 1, 2, 3 );
-
+  
   say $result;  ## ==> 'code'
   say $context; ## ==> false
 
@@ -128,10 +128,10 @@ Calls the coderef, passing it any arguments, and forcing void context. Returns u
   my $context;
   my $coderef = sub { $context = wantarray(); 'code' };
   my $object  = My::Class->new( attr => $coderef );
-
+  
   # Calls: $coderef->( 1, 2, 3 )
   my $result = $object->my_execute_void( 1, 2, 3 );
-
+  
   say $result;  ## ==> undef
   say $context; ## ==> undef
 
