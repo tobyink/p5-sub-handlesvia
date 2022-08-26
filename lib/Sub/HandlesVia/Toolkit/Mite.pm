@@ -28,6 +28,7 @@ sub install_has_wrapper {
 	
 	my $orig         = \&{ "$target\::has" };
 	my $uses_mite    = ${ "$target\::USES_MITE" };
+	my $mite_shim    = ${ "$target\::MITE_SHIM" };
 
 	*{ "$target\::has" } = sub {
 		my ( $names, %spec ) = @_;
@@ -42,7 +43,7 @@ sub install_has_wrapper {
 			push @shv, $shv if $shv;
 		}
 		
-		if ( $ENV{MITE_COMPILE} ) {
+		if ( $ENV{MITE_COMPILE} or $Mite::COMPILING eq $mite_shim ) {
 			return;
 		}
 		

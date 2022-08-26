@@ -29,7 +29,7 @@ has attr => (
     'my_sorted_keys' => 'sorted_keys',
     'my_values' => 'values',
   },
-  default => {},
+  default => sub { {} },
 );
 
 1;
