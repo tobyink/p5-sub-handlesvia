@@ -265,3 +265,15 @@
 	changeset [
 		item "Sub::HandlesVia::CodeGenerator method_installer is now a rw attribute as Sub::Accessor::Small was relying on that."^^Change;
 	].
+
+`Sub-HandlesVia 0.036 cpan:TOBYINK`
+	issued  2022-08-26;
+	changeset [
+		item "Fix integration issues with newer versions of Mite."^^Bugfix;
+		item "Add a delete_where method for hashes."^^Addition;
+		item "Add execute_list, execute_scalar, execute_void, and corresponding _method variants for coderefs."^^Addition;
+		item "The flatten_deep, natatime, and first_index methods for arrayrefs no longer use callbacks."^^Addition;
+		item "Examples for a few methods."^^Documentation;
+		item "More tests for a few methods."^^Documentation;
+	].
+
