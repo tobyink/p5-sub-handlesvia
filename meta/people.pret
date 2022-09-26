@@ -8,5 +8,5 @@ cpan:TOBYINK
 	:mbox  <mailto:tobyink@cpan.org>.
 
 cpan:SYSPETE
-	:name  "Peter Mottram",
+	:name  "Peter Mottram";
 	:page  <https://metacpan.org/author/SYSPETE>, <https://github.com/SysPete>.
