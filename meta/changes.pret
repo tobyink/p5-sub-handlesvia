@@ -277,3 +277,15 @@
 		item "More tests for a few methods."^^Documentation;
 	].
 
+`Sub-HandlesVia 0.037 cpan:TOBYINK`
+	issued  2022-09-26;
+	changeset [
+		item [
+			a dcs:Bugfix;
+			label "Fix test case broken by Type::Tiny v2.";
+			dcs:thanks cpan:SYSPETE;
+			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/2>;
+		];
+		item "Hash:set shouldn't hardcode use of Carp::croak. Instead a CodeGenerator should decide how to deal with error messages."^^Bugfix;
+	].
+
