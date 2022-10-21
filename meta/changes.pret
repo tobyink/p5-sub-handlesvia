@@ -289,3 +289,9 @@
 		item "Hash:set shouldn't hardcode use of Carp::croak. Instead a CodeGenerator should decide how to deal with error messages."^^Bugfix;
 	].
 
+`Sub-HandlesVia 0.038 cpan:TOBYINK`
+	issued  2022-10-21;
+	changeset [
+		item "Minor changes to documentation for Hash:accessor and Array:accessor."^^Documentation;
+	].
+
