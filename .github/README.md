@@ -1,7 +1,7 @@
 # Sub-HandlesVia
 
 [![MetaCPAN](https://img.shields.io/cpan/v/Sub-HandlesVia.svg)](https://metacpan.org/release/Sub-HandlesVia)
-![Licence](https://img.shields.io/cpan/l/Sub-HandlesVia)
+[![Licence](https://img.shields.io/cpan/l/Sub-HandlesVia)](https://metacpan.org/dist/Sub-HandlesVia/source/LICENSE)
 [![Issues](https://img.shields.io/github/issues/tobyink/p5-sub-handlesvia)](https://github.com/tobyink/p5-sub-handlesvia/issues)
 [![CI](https://github.com/tobyink/p5-sub-handlesvia/workflows/CI/badge.svg)](https://github.com/tobyink/p5-sub-handlesvia/actions)
 [![Coveralls](https://coveralls.io/repos/tobyink/p5-sub-handlesvia/badge.svg?branch=master&amp;service=github)](https://coveralls.io/github/tobyink/p5-sub-handlesvia)
