@@ -2,6 +2,8 @@ use 5.008001;
 use strict;
 use warnings;
 
+{ package Local::Dummy1; use Test::Requires 'Mouse' };
+
 BEGIN {
 	package My::Trait::AutoSetters;
 
