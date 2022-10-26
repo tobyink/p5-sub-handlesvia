@@ -296,7 +296,7 @@
 	].
 
 `Sub-HandlesVia 0.039 cpan:TOBYINK`
-	issued  2022-10-22;
+	issued  2022-10-26;
 	changeset [
 		item "Mite has supported Perl 5.8.x for a while now, so Mite-related tests shouldn't be restricted to running on Perl 5.10.1+."^^Tests;
 		item [
