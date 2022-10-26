@@ -295,3 +295,15 @@
 		item "Minor changes to documentation for Hash:accessor and Array:accessor."^^Documentation;
 	].
 
+`Sub-HandlesVia 0.039 cpan:TOBYINK`
+	issued  2022-10-22;
+	changeset [
+		item "Mite has supported Perl 5.8.x for a while now, so Mite-related tests shouldn't be restricted to running on Perl 5.10.1+."^^Tests;
+		item [
+			a dcs:Bugfix;
+			label "Fix application of Sub::HandlesVia Moose/Mouse traits to metaobjects that have other traits applied to them.";
+			dcs:thanks cpan:BRTASTIC;
+			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/3>;
+		];
+	].
+

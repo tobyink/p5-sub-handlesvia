@@ -10,3 +10,8 @@ cpan:TOBYINK
 cpan:SYSPETE
 	:name  "Peter Mottram";
 	:page  <https://metacpan.org/author/SYSPETE>, <https://github.com/SysPete>.
+
+cpan:BRTASTIC
+	:name  "Bartosz Jarzyna";
+	:page  <https://metacpan.org/author/BRTASTIC>, <https://github.com/bbrtj>;
+	:homepage <https://bbrtj.eu/>.
