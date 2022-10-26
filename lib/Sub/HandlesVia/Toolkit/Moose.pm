@@ -26,14 +26,14 @@ sub meta_hack {
 	
 	if ( $meta->isa('Moose::Meta::Role') ) {
 		
-		Moose::Util::MetaRole::apply_metaroles(
+		return Moose::Util::MetaRole::apply_metaroles(
 			for             => $meta,
 			role_metaroles  => { role => [ $me->package_trait, $me->role_trait ] },
 		);
 	}
 	else {
 		
-		Moose::Util::MetaRole::apply_metaroles(
+		return Moose::Util::MetaRole::apply_metaroles(
 			for             => $meta,
 			class_metaroles => { class => [ $me->package_trait ] },
 		);
@@ -217,11 +217,12 @@ our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.038';
 
 use Moose::Role;
+requires '_shv_toolkit';
 
 around apply => sub {
 	my ($next, $self, $other, %args) = (shift, shift, @_);
-	$self->_shv_toolkit->meta_hack( $other );
-	$self->$next(@_);
+	$other = $self->_shv_toolkit->meta_hack( $other );
+	$self->$next( $other, %args );
 };
 
 1;
