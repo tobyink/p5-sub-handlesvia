@@ -44,7 +44,11 @@ sub detect_toolkit {
 sub _detect_framework {
 	my ($me, $target) = (shift, @_);
 	
+	# Need to ask Role::Tiny too because Moo::Role will pretend
+	# that Moose::Role and Mouse::Role roles are Moo::Role roles!
+	#
 	if ($INC{'Moo/Role.pm'}
+	and Role::Tiny->is_role($target)
 	and Moo::Role->is_role($target)) {
 		return 'Moo';
 	}

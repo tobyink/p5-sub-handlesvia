@@ -78,7 +78,7 @@ sub code_generator_for_attribute {
 		$coerce = 1;
 	}
 	
-	my ($slot) = sub {
+	my $slot = sub {
 		my $gen = shift;
 		my ($code) = $maker->generate_simple_get($gen->generate_self, $attrname, $spec);
 		$code;
