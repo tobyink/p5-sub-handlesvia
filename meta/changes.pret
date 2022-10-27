@@ -307,3 +307,20 @@
 		];
 	].
 
+`Sub-HandlesVia 0.040 cpan:TOBYINK`
+	issued  2022-10-27;
+	changeset [
+		item [
+			a dcs:Bugfix;
+			label "Stricter detection of Moo::Role roles to prevent some false positives when given Mouse::Role and Moose::Role roles.";
+			dcs:thanks cpan:BRTASTIC;
+			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/4>;
+		];
+		item [
+			a dcs:Tests;
+			label "Add a test using Sub::HandlesVia when Beam::Wire is loaded.";
+			dcs:thanks cpan:BRTASTIC;
+			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/5>;
+		];
+	].
+
