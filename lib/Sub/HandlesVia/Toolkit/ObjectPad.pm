@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::Toolkit::ObjectPad;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.040';
+our $VERSION   = '0.041';
 
 use Sub::HandlesVia::Mite -all;
 extends 'Sub::HandlesVia::Toolkit';

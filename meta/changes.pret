@@ -324,3 +324,9 @@
 		];
 	].
 
+`Sub-HandlesVia 0.041 cpan:TOBYINK`
+	issued  2022-10-29;
+	changeset [
+		item "Experimental support for Object::Pad."^^Addition;
+	].
+
