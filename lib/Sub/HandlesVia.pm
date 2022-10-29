@@ -84,6 +84,19 @@ sub _detect_framework {
 	}
 	
 	{
+		no warnings;
+		if ($INC{'Object/Pad.pm'}
+		and 'Object::Pad'->VERSION ge 0.67
+		and do { require Object::Pad::MOP::Class; 1 }
+		and Object::Pad::MOP::Class->for_class($target) ) {
+			require Scalar::Util;
+			my $META = Object::Pad::MOP::Class->for_class($target);
+			return 'ObjectPad'
+				if Scalar::Util::blessed($META) && $META->isa('Object::Pad::MOP::Class');
+		}
+	}
+	
+	{
 		no strict 'refs';
 		no warnings 'once';
 		if ( ${"$target\::USES_MITE"} ) {
@@ -297,25 +310,6 @@ the mouse.)
 
 =head2 Using with Mite
 
-You should be able to use Sub::HandlesVia with L<Mite> 0.001011 or above.
-Your project will still have a dependency on Sub::HandlesVia.
-
- package MyApp::Kitchen {
-   use MyApp::Mite;
-   use Sub::HandlesVia;
-   
-   has food => (
-     is          => 'ro',
-     isa         => 'ArrayRef[Str]',
-     handles_via => 'Array',
-     default     => sub { [] },
-     handles     => {
-       'add_food'    => 'push',
-       'find_food'   => 'grep',
-     },
-   );
- }
-
 If you have Mite 0.009000 or above, you can probably use its built-in
 C<handles_via> support, and avoid your project having a Sub::HandlesVia
 dependency!
@@ -334,6 +328,12 @@ dependency!
      },
    );
  }
+
+=head2 Using with Object::Pad
+
+Experimental L<Object::Pad> support is provided, but only for scalar fields.
+(This includes arrayrefs and hashrefs.) See F<50objectpad.t> in the
+Sub::HandlesVia test suite for an example.
 
 =head2 Using with Anything
 
