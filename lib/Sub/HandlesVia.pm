@@ -88,7 +88,7 @@ sub _detect_framework {
 		if ($INC{'Object/Pad.pm'}
 		and 'Object::Pad'->VERSION ge 0.67
 		and do { require Object::Pad::MOP::Class; 1 }
-		and Object::Pad::MOP::Class->for_class($target) ) {
+		and eval { Object::Pad::MOP::Class->for_class($target) } ) {
 			require Scalar::Util;
 			my $META = Object::Pad::MOP::Class->for_class($target);
 			return 'ObjectPad'
