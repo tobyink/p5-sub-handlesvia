@@ -7,7 +7,7 @@ package Sub::HandlesVia;
 use Exporter::Shiny qw( delegations );
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.041';
+our $VERSION   = '0.042';
 
 sub _generate_delegations {
 	my ($me, $name, $args, $globals) = (shift, @_);
@@ -331,9 +331,9 @@ dependency!
 
 =head2 Using with Object::Pad
 
-Experimental L<Object::Pad> support is provided, but only for scalar fields.
-(This includes arrayrefs and hashrefs.) See F<50objectpad.t> in the
-Sub::HandlesVia test suite for an example.
+Experimental L<Object::Pad> support is provided, including for array and hash
+fields. See F<50objectpad.t> in the Sub::HandlesVia test suite for an example.
+See also L<Sub::HandlesVia::Declare>.
 
 =head2 Using with Anything
 
@@ -747,6 +747,10 @@ L<String|Sub::HandlesVia::HandlerLibrary::String>.
 Other implementations of the same concept:
 L<Moose::Meta::Attribute::Native>, L<MouseX::NativeTraits>, and
 L<MooX::HandlesVia> with L<Data::Perl>.
+
+L<Sub::HandlesVia::Declare> is a helper for declaring Sub::HandlesVia
+delegations at compile-time, useful for L<Object::Pad> and (to a lesser
+extent) L<Class::Tiny>.
 
 =head1 AUTHOR
 

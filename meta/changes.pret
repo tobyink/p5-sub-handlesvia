@@ -330,3 +330,9 @@
 		item "Experimental support for Object::Pad."^^Addition;
 	].
 
+`Sub-HandlesVia 0.042 cpan:TOBYINK`
+	issued  2022-10-30;
+	changeset [
+		item "Improved support for Object::Pad, including support for non-scalar fields."^^Change;
+		item "Sub::HandlesVia::Declare for compile-time declaration of Sub::HandlesVia delegations."^^Addition;
+	].

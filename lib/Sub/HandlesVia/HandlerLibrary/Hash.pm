@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::HandlerLibrary::Hash;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.041';
+our $VERSION   = '0.042';
 
 use Sub::HandlesVia::HandlerLibrary;
 our @ISA = 'Sub::HandlesVia::HandlerLibrary';
