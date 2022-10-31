@@ -49,31 +49,55 @@ You can delegate to coderefs:
 
 =head2 Delegating to Named Methods
 
-Let's say "FoodList" is a class where instances are blessed arrayrefs
-of strings.
+The L<Sub::HandlesVia::HandlerLibrary::Blessed> handler library allows
+you to delegate to named methods of a blessed object.
+
+     isa         => InstanceOf['HTTP::Tiny'],
+     handles_via => 'Blessed',
+     handles     => {
+       'http_get'   => 'get',
+       'http_post'  => 'post',
+     },
+
+However, in L<Moo>, L<Moose>, L<Mouse>, and L<Mite>, this kind of
+delegation is baked in, so you don't even need Sub::HandlesVia!
+
+     isa         => InstanceOf['HTTP::Tiny'],
+     handles     => {
+       'http_get'   => 'get',
+       'http_post'  => 'post',
+     },
+
+Still, the L<Sub::HandlesVia::HandlerLibrary::Blessed> handler
+library may still be useful if you wish to use other Sub::HandlesVia
+features like chaining, or if you're using a different OO toolkit.
+
+An example of combining delegation to named methods with "native trait"
+style delegation... let's say "FoodList" is a class where instances
+are blessed arrayrefs of strings.
 
      isa         => InstanceOf['FoodList'],
-     handles_via => 'Array',
+     handles_via => 'Array', 'Blessed',
      handles     => {
        'find_food'             => 'grep',
        'find_healthiest_food'  => 'find_healthiest',
      },
 
 Now C<< $kitchen->find_food($coderef) >> does this (which breaks
-encapsulation of course):
+encapsulation ):
 
   my @result = grep $coderef->(), @{ $kitchen->food };
 
-And C<< $kitchen->find_healthiest_food >> does this:
+But because C<find_healthiest> isn't one of the methods offered
+by L<Sub::HandlesVia::HandlerList::Array>, Sub::HandlesVia assumes
+you want to call it on the arrayref like a proper method, so
+C<< $kitchen->find_healthiest_food >> does this:
 
   $kitchen->food->find_healthiest
 
-Basically, because C<find_healthiest> isn't one of the methods offered
-by Sub::HandlesVia::HandlerList::Array, it assumes you want to call it
-on the arrayref like a proper method.
-
-If you want to be explicit, you can use the 'Blessed' trait to indicate
-that you want to call a method on a blessed object:
+It can be useful to be explicit about which methods you wish to
+delegate to a "native trait" style array and which are named methods
+to be called on a blessed object:
 
      isa         => InstanceOf['FoodList'],
      handles_via => [ 'Array', 'Blessed' ],
@@ -81,6 +105,8 @@ that you want to call a method on a blessed object:
        'find_food'             => 'Array->grep',
        'find_healthiest_food'  => 'Blessed->find_healthiest',
      },
+
+See L</Delegating to Multiple Handler Libraries>.
 
 =head2 Curried Arguments
 
