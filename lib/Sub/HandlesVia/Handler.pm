@@ -271,6 +271,7 @@ sub _generate_handler {
 }
 
 package Sub::HandlesVia::Handler::Traditional;
+# XXX: can this be replaced by Blessed trait?
 
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.042';
