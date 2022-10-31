@@ -34,6 +34,7 @@ sub get_handler {
 				'use Scalar::Util (); ⸨q{$ATTRNAME is not a blessed object}⸩ unless Scalar::Util::blessed( $GET ); $GET->%s(@ARG)',
 				$handler_name,
 			),
+			is_mutator => 0,
 		);
 	}
 	else {
@@ -43,6 +44,7 @@ sub get_handler {
 				'use Scalar::Util (); ⸨q{$ATTRNAME is not a blessed object}⸩ unless Scalar::Util::blessed( $GET ); $GET->${\ %s }(@ARG)',
 				B::perlstring($handler_name),
 			),
+			is_mutator => 0,
 		);
 	}
 }
