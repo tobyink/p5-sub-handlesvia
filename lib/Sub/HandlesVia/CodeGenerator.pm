@@ -236,6 +236,19 @@ for my $thing ( @generatable_things ) {
 	*$method_name = $method;
 }
 
+sub attribute_name {
+	my $self = shift;
+	my $attr = $self->attribute;
+	
+	return $attr
+		if !ref $attr;
+		
+	return sprintf '$instance->%s', $attr->[0]
+		if ref($attr) eq 'ARRAY';
+	
+	return '$attribute_value';
+}
+
 sub _start_overriding_generators {
 	my $self = shift;
 	$self->_override( {} );
@@ -703,6 +716,7 @@ sub _handle_template {
 	#
 	$template =~ s/\$SLOT/$self->generate_slot()/eg;
 	$template =~ s/\$GET/$state->{getter}/g;
+	$template =~ s/\$ATTRNAME/$self->attribute_name()/eg;
 	$template =~ s/\$ARG\[([0-9]+)\]/$self->generate_arg($1)/eg;
 	$template =~ s/\$ARG/$self->generate_arg(1)/eg;
 	$template =~ s/\#ARG/$self->generate_argc()/eg;

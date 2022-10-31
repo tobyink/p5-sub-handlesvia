@@ -587,6 +587,7 @@ native traits, and L<MouseX::NativeTraits>.
 
 For further details see:
 L<Array|Sub::HandlesVia::HandlerLibrary::Array>,
+L<Blessed|Sub::HandlesVia::HandlerLibrary::Blessed>,
 L<Bool|Sub::HandlesVia::HandlerLibrary::Bool>,
 L<Code|Sub::HandlesVia::HandlerLibrary::Code>,
 L<Counter|Sub::HandlesVia::HandlerLibrary::Counter>,
@@ -667,6 +668,16 @@ Basically, because C<find_healthiest> isn't one of the methods offered
 by Sub::HandlesVia::HandlerList::Array, it assumes you want to call it
 on the arrayref like a proper method.
 
+If you want to be explicit, you can use the 'Blessed' trait to indicate
+that you want to call a method on a blessed object:
+
+     isa         => InstanceOf['FoodList'],
+     handles_via => [ 'Array', 'Blessed' ],
+     handles     => {
+       'find_food'             => 'Array->grep',
+       'find_healthiest_food'  => 'Blessed->find_healthiest',
+     },
+
 =head2 Currying Favour
 
 All this talk of food is making me hungry, but as much as I'd like to eat a
@@ -736,6 +747,7 @@ L<https://github.com/tobyink/p5-sub-handlesvia/issues>.
 
 Documentation for delegatable methods:
 L<Array|Sub::HandlesVia::HandlerLibrary::Array>,
+L<Blessed|Sub::HandlesVia::HandlerLibrary::Blessed>,
 L<Bool|Sub::HandlesVia::HandlerLibrary::Bool>,
 L<Code|Sub::HandlesVia::HandlerLibrary::Code>,
 L<Counter|Sub::HandlesVia::HandlerLibrary::Counter>,
