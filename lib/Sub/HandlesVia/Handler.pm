@@ -213,8 +213,8 @@ sub lookup {
 				eval "require $class; 1"
 					or warn $@;
 			}
-			if ($class->isa('Sub::HandlesVia::HandlerLibrary') and $class->can($method_name)) {
-				$handler = $class->$method_name;
+			if ($class->isa('Sub::HandlesVia::HandlerLibrary') and $class->has_handler($method_name)) {
+				$handler = $class->get_handler($method_name);
 			}
 		}
 	}
