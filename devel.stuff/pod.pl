@@ -26,8 +26,7 @@ for my $category (@categories) {
 	{
 		my $class = "Sub::HandlesVia::HandlerLibrary::$category";
 		eval "require $class" or die($@);
-		no strict 'refs';
-		my @funcs = @{"$class\::METHODS"};
+		my @funcs = $class->handler_names;
 		undef $all{$category}{$_} for @funcs;
 	}
 }
@@ -72,7 +71,7 @@ for my $category ( @categories ) {
 
 	print $fh "=head1 DELEGATABLE METHODS\n\n";
 	for my $method (sort keys %{$all{$category}}) {
-		my $h = $class->$method;
+		my $h = $class->get_handler($method);
 
 		if ( $h->usage ) {
 			printf $fh "=head2 C<< %s( %s ) >>\n\n", $method, $h->usage;

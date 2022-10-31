@@ -45,8 +45,7 @@ for my $category (@categories) {
 	SHV: {
 		my $class = "Sub::HandlesVia::HandlerLibrary::$category";
 		eval "require $class" or last SHV;
-		no strict 'refs';
-		my @funcs = @{"$class\::METHODS"};
+		my @funcs = $class->handler_names;
 		undef $all{$category}{$_}{'Sub::HandlesVia'} for @funcs;
 	};
 	

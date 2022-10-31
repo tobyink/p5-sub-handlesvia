@@ -26,8 +26,7 @@ for my $category (@categories) {
 	{
 		my $class = "Sub::HandlesVia::HandlerLibrary::$category";
 		eval "require $class" or die($@);
-		no strict 'refs';
-		my @funcs = @{"$class\::METHODS"};
+		my @funcs = $class->handler_names;
 		undef $all{$category}{$_} for @funcs;
 	}
 }
@@ -98,7 +97,7 @@ HEADER
 	print $classfh "\n";
 	
 	for my $method (sort keys %{$all{$category}}) {
-		my $h = $class->$method;
+		my $h = $class->get_handler($method);
 
 		print $fh "## $method\n\n";
 		printf $fh "can_ok( \$CLASS, 'my_%s' );\n\n", $method;
