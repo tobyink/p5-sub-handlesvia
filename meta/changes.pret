@@ -343,3 +343,9 @@
 		item "Sub::HandlesVia::HandlerLibrary methods: handler_names, has_handler, and get_handler."^^Addition;
 		item "Sub::HandlesVia::HandlerLibrary::Blessed."^^Addition;
 	].
+
+`Sub-HandlesVia 0.044 cpan:TOBYINK`
+	issued  2022-10-31;
+	changeset [
+		item "Moved a lot of pod out of Sub::HandlesVia and into Sub::HandlesVia::Manual::*."^^Documentation;
+	].

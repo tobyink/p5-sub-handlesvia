@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::Declare;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.043';
+our $VERSION   = '0.044';
 
 use Sub::HandlesVia ();
 
