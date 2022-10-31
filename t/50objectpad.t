@@ -42,4 +42,11 @@ $o->add_z( foo => 123 );
 $o->add_z( bar => 456 );
 is_deeply( { $o->all_z }, { bar => 456, foo => 123 } );
 
+for my $method ( qw/ add_x all_x add_y all_y add_z all_z / ) {
+	no warnings 'once';
+	local $Data::Dumper::Deparse = 1;
+	note "==== $method ====";
+	note explain( $o->can($method) );
+}
+
 done_testing;
