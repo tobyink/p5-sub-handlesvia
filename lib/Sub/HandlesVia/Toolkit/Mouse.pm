@@ -224,4 +224,25 @@ around apply => sub {
 	$self->$next( $other, %args );
 };
 
+# This is a horrible hack.
+do {
+	no warnings 'redefine';
+	require Mouse::Meta::Role;
+	require Scalar::Util;
+	my $next = \&Mouse::Meta::Role::combine;
+	*Mouse::Meta::Role::combine = sub {
+		my ( $class, @roles ) = ( shift, @_ );
+		my $combined = $class->$next( @roles );
+		my ($hack) = map {
+			( ref $_ and blessed $_->[0] and $_->[0]->can( '_shv_toolkit' ) )
+				? $_->[0]->_shv_toolkit
+				: ();
+		} @roles;
+		if ($hack) {
+			$combined = $hack->meta_hack( $combined );
+		}
+		return $combined;
+	};
+};
+
 1;
