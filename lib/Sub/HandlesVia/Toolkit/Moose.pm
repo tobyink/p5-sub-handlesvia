@@ -225,4 +225,14 @@ around apply => sub {
 	$self->$next( $other, %args );
 };
 
+around composition_class_roles => sub {
+	my ( $next, $self ) = ( shift, shift );
+	my @return = $self->$next( @_ );
+	return (
+		@return,
+		$self->_shv_toolkit->package_trait,
+		$self->_shv_toolkit->role_trait,
+	);
+};
+
 1;
