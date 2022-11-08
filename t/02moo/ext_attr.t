@@ -1,4 +1,7 @@
+use strict;
+use warnings;
 use Test::More;
+{ package Local::Dummy1; use Test::Requires 'Moo' };
 
 {
 	package ParentClass;
