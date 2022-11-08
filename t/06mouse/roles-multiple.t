@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More skip_all => 'TODO';
+use Test::More skip_all => 'TODO (issue #9)';
 use Test::Fatal;
 { package Local::Dummy1; use Test::Requires 'Mouse' };
 
