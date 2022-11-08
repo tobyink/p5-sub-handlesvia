@@ -349,3 +349,30 @@
 	changeset [
 		item "Moved a lot of pod out of Sub::HandlesVia and into Sub::HandlesVia::Manual::*."^^Documentation;
 	].
+
+`Sub-HandlesVia 0.045 cpan:TOBYINK`
+	issued  2022-11-08;
+	changeset [
+		item [
+			a dcs:Bugfix;
+			label "Fix for `with qw(Role1 Role2)` in Moose where at least one role uses Sub::HandlesVia.";
+			dcs:thanks cpan:BRTASTIC;
+			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/6>;
+		];
+		item [
+			a dcs:Bugfix;
+			label "Support attributes declared with `has '+name'`.";
+			dcs:thanks cpan:BRTASTIC;
+			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/7>;
+		];
+		item [
+			a dcs:Addition;
+			label "Add a `generator_for_prelude` attribute to Sub::HandlesVia::CodeGenerator.";
+			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/8>;
+		];
+		item [
+			a dcs:Documentation;
+			label "Document that `with qw(Role1 Role2)` in Mouse is currently broken if either role uses Sub::HandlesVia.";
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/9>;
+		];
+	].
