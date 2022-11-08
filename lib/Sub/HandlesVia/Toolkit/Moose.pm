@@ -199,7 +199,8 @@ around add_attribute => sub {
 		($attrname, %spec) = @args;
 		$spec = \%spec;
 	}
-	$spec->{definition_context}{shv} = $self->_shv_toolkit->clean_spec($self->name, $attrname, $spec)
+	( my $real_attrname = $attrname ) =~ s/^[+]//;
+	$spec->{definition_context}{shv} = $self->_shv_toolkit->clean_spec($self->name, $real_attrname, $spec)
 		unless $spec->{definition_context}{shv};
 	my $attr = $self->$next($attrobj ? $attrobj : ($attrname, %$spec));
 	if ($spec->{definition_context}{shv} and $self->isa('Moose::Meta::Class')) {

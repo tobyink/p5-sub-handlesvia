@@ -44,9 +44,9 @@ sub install_has_wrapper {
 		}
 		my ($attrs, %spec) = @_;
 		return $orig->($attrs, %spec) unless $spec{handles}; # shortcut
-		$attrs = [$attrs] unless ref $attrs;
-		for my $attr (@$attrs) {
-			my $shv = $me->clean_spec($target, $attr, \%spec);
+		for my $attr ( ref($attrs) ? @$attrs : $attrs ) {
+			( my $real_attr = $attr ) =~ s/^[+]//;
+			my $shv = $me->clean_spec($target, $real_attr, \%spec);
 			$orig->($attr, %spec);
 			$me->install_delegations($shv) if $shv;
 		}

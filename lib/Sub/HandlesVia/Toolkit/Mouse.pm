@@ -198,7 +198,8 @@ around add_attribute => sub {
 		($attrname, %spec) = @args;
 		$spec = \%spec;
 	}
-	$spec->{provides}{shv} = $self->_shv_toolkit->clean_spec($self->name, $attrname, $spec)
+	( my $real_attrname = $attrname ) =~ s/^[+]//;
+	$spec->{provides}{shv} = $self->_shv_toolkit->clean_spec($self->name, $real_attrname, $spec)
 		unless $spec->{provides}{shv};
 	my $attr = $self->$next($attrobj ? $attrobj : ($attrname, %$spec));
 	if ($spec->{provides}{shv} and $self->isa('Mouse::Meta::Class')) {
