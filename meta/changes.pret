@@ -285,6 +285,7 @@
 			label "Fix test case broken by Type::Tiny v2.";
 			dcs:thanks cpan:SYSPETE;
 			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/2>;
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/2>;
 		];
 		item "Hash:set shouldn't hardcode use of Carp::croak. Instead a CodeGenerator should decide how to deal with error messages."^^Bugfix;
 	].
@@ -304,6 +305,7 @@
 			label "Fix application of Sub::HandlesVia Moose/Mouse traits to metaobjects that have other traits applied to them.";
 			dcs:thanks cpan:BRTASTIC;
 			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/3>;
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/3>;
 		];
 	].
 
@@ -315,12 +317,14 @@
 			label "Stricter detection of Moo::Role roles to prevent some false positives when given Mouse::Role and Moose::Role roles.";
 			dcs:thanks cpan:BRTASTIC;
 			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/4>;
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/4>;
 		];
 		item [
 			a dcs:Tests;
 			label "Add a test using Sub::HandlesVia when Beam::Wire is loaded.";
 			dcs:thanks cpan:BRTASTIC;
 			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/5>;
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/5>;
 		];
 	].
 
@@ -358,21 +362,28 @@
 			label "Fix for `with qw(Role1 Role2)` in Moose where at least one role uses Sub::HandlesVia.";
 			dcs:thanks cpan:BRTASTIC;
 			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/6>;
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/6>;
 		];
 		item [
 			a dcs:Bugfix;
 			label "Support attributes declared with `has '+name'`.";
 			dcs:thanks cpan:BRTASTIC;
 			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/7>;
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/7>;
 		];
 		item [
 			a dcs:Addition;
 			label "Add a `generator_for_prelude` attribute to Sub::HandlesVia::CodeGenerator.";
 			dcs:fixes <tdb:2013,https://github.com/tobyink/p5-sub-handlesvia/issues/8>;
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/8>;
 		];
 		item [
 			a dcs:Documentation;
 			label "Document that `with qw(Role1 Role2)` in Mouse is currently broken if either role uses Sub::HandlesVia.";
 			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/9>;
+		];
+		item [
+			a dcs:Tests;
+			label "Test that `with qw(Role1 Role2)` in Moo works if either role uses Sub::HandlesVia.";
 		];
 	].
