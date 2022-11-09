@@ -481,9 +481,7 @@ sub _handle_sigcheck {
 
 sub _handle_prelude {
 	my ( $self, $method_name, $handler, $env, $code, $state ) = @_;
-	
-	push @$code, $self->generate_prelude();
-	
+	push @$code, grep !!$_, $self->generate_prelude();
 	return $self;
 }
 
