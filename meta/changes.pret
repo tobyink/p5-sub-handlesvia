@@ -387,3 +387,20 @@
 			label "Test that `with qw(Role1 Role2)` in Moo works if either role uses Sub::HandlesVia.";
 		];
 	].
+
+`Sub-HandlesVia 0.046 cpan:TOBYINK`
+	issued  2022-12-16;
+	changeset [
+		item [
+			a dcs:Addition;
+			label "Sub::HandlesVia::HandlerLibrary::Enum module.";
+		];
+		item [
+			a dcs:Change;
+			label "Handler libraries can now provide constants for shortcuts.";
+		];
+		item [
+			a dcs:Update;
+			label "Rebuild with latest Mite.";
+		];
+	].
