@@ -50,4 +50,13 @@ sub _populate_cache {
 	\%hash;
 }
 
+sub expand_shortcut {
+	use Carp;
+	Carp::croak( "Not implemented" );
+}
+
+sub preprocess_spec {
+	return;
+}
+
 1;

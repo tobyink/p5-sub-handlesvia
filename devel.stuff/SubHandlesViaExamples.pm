@@ -318,4 +318,47 @@ EG
 
 ##############################################################################
 
+our %SEC;
+$SEC{Array} = <<'SECTION';
+=head1 SHORTCUT CONSTANTS
+
+This module provides some shortcut constants for indicating a list of
+delegations.
+
+  package My::Class {
+    use Moo;
+    use Sub::HandlesVia;
+    use Sub::HandlesVia::HandlerLibrary::Array qw( HandleQueue );
+    
+    has things => (
+      is          => 'ro',
+      handles_via => 'Array',
+      handles     => HandleQueue,
+      default     => sub { [] },
+    );
+  }
+
+These shortcuts can be combined using the C< | > operator.
+
+    has things => (
+      is          => 'ro',
+      handles_via => 'Array',
+      handles     => HandleQueue | HandleStack,
+      default     => sub { [] },
+    );
+
+=head2 C<< HandleQueue >>
+
+Creates delegations named like C<< things_is_empty >>, C<< things_size >>,
+C<< things_enqueue >>, C<< things_dequeue >>, and C<< things_peek >>.
+
+=head2 C<< HandleStack >>
+
+Creates delegations named like C<< things_is_empty >>, C<< things_size >>,
+C<< things_push >>, C<< things_pop >>, and C<< things_peek >>.
+
+SECTION
+
+##############################################################################
+
 1;

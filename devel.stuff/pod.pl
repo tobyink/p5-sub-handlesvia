@@ -97,6 +97,11 @@ for my $category ( @categories ) {
 		}
 	}
 
+	my %SEC = %SubHandlesViaExamples::SEC;
+	if ( $SEC{$category} ) {
+		print $fh $SEC{$category};
+	}
+
 	my %EG = %SubHandlesViaExamples::EG;
 	if ( ref $EG{$category} ) {
 		print $fh "=head1 EXTENDED EXAMPLES\n\n";

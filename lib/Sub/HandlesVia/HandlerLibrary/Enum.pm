@@ -7,28 +7,79 @@ package Sub::HandlesVia::HandlerLibrary::Enum;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.045';
 
+use Exporter::Tiny;
 use Sub::HandlesVia::HandlerLibrary;
-our @ISA = 'Sub::HandlesVia::HandlerLibrary';
+our @ISA = qw(
+	Exporter::Tiny
+	Sub::HandlesVia::HandlerLibrary
+);
 
 use Sub::HandlesVia::Handler qw( handler );
 use Types::Standard qw( is_Str Any );
 
+sub HandleIs        () { 1 }
+sub HandleNamedIs   () { 2 }
+sub HandleSet       () { 4 }
+sub HandleNamedSet  () { 8 }
+
+our @EXPORT = qw(
+	HandleIs
+	HandleNamedIs
+	HandleSet
+	HandleNamedSet
+);
+
+sub preprocess_spec {
+	my ( $class, $target, $attrname, $spec ) = @_;
+	if ( my $values = delete $spec->{enum} ) {
+		require Type::Tiny::Enum;
+		$spec->{isa} ||= 'Type::Tiny::Enum'->new( values => $values );
+	}
+}
+
+sub expand_shortcut {
+	require Carp;
+	my ( $class, $target, $attrname, $spec, $shortcut ) = @_;
+	my %handlers;
+
+	my $type = $spec->{isa}
+		or Carp::croak( "No type constraint!" );
+	$type->can( 'values' )
+		or Carp::croak( "Type constraint does not have a `values` method!" );
+	my @values = @{ $type->values };
+
+	if ( HandleIs & $shortcut ) {
+		$handlers{"is_$_"} = [ is => $_ ] for @values;
+	}
+	if ( HandleNamedIs & $shortcut ) {
+		$handlers{"$attrname\_is_$_"} = [ is => $_ ] for @values;
+	}
+	if ( HandleSet & $shortcut ) {
+		$handlers{"set_$_"} = [ set => $_ ] for @values;
+	}
+	if ( HandleNamedSet & $shortcut ) {
+		$handlers{"$attrname\_set_$_"} = [ set => $_ ] for @values;
+	}
+
+	return \%handlers;
+}
+
 # Non-exhaustive list!
 sub handler_names {
-	qw( is assign );
+	qw( is assign set );
 }
 
 sub has_handler {
 	my ($me, $handler_name) = @_;
-	return 1 if $handler_name =~ /^(is|assign)$/;
-	return 1 if is_Str $handler_name and $handler_name =~ /^(is|assign)_(.+)$/;
+	return 1 if $handler_name =~ /^(is|assign|set)$/;
+	return 1 if is_Str $handler_name and $handler_name =~ /^(is|assign|set)_(.+)$/;
 	return 0;
 }
 
 sub get_handler {
 	my ($me, $handler_name) = @_;
 	
-	$handler_name =~ /^(is|assign)_(.+)$/
+	$handler_name =~ /^(is|assign|set)_(.+)$/
 		or return $me->SUPER::get_handler( $handler_name );
 	
 	my $handler_type = $1;
@@ -40,6 +91,17 @@ sub get_handler {
 sub assign {
 	handler
 		name      => 'Enum:assign',
+		args      => 1,
+		signature => [Any],
+		template  => '« $ARG »',
+		lvalue_template => '$GET = $ARG',
+		usage     => '$value',
+		documentation => "Sets the enum to a new value.",
+}
+
+sub set {
+	handler
+		name      => 'Enum:set',
 		args      => 1,
 		signature => [Any],
 		template  => '« $ARG »',
@@ -135,6 +197,77 @@ Sets the enum to the value.
   $object->assign_fail();
   say $object->is_pass(); ## ==> false
   say $object->is_fail(); ## ==> true
+
+=head2 C<< set( $value ) >>
+
+An alias for C<assign>.
+
+=head1 TYPE CONSTRAINT SHORTCUT
+
+The Enum handler library also allows an C<enum> shortcut in the attribute
+spec.
+
+  package My::Class {
+    use Moo;
+    use Sub::HandlesVia;
+    has status => (
+      is          => 'ro',
+      enum        => [ 'pass', 'fail' ],
+      handles_via => 'Enum',
+      handles     => {
+        'is_pass'      => [ is     => 'pass' ],
+        'is_fail'      => [ is     => 'fail' ],
+        'assign_pass'  => [ assign => 'pass' ],
+        'assign_fail'  => [ assign => 'fail' ],
+      },
+      default     => sub { 'fail' },
+    );
+  }
+
+=head1 SHORTCUT CONSTANTS
+
+This module provides some shortcut constants for indicating a list of
+delegations.
+
+  package My::Class {
+    use Moo;
+    use Types::Standard qw( Enum );
+    use Sub::HandlesVia;
+    use Sub::HandlesVia::HandlerLibrary::Enum qw( HandleIs );
+    has status => (
+      is          => 'ro',
+      isa         => Enum[ 'pass', 'fail' ],
+      handles_via => 'Enum',
+      handles     => HandleIs,
+      default     => sub { 'fail' },
+    );
+  }
+
+Any of these shortcuts can be combined using the C< | > operator.
+
+    has status => (
+      is          => 'ro',
+      isa         => Enum[ 'pass', 'fail' ],
+      handles_via => 'Enum',
+      handles     => HandleIs | HandleSet,
+      default     => sub { 'fail' },
+    );
+
+=head2 C<< HandleIs >>
+
+Creates delegations named like C<< is_pass >> and C<< is_fail >>.
+
+=head2 C<< HandleNamedIs >>
+
+Creates delegations named like C<< status_is_pass >> and C<< status_is_fail >>.
+
+=head2 C<< HandleSet >>
+
+Creates delegations named like C<< set_pass >> and C<< set_fail >>.
+
+=head2 C<< HandleNamedSet >>
+
+Creates delegations named like C<< status_set_pass >> and C<< status_set_fail >>.
 
 =head1 BUGS
 

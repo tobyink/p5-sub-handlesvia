@@ -50,4 +50,37 @@ is( $obj->status, 'fail' );
 ok( $obj->is( 'fail' ) );
 ok( $obj->is_fail );
 
+{
+	package Local::Bleh2;
+	use Moo;
+	use Types::Standard -types;
+	use Sub::HandlesVia;
+	use Sub::HandlesVia::HandlerLibrary::Enum;
+
+	has status => (
+		is           => 'ro',
+		lazy         => 1,
+		coerce       => 1,
+		builder      => '_build_status',
+		handles_via  => 'Enum',
+		enum         => [qw/ pass fail unknown /],
+		handles      => HandleIs | HandleNamedSet,
+	);
+	
+	sub _build_status { 'unknown' }
+}
+
+my $obj2 = Local::Bleh2->new;
+
+is( $obj2->status, 'unknown' );
+ok( $obj2->is_unknown );
+
+$obj2->status_set_pass;
+is( $obj2->status, 'pass' );
+ok( $obj2->is_pass );
+
+$obj2->status_set_fail;
+is( $obj2->status, 'fail' );
+ok( $obj2->is_fail );
+
 done_testing;
