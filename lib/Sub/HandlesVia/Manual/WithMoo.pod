@@ -64,6 +64,23 @@ are conceptually contradictory.
 Please report any bugs to
 L<https://github.com/tobyink/p5-sub-handlesvia/issues>.
 
+=head2 Potential load order bugs
+
+Unlike L<Moose>, Moo doesn't really offer much of an API for extensions.
+As a result, most modules that provide extensions do so by wrapping the
+Moo keywords (especially C<has>). Sub::HandlesVia is no exception to this.
+If you are using multiple Moo extensions, you may need to adjust the order
+you C<use> them for them to work properly together. In some combinations,
+there may be no order that fully works!
+
+Some known modules that should be imported I<before> Sub::HandlesVia if
+you're using them: L<MooX::Should>.
+
+Some known modules that should be imported I<after> Sub::HandlesVia if
+you're using them: L<MooX::ProtectedAttributes>.
+
+Some known modules that conflict with Sub::HandlesVia: none so far!
+
 =head1 SEE ALSO
 
 Misc advanced documentation:
