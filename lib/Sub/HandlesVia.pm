@@ -7,7 +7,7 @@ package Sub::HandlesVia;
 use Exporter::Shiny qw( delegations );
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.046';
+our $VERSION   = '0.050000';
 
 sub _generate_delegations {
 	my ($me, $name, $args, $globals) = (shift, @_);
