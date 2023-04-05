@@ -404,3 +404,16 @@
 			label "Rebuild with latest Mite.";
 		];
 	].
+
+`Sub-HandlesVia 0.050000 cpan:TOBYINK`
+	issued  2023-04-05;
+	changeset [
+		item [
+			a dcs:Documentation;
+			label "Mention potential load-order bugs when importing multiple extensions for Moo into the same package.";
+		];
+		item [
+			a dcs:Packaging;
+			label "Change versioning scheme.";
+		];
+	].
