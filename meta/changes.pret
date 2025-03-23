@@ -425,3 +425,16 @@
 			label "Change versioning scheme.";
 		];
 	].
+
+`Sub-HandlesVia 0.050001 cpan:TOBYINK`
+	issued  2025-03-23;
+	changeset [
+		item [
+			a dcs:Update;
+			label "Fix test cases which failed due to Object::Pad dropping the `has` keyword.";
+		];
+		item [
+			a dcs:Update;
+			label "Fix test cases which will fail due to changed error messages in next release of Type::Tiny.";
+		];
+	].
