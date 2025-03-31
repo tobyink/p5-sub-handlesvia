@@ -442,3 +442,12 @@
 			label "Fix test cases which will fail due to changed error messages in next release of Type::Tiny.";
 		];
 	].
+
+`Sub-HandlesVia 0.050002 cpan:TOBYINK`
+	issued  2025-03-23;
+	changeset [
+		item [
+			a dcs:SecurityFix;
+			label "Rebuild using Mite 0.013000.";
+		];
+	].
