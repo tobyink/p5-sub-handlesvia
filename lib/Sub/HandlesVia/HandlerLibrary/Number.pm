@@ -199,7 +199,7 @@ sub ceil {
 		args      => 0,
 		template  => 'use POSIX (); « POSIX::ceil($GET) »',
 		additional_validation => 'no incoming values',
-		documentation => "Finds the ceiling of the current number, updating the attribute.",
+		documentation => "Finds the ceiling of the current number, updating the attribute. Like C<ceil> from L<builtin>, but in-place.",
 }
 
 sub floor {
@@ -208,7 +208,7 @@ sub floor {
 		args      => 0,
 		template  => 'use POSIX (); « POSIX::floor($GET) »',
 		additional_validation => 'no incoming values',
-		documentation => "Finds the floor of the current number, updating the attribute.",
+		documentation => "Finds the floor of the current number, updating the attribute. Like C<floor> from L<builtin>, but in-place.",
 }
 
 1;
