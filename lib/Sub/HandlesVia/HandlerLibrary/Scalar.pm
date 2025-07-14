@@ -11,7 +11,10 @@ use Sub::HandlesVia::HandlerLibrary;
 our @ISA = 'Sub::HandlesVia::HandlerLibrary';
 
 use Sub::HandlesVia::Handler qw( handler );
-our @METHODS = qw( scalar_reference make_getter make_setter get set );
+our @METHODS = qw(
+	scalar_reference make_getter make_setter get set
+	stringify
+);
 
 sub scalar_reference {
 	handler
@@ -84,6 +87,15 @@ sub set {
 		lvalue_template => '$GET = $ARG',
 		usage     => '$value',
 		documentation => "Sets the scalar to a new value.",
+}
+
+sub stringify {
+	handler
+		name      => 'Scalar:stringify',
+		args      => 0,
+		template  => 'do { my $shv_tmp = $GET; sprintf q(%s), $shv_tmp; }',
+		documentation => "Gets the current value of the scalar, but as a string.",
+		allow_getter_shortcuts => 0,
 }
 
 1;
