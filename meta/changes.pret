@@ -451,3 +451,24 @@
 			label "Rebuild using Mite 0.013000.";
 		];
 	].
+
+`Sub-HandlesVia 0.050002 cpan:TOBYINK`
+	issued  2025-07-14;
+	changeset [
+		item [
+			a dcs:Addition;
+			label "String:trim.";
+		];
+		item [
+			a dcs:Addition;
+			label "Number:ceil and Number:floor.";
+		];
+		item [
+			a dcs:Addition;
+			label "ArrayRef:indexed.";
+		];
+		item [
+			a dcs:Addition;
+			label "Scalar:get and Scalar:set.";
+		];
+	].
