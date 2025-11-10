@@ -472,3 +472,12 @@
 			label "Scalar:get and Scalar:set.";
 		];
 	].
+
+`Sub-HandlesVia 0.050003 cpan:TOBYINK`
+	issued  2025-11-10;
+	changeset [
+		item [
+			a dcs:Change;
+			label "Array:for_each, Hash:for_each_key, and Hash:for_each_value now support $_.";
+		];
+	].
