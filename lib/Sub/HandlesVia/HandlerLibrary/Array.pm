@@ -845,8 +845,8 @@ sub for_each {
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => 'foreach my $shv_index (0 .. $#{$GET}) { &{$ARG}(($GET)->[$shv_index], $shv_index) }; $SELF',
-		documentation => 'Chainable method which executes the coderef on each element of the array. The coderef will be passed two values: the element and its index.',
+		template  => 'local $_; foreach my $shv_index (0 .. $#{$GET}) { &{$ARG}($_ = ($GET)->[$shv_index], $shv_index) }; $SELF',
+		documentation => 'Chainable method which executes the coderef on each element of the array. The coderef will be passed two values: the element and its index. The element will also be available as C<< $_ >>.',
 		_examples => sub {
 			my ( $class, $attr, $method ) = @_;
 			return CORE::join "",
