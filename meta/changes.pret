@@ -490,3 +490,16 @@
 			label "Bug fix for pathological case exposed by Hydrogen.";
 		];
 	].
+
+`Sub-HandlesVia 0.050006 cpan:TOBYINK`
+	issued  2025-11-10;
+	changeset [
+		item [
+			a dcs:Documentation;
+			label "Document usage with the Perl 5.38+ `class` keyword (Corinna).";
+		];
+		item [
+			a dcs:Tests;
+			label "Test with Perl 5.38+ `class` keyword (Corinna).";
+		];
+	].
