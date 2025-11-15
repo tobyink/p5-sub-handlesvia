@@ -503,3 +503,13 @@
 			label "Test with Perl 5.38+ `class` keyword (Corinna).";
 		];
 	].
+
+`Sub-HandlesVia 0.050007 cpan:TOBYINK`
+	issued  2025-11-15;
+	changeset [
+		item [
+			a dcs:Tests;
+			label "Some of the Corinna test cases accidentally required Moo.";
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/18>;
+		];
+	].
