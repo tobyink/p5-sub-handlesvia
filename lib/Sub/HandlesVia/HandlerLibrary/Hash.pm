@@ -234,7 +234,7 @@ sub exists {
 		args      => 1,
 		signature => [Str],
 		usage     => '$key',
-		template  => 'defined(($GET)->{$ARG})',
+		template  => 'exists(($GET)->{$ARG})',
 		documentation => 'Indicates whether a value exists in the hashref by its key.',
 		_examples => sub {
 			my ( $class, $attr, $method ) = @_;
