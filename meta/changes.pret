@@ -513,3 +513,33 @@
 			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/18>;
 		];
 	].
+
+`Sub-HandlesVia 0.052000 cpan:TOBYINK`
+	issued  2025-11-21;
+	changeset [
+		item [
+			a dcs:Bugfix;
+			label "The Hash `exists` check was checking definedness. It now properly tests slot existence.";
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/20>;
+		];
+		item [
+			a dcs:Update, dcs:Tests;
+			label "In Object::Pad tests, use the `field` keyword rather than deprecated `has` keyword.";
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/17>;
+		];
+		item [
+			a dcs:Change;
+			label "Use Class::Method::Modifiers to wrap Moo `has`.";
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/14>;
+		];
+		item [
+			a dcs:Tests;
+			label "Include tests for interaction with MooX::Tag::TO_HASH.";
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/14>;
+		];
+		item [
+			a dcs:Change;
+			label "Use Class::Method::Modifiers to wrap Moo `has`.";
+			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/14>;
+		];
+	].
