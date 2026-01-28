@@ -117,12 +117,29 @@
             $self->{"attribute_spec"} = $args->{"attribute_spec"};
         }
 
-        # Attribute isa
+        # Attribute xs_info (type: Maybe[HashRef])
         # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 29
+        if ( exists $args->{"xs_info"} ) {
+            do {
+
+                package Sub::HandlesVia::Mite;
+                !defined( $args->{"xs_info"} ) or do {
+
+                    package Sub::HandlesVia::Mite;
+                    ref( $args->{"xs_info"} ) eq 'HASH';
+                }
+              }
+              or croak "Type check failed in constructor: %s should be %s",
+              "xs_info", "Maybe[HashRef]";
+            $self->{"xs_info"} = $args->{"xs_info"};
+        }
+
+        # Attribute isa
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 34
         if ( exists $args->{"isa"} ) { $self->{"isa"} = $args->{"isa"}; }
 
         # Attribute coerce (type: Bool)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 33
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 38
         if ( exists $args->{"coerce"} ) {
             do {
 
@@ -139,7 +156,7 @@
         }
 
         # Attribute env (type: HashRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 38
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
         do {
             my $value = exists( $args->{"env"} )
               ? (
@@ -159,7 +176,7 @@
         };
 
         # Attribute sandboxing_package (type: Str|Undef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 45
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 50
         do {
             my $value = exists( $args->{"sandboxing_package"} )
               ? (
@@ -200,7 +217,7 @@
         };
 
         # Attribute generator_for_slot (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 52
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 57
         if ( exists $args->{"generator_for_slot"} ) {
             do {
 
@@ -213,7 +230,7 @@
         }
 
         # Attribute generator_for_get (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 52
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 57
         if ( exists $args->{"generator_for_get"} ) {
             do {
 
@@ -226,7 +243,7 @@
         }
 
         # Attribute generator_for_set (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 52
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 57
         if ( exists $args->{"generator_for_set"} ) {
             do {
 
@@ -239,7 +256,7 @@
         }
 
         # Attribute generator_for_default (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 52
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 57
         if ( exists $args->{"generator_for_default"} ) {
             do {
 
@@ -252,7 +269,7 @@
         }
 
         # Attribute generator_for_args (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 65
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 70
         do {
             my $value = exists( $args->{"generator_for_args"} )
               ? (
@@ -272,7 +289,7 @@
         };
 
         # Attribute generator_for_arg (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 78
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 83
         do {
             my $value = exists( $args->{"generator_for_arg"} )
               ? (
@@ -292,7 +309,7 @@
         };
 
         # Attribute generator_for_argc (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 89
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 94
         do {
             my $value = exists( $args->{"generator_for_argc"} )
               ? (
@@ -312,7 +329,7 @@
         };
 
         # Attribute generator_for_currying (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 102
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 107
         do {
             my $value = exists( $args->{"generator_for_currying"} )
               ? (
@@ -332,7 +349,7 @@
         };
 
         # Attribute generator_for_usage_string (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 117
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 122
         do {
             my $value = exists( $args->{"generator_for_usage_string"} )
               ? (
@@ -352,7 +369,7 @@
         };
 
         # Attribute generator_for_self (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 128
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 133
         do {
             my $value = exists( $args->{"generator_for_self"} )
               ? (
@@ -372,7 +389,7 @@
         };
 
         # Attribute generator_for_type_assertion (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 155
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 160
         do {
             my $value = exists( $args->{"generator_for_type_assertion"} )
               ? (
@@ -393,7 +410,7 @@
         };
 
         # Attribute generator_for_error (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 167
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 172
         do {
             my $value = exists( $args->{"generator_for_error"} )
               ? (
@@ -413,7 +430,7 @@
         };
 
         # Attribute generator_for_prelude (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 176
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 181
         do {
             my $value = exists( $args->{"generator_for_prelude"} )
               ? (
@@ -433,7 +450,7 @@
         };
 
         # Attribute method_installer (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 179
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 184
         if ( exists $args->{"method_installer"} ) {
             do {
 
@@ -446,26 +463,33 @@
         }
 
         # Attribute is_method
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 189
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 194
         $self->{"is_method"} =
           ( exists( $args->{"is_method"} ) ? $args->{"is_method"} : "1" );
 
         # Attribute get_is_lvalue
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 194
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 199
         $self->{"get_is_lvalue"} = (
             exists( $args->{"get_is_lvalue"} )
             ? $args->{"get_is_lvalue"}
             : "" );
 
         # Attribute set_checks_isa
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 199
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 204
         $self->{"set_checks_isa"} = (
             exists( $args->{"set_checks_isa"} )
             ? $args->{"set_checks_isa"}
             : "" );
 
+        # Attribute never_shift_self
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 209
+        $self->{"never_shift_self"} = (
+            exists( $args->{"never_shift_self"} )
+            ? $args->{"never_shift_self"}
+            : "" );
+
         # Attribute set_strictly
-        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 204
+        # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 214
         $self->{"set_strictly"} =
           ( exists( $args->{"set_strictly"} ) ? $args->{"set_strictly"} : "1" );
 
@@ -474,7 +498,7 @@
 
         # Unrecognized parameters
         my @unknown = grep not(
-/\A(?:attribute(?:_spec)?|coerce|env|ge(?:nerator_for_(?:arg[cs]?|currying|default|error|get|prelude|s(?:e(?:lf|t)|lot)|type_assertion|usage_string)|t_is_lvalue)|is(?:_method|a)|method_installer|s(?:andboxing_package|et_(?:checks_isa|strictly))|t(?:arget|oolkit))\z/
+/\A(?:attribute(?:_spec)?|coerce|env|ge(?:nerator_for_(?:arg[cs]?|currying|default|error|get|prelude|s(?:e(?:lf|t)|lot)|type_assertion|usage_string)|t_is_lvalue)|is(?:_method|a)|method_installer|never_shift_self|s(?:andboxing_package|et_(?:checks_isa|strictly))|t(?:arget|oolkit)|xs_info)\z/
         ), keys %{$args};
         @unknown
           and croak(
@@ -515,7 +539,7 @@
       && eval { require Class::XSAccessor; Class::XSAccessor->VERSION("1.19") };
 
     # Accessors for _override
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 184
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 189
     if ($__XS) {
         Class::XSAccessor->import(
             chained     => 1,
@@ -563,7 +587,7 @@
     }
 
     # Accessors for coerce
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 33
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 38
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -578,7 +602,7 @@
     }
 
     # Accessors for env
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 38
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 43
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -593,7 +617,7 @@
     }
 
     # Accessors for generator_for_arg
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 78
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 83
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -610,7 +634,7 @@
     }
 
     # Accessors for generator_for_argc
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 89
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 94
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -628,7 +652,7 @@
     }
 
     # Accessors for generator_for_args
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 65
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 70
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -646,7 +670,7 @@
     }
 
     # Accessors for generator_for_currying
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 102
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 107
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -665,7 +689,7 @@
     }
 
     # Accessors for generator_for_default
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 52
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 57
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -683,7 +707,7 @@
     }
 
     # Accessors for generator_for_error
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 167
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 172
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -701,7 +725,7 @@
     }
 
     # Accessors for generator_for_get
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 52
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 57
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -718,7 +742,7 @@
     }
 
     # Accessors for generator_for_prelude
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 176
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 181
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -736,7 +760,7 @@
     }
 
     # Accessors for generator_for_self
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 128
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 133
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -754,7 +778,7 @@
     }
 
     # Accessors for generator_for_set
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 52
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 57
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -771,7 +795,7 @@
     }
 
     # Accessors for generator_for_slot
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 52
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 57
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -789,7 +813,7 @@
     }
 
     # Accessors for generator_for_type_assertion
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 155
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 160
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -809,7 +833,7 @@
     }
 
     # Accessors for generator_for_usage_string
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 117
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 122
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -828,7 +852,7 @@
     }
 
     # Accessors for get_is_lvalue
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 194
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 199
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -844,7 +868,7 @@
     }
 
     # Accessors for is_method
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 189
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 194
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -859,7 +883,7 @@
     }
 
     # Accessors for isa
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 29
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 34
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -874,7 +898,7 @@
     }
 
     # Accessors for method_installer
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 179
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 184
     sub method_installer {
         @_ > 1
           ? do {
@@ -887,8 +911,25 @@
           : ( $_[0]{"method_installer"} );
     }
 
+    # Accessors for never_shift_self
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 209
+    if ($__XS) {
+        Class::XSAccessor->import(
+            chained   => 1,
+            "getters" => { "never_shift_self" => "never_shift_self" },
+        );
+    }
+    else {
+        *never_shift_self = sub {
+            @_ == 1
+              or croak(
+                'Reader "never_shift_self" usage: $self->never_shift_self()');
+            $_[0]{"never_shift_self"};
+        };
+    }
+
     # Accessors for sandboxing_package
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 45
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 50
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -906,7 +947,7 @@
     }
 
     # Accessors for set_checks_isa
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 199
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 204
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -923,7 +964,7 @@
     }
 
     # Accessors for set_strictly
-    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 204
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 214
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -965,6 +1006,21 @@
         *toolkit = sub {
             @_ == 1 or croak('Reader "toolkit" usage: $self->toolkit()');
             $_[0]{"toolkit"};
+        };
+    }
+
+    # Accessors for xs_info
+    # has declaration, file lib/Sub/HandlesVia/CodeGenerator.pm, line 29
+    if ($__XS) {
+        Class::XSAccessor->import(
+            chained   => 1,
+            "getters" => { "xs_info" => "xs_info" },
+        );
+    }
+    else {
+        *xs_info = sub {
+            @_ == 1 or croak('Reader "xs_info" usage: $self->xs_info()');
+            $_[0]{"xs_info"};
         };
     }
 

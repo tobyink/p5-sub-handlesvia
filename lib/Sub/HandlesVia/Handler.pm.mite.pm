@@ -511,12 +511,25 @@
             $self->{"_examples"} = $args->{"_examples"};
         }
 
+        # Attribute xs_install (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 106
+        if ( exists $args->{"xs_install"} ) {
+            do {
+
+                package Sub::HandlesVia::Mite;
+                ref( $args->{"xs_install"} ) eq 'CODE';
+              }
+              or croak "Type check failed in constructor: %s should be %s",
+              "xs_install", "CodeRef";
+            $self->{"xs_install"} = $args->{"xs_install"};
+        }
+
         # Call BUILD methods
         $self->BUILDALL($args) if ( !$no_build and @{ $meta->{BUILD} || [] } );
 
         # Unrecognized parameters
         my @unknown = grep not(
-/\A(?:_examples|a(?:dditional_validation|llow_getter_shortcuts|rgs)|curried|d(?:efault_for_reset|ocumentation)|is_(?:chainable|mutator)|lvalue_template|m(?:ax_args|in_args)|n(?:ame|o_validation_needed)|prefer_shift_self|signature|template|usage)\z/
+/\A(?:_examples|a(?:dditional_validation|llow_getter_shortcuts|rgs)|curried|d(?:efault_for_reset|ocumentation)|is_(?:chainable|mutator)|lvalue_template|m(?:ax_args|in_args)|n(?:ame|o_validation_needed)|prefer_shift_self|signature|template|usage|xs_install)\z/
         ), keys %{$args};
         @unknown
           and croak(
@@ -908,6 +921,28 @@
                 }
             )
         );
+    }
+
+    # Accessors for xs_install
+    # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 106
+    if ($__XS) {
+        Class::XSAccessor->import(
+            chained             => 1,
+            "exists_predicates" => { "has_xs_install" => "xs_install" },
+            "getters"           => { "xs_install"     => "xs_install" },
+        );
+    }
+    else {
+        *has_xs_install = sub {
+            @_ == 1
+              or croak(
+                'Predicate "has_xs_install" usage: $self->has_xs_install()');
+            exists $_[0]{"xs_install"};
+        };
+        *xs_install = sub {
+            @_ == 1 or croak('Reader "xs_install" usage: $self->xs_install()');
+            $_[0]{"xs_install"};
+        };
     }
 
     # See UNIVERSAL
@@ -1415,8 +1450,21 @@
             $self->{"_examples"} = $args->{"_examples"};
         }
 
+        # Attribute xs_install (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 106
+        if ( exists $args->{"xs_install"} ) {
+            do {
+
+                package Sub::HandlesVia::Mite;
+                ref( $args->{"xs_install"} ) eq 'CODE';
+              }
+              or croak "Type check failed in constructor: %s should be %s",
+              "xs_install", "CodeRef";
+            $self->{"xs_install"} = $args->{"xs_install"};
+        }
+
         # Attribute name (type: Str)
-        # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 282
+        # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 307
         croak "Missing key in constructor: name" unless exists $args->{"name"};
         do {
 
@@ -1435,7 +1483,7 @@
 
         # Unrecognized parameters
         my @unknown = grep not(
-/\A(?:_examples|a(?:dditional_validation|llow_getter_shortcuts|rgs)|curried|d(?:efault_for_reset|ocumentation)|is_(?:chainable|mutator)|lvalue_template|m(?:ax_args|in_args)|n(?:ame|o_validation_needed)|prefer_shift_self|signature|template|usage)\z/
+/\A(?:_examples|a(?:dditional_validation|llow_getter_shortcuts|rgs)|curried|d(?:efault_for_reset|ocumentation)|is_(?:chainable|mutator)|lvalue_template|m(?:ax_args|in_args)|n(?:ame|o_validation_needed)|prefer_shift_self|signature|template|usage|xs_install)\z/
         ), keys %{$args};
         @unknown
           and croak(
@@ -1448,7 +1496,7 @@
       && eval { require Class::XSAccessor; Class::XSAccessor->VERSION("1.19") };
 
     # Accessors for name
-    # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 282
+    # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 307
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,
@@ -1983,8 +2031,21 @@
             $self->{"_examples"} = $args->{"_examples"};
         }
 
+        # Attribute xs_install (type: CodeRef)
+        # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 106
+        if ( exists $args->{"xs_install"} ) {
+            do {
+
+                package Sub::HandlesVia::Mite;
+                ref( $args->{"xs_install"} ) eq 'CODE';
+              }
+              or croak "Type check failed in constructor: %s should be %s",
+              "xs_install", "CodeRef";
+            $self->{"xs_install"} = $args->{"xs_install"};
+        }
+
         # Attribute delegated_coderef (type: CodeRef)
-        # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 303
+        # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 328
         croak "Missing key in constructor: delegated_coderef"
           unless exists $args->{"delegated_coderef"};
         do {
@@ -2001,7 +2062,7 @@
 
         # Unrecognized parameters
         my @unknown = grep not(
-/\A(?:_examples|a(?:dditional_validation|llow_getter_shortcuts|rgs)|curried|d(?:e(?:fault_for_reset|legated_coderef)|ocumentation)|is_(?:chainable|mutator)|lvalue_template|m(?:ax_args|in_args)|n(?:ame|o_validation_needed)|prefer_shift_self|signature|template|usage)\z/
+/\A(?:_examples|a(?:dditional_validation|llow_getter_shortcuts|rgs)|curried|d(?:e(?:fault_for_reset|legated_coderef)|ocumentation)|is_(?:chainable|mutator)|lvalue_template|m(?:ax_args|in_args)|n(?:ame|o_validation_needed)|prefer_shift_self|signature|template|usage|xs_install)\z/
         ), keys %{$args};
         @unknown
           and croak(
@@ -2014,7 +2075,7 @@
       && eval { require Class::XSAccessor; Class::XSAccessor->VERSION("1.19") };
 
     # Accessors for delegated_coderef
-    # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 303
+    # has declaration, file lib/Sub/HandlesVia/Handler.pm, line 328
     if ($__XS) {
         Class::XSAccessor->import(
             chained   => 1,

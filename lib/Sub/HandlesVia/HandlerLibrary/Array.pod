@@ -48,6 +48,8 @@ Sub::HandlesVia::HandlerLibrary::Array - library of array-related methods
         'my_pairmap' => 'pairmap',
         'my_pairs' => 'pairs',
         'my_pairvalues' => 'pairvalues',
+        'my_peek' => 'peek',
+        'my_peekend' => 'peekend',
         'my_pick_random' => 'pick_random',
         'my_pop' => 'pop',
         'my_print' => 'print',
@@ -334,6 +336,20 @@ Like C<< List::Util::pairs() >>.
 =head2 C<< pairvalues() >>
 
 Like C<< List::Util::pairvalues() >>.
+
+=head2 C<< peek() >>
+
+Returns the first item on the array.
+
+  my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+  say $object->my_peek; ## ==> 'foo'
+
+=head2 C<< peekend() >>
+
+Returns the last item on the array.
+
+  my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+  say $object->my_peekend; ## ==> 'baz'
 
 =head2 C<< pick_random( $count ) >>
 

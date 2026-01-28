@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::HandlerLibrary::Array;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.052000';
+our $VERSION   = '0.053000';
 
 use Exporter::Tiny;
 use Sub::HandlesVia::HandlerLibrary;
@@ -31,18 +31,18 @@ sub expand_shortcut {
 	my %handlers;
 
 	if ( HandleQueue & $shortcut ) {
-		$handlers{"$attrname\_is_empty"}  = 'is_empty';
-		$handlers{"$attrname\_size"}      = 'count';
-		$handlers{"$attrname\_enqueue"}   = 'push...';
-		$handlers{"$attrname\_dequeue"}   = 'shift';
-		$handlers{"$attrname\_peek"}      = [ get => 0 ];
+		$handlers{"$attrname\_is_empty"}  ||= 'is_empty';
+		$handlers{"$attrname\_size"}      ||= 'count';
+		$handlers{"$attrname\_enqueue"}   ||= 'push...';
+		$handlers{"$attrname\_dequeue"}   ||= 'shift';
+		$handlers{"$attrname\_peek"}      ||= 'peek';
 	}
 	if ( HandleStack & $shortcut ) {
-		$handlers{"$attrname\_is_empty"}  = 'is_empty';
-		$handlers{"$attrname\_size"}      = 'count';
-		$handlers{"$attrname\_push"}      = 'push...';
-		$handlers{"$attrname\_pop"}       = 'pop';
-		$handlers{"$attrname\_peek"}      = [ get => -1 ];
+		$handlers{"$attrname\_is_empty"}  ||= 'is_empty';
+		$handlers{"$attrname\_size"}      ||= 'count';
+		$handlers{"$attrname\_push"}      ||= 'push...';
+		$handlers{"$attrname\_pop"}       ||= 'pop';
+		$handlers{"$attrname\_peek"}      ||= 'peekend';
 	}
 
 	return \%handlers;
@@ -55,7 +55,7 @@ our @METHODS = qw( count is_empty all elements flatten get pop push shift
 	join print head tail apply pick_random for_each for_each_pair
 	all_true not_all_true min minstr max maxstr sum product indexed
 	reductions sample uniqnum uniqnum_in_place uniqstr uniqstr_in_place
-	pairs pairkeys pairvalues pairgrep pairfirst pairmap reset );
+	pairs pairkeys pairvalues pairgrep pairfirst pairmap reset peek peekend );
 
 sub _type_inspector {
 	my ($me, $type) = @_;
@@ -172,6 +172,12 @@ sub count {
 				"  say \$object->$method; ## ==> 2\n",
 				"\n";
 		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			return 0 if ( $handler->curried and @{$handler->curried} );
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_count( $args{fqname}, $args{info} );
+			return 1;
+		},
 }
 
 sub is_empty {
@@ -189,6 +195,11 @@ sub is_empty {
 				"  say \$object->$method; ## ==> true\n",
 				"\n";
 		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_is_empty( $args{fqname}, $args{info} );
+			return 1;
+		},
 }
 
 sub all {
@@ -205,6 +216,11 @@ sub all {
 				"  say Dumper( \\\@list ); ## ==> [ 'foo', 'bar' ]\n",
 				"\n";
 		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_all( $args{fqname}, $args{info} );
+			return 1;
+		},
 }
 
 sub elements {
@@ -220,6 +236,11 @@ sub elements {
 				"  my \@list = \$object->$method;\n",
 				"  say Dumper( \\\@list ); ## ==> [ 'foo', 'bar' ]\n",
 				"\n";
+		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_all( $args{fqname}, $args{info} );
+			return 1;
 		},
 }
 
@@ -256,6 +277,18 @@ sub get {
 				"  say \$object->$method( -1 ); ## ==> 'baz'\n",
 				"\n";
 		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 and Int->check($handler->curried->[0]) ) {
+				$info{index} = $handler->curried->[0];
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_get( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub pop {
@@ -275,6 +308,11 @@ sub pop {
 				"  say \$object->$method; ## ==> 'bar'\n",
 				"  say Dumper( \$object->$attr ); ## ==> [ 'foo' ]\n",
 				"\n";
+		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_pop( $args{fqname}, $args{info} );
+			return 1;
 		},
 }
 
@@ -296,6 +334,13 @@ sub push {
 				"  say Dumper( \$object->$attr ); ## ==> [ 'foo', 'bar', 'baz' ]\n",
 				"\n";
 		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			die if ( $handler->curried and @{$handler->curried} );
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_push( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub shift {
@@ -315,6 +360,11 @@ sub shift {
 				"  say \$object->$method; ## ==> 'bar'\n",
 				"  say Dumper( \$object->$attr ); ## ==> [ 'baz' ]\n",
 				"\n";
+		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_shift( $args{fqname}, $args{info} );
+			return 1;
 		},
 }
 
@@ -336,6 +386,13 @@ sub unshift {
 				"  say Dumper( \$object->$attr ); ## ==> [ 'bar', 'baz', 'foo' ]\n",
 				"\n";
 		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			die if ( $handler->curried and @{$handler->curried} );
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_unshift( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub clear {
@@ -354,6 +411,11 @@ sub clear {
 				"  \$object->$method;\n",
 				"  say Dumper( \$object->$attr ); ## ==> []\n",
 				"\n";
+		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_clear( $args{fqname}, $args{info} );
+			return 1;
 		},
 }
 
@@ -374,6 +436,18 @@ sub first {
 				"  say \$found; ## ==> 'bar'\n",
 				"\n";
 		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 and CodeRef->check($handler->curried->[0]) ) {
+				$info{callback} = $handler->curried->[0];
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_first( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub any {
@@ -392,6 +466,18 @@ sub any {
 				"  my \$truth  = \$object->$method( sub { /a/ } );\n",
 				"  say \$truth; ## ==> true\n",
 				"\n";
+		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 and CodeRef->check($handler->curried->[0]) ) {
+				$info{callback} = $handler->curried->[0];
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_any( $args{fqname}, \%info );
+			return 1;
 		},
 }
 
@@ -443,6 +529,20 @@ sub set {
 				"  \$object->$method( 1, 'quux' );\n",
 				"  say Dumper( \$object->$attr ); ## ==> [ 'foo', 'quux', 'baz' ]\n",
 				"\n";
+		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}>=1 and Int->check($handler->curried->[0]) ) {
+				$info{index}      = $handler->curried->[0];
+				$info{curried_sv} = $handler->curried->[1] if @{$handler->curried}>=2;
+				die if @{$handler->curried}>=3;
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_set( $args{fqname}, \%info );
+			return 1;
 		},
 }
 
@@ -505,6 +605,26 @@ sub accessor {
 			"  say \$object->$method( 2 ); ## ==> 'baz'\n",
 			"\n";
 	},
+	xs_install => sub {
+		my ( $handler, %args ) = @_;
+		my %info = %{ $args{info} };
+		if ( $handler->curried and @{$handler->curried}>=1 and Int->check($handler->curried->[0]) ) {
+			$info{index}      = $handler->curried->[0];
+			$info{curried_sv} = $handler->curried->[1] if @{$handler->curried}>=2;
+			die if @{$handler->curried}>=3;
+		}
+		elsif ( $handler->curried and @{$handler->curried} ) {
+			die;
+		}
+		if ( exists $info{curried_sv} ) {
+			# Silly to use accessor here; set will be faster.
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_set( $args{fqname}, \%info );
+		}
+		else {
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_accessor( $args{fqname}, \%info );
+		}
+		return 1;
+	},
 }
 
 sub natatime {
@@ -544,6 +664,18 @@ sub map {
 		usage     => '$coderef',
 		template  => 'map($ARG->($_), @{$GET})',
 		documentation => 'Like C<map> from L<perlfunc>.',
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 and CodeRef->check($handler->curried->[0]) ) {
+				$info{callback} = $handler->curried->[0];
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_map( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub grep {
@@ -554,6 +686,18 @@ sub grep {
 		usage     => '$coderef',
 		template  => 'grep($ARG->($_), @{$GET})',
 		documentation => 'Like C<grep> from L<perlfunc>.',
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 and CodeRef->check($handler->curried->[0]) ) {
+				$info{callback} = $handler->curried->[0];
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_grep( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub sort {
@@ -565,6 +709,18 @@ sub sort {
 		usage     => '$coderef?',
 		template  => 'my @shv_return = $ARG ? (sort {$ARG->($a,$b)} @{$GET}) : (sort @{$GET})',
 		documentation => 'Like C<sort> from L<perlfunc>.',
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 and CodeRef->check($handler->curried->[0]) ) {
+				$info{callback} = $handler->curried->[0];
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_sort( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub reverse {
@@ -573,6 +729,12 @@ sub reverse {
 		args      => 0,
 		template  => 'reverse @{$GET}',
 		documentation => 'Returns the reversed array in list context.',
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_reverse( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub sort_in_place {
@@ -784,6 +946,18 @@ sub join {
 				"  say \$object->$method( '|' ); ## ==> 'foo|bar|baz'\n",
 				"\n";
 		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 and Str->check($handler->curried->[0]) ) {
+				$info{curried_sv} = $handler->curried->[0];
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_join( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub print {
@@ -854,6 +1028,18 @@ sub for_each {
 				"  \$object->$method( sub { say \"Item \$_[1] is \$_[0].\" } );\n",
 				"\n";
 		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 and CodeRef->check($handler->curried->[0]) ) {
+				$info{callback} = $handler->curried->[0];
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_for_each( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub for_each_pair {
@@ -875,6 +1061,18 @@ sub all_true {
 		usage     => '$coderef',
 		template  => '&List::Util::all($ARG, @{$GET})',
 		documentation => 'Like C<< List::Util::all() >>.',
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 and CodeRef->check($handler->curried->[0]) ) {
+				$info{callback} = $handler->curried->[0];
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_all_true( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub not_all_true {
@@ -1047,6 +1245,48 @@ sub indexed {
 		args      => 0,
 		template  => 'my $shv_ix = 0; map +($shv_ix++, $_), @{$GET}',
 		documentation => 'Like C<indexed> from L<builtin>.',
+}
+
+sub peek {
+	handler
+		name      => 'Array:peek',
+		args      => 0,
+		template  => '($GET)->[0]',
+		documentation => 'Returns the first item on the array.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
+				"  say \$object->$method; ## ==> 'foo'\n",
+				"\n";
+		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_peek( $args{fqname}, \%info );
+			return 1;
+		},
+}
+
+sub peekend {
+	handler
+		name      => 'Array:peekend',
+		args      => 0,
+		template  => '($GET)->[-1]',
+		documentation => 'Returns the last item on the array.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
+				"  say \$object->$method; ## ==> 'baz'\n",
+				"\n";
+		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_peekend( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 1;

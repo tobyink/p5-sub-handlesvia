@@ -47,6 +47,8 @@ native traits, and L<MouseX::NativeTraits>.
                pairkeys : SubHV                       
                 pairmap : SubHV                       
                   pairs : SubHV                       
+                   peek : SubHV                       
+                peekend : SubHV                       
              pairvalues : SubHV                       
             pick_random : SubHV                       
                     pop : SubHV  DataP  Moose  Mouse  

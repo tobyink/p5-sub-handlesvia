@@ -5,13 +5,15 @@ use warnings;
 package Sub::HandlesVia::Toolkit::Moo;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.052000';
+our $VERSION   = '0.053000';
+
+our $NO_SHVXS;
 
 use Sub::HandlesVia::Mite;
 extends 'Sub::HandlesVia::Toolkit';
 
-use Types::Standard qw( is_ArrayRef is_Str assert_HashRef is_CodeRef is_Undef );
-use Types::Standard qw( ArrayRef HashRef Str Num Int CodeRef Bool );
+use Types::Standard qw( is_ArrayRef is_Str assert_HashRef is_CodeRef is_Undef is_Object );
+use Types::Standard qw( Any ArrayRef HashRef Str Num Int CodeRef Bool );
 
 sub setup_for {
 	my $me = shift;
@@ -23,23 +25,100 @@ sub install_has_wrapper {
 	my $me = shift;
 	my ($target) = @_;
 
-        require Moo::_Utils;
-        Moo::_Utils::_install_modifier( $target, around => has => sub {
-            my $orig = shift;
+	require Moo::_Utils;
+	Moo::_Utils::_install_modifier( $target, around => has => sub {
+		my $orig = shift;
 		if (@_ % 2 == 0) {
 			require Carp;
 			Carp::croak("Invalid options for attribute(s): even number of arguments expected, got " . scalar @_);
 		}
 		my ($attrs, %spec) = @_;
+		my $got_no_SHVXS = delete $spec{no_SHVXS};
 		return $orig->($attrs, %spec) unless $spec{handles}; # shortcut
 		for my $attr ( ref($attrs) ? @$attrs : $attrs ) {
 			( my $real_attr = $attr ) =~ s/^[+]//;
 			my $shv = $me->clean_spec($target, $real_attr, \%spec);
 			$orig->($attr, %spec);
+			local $NO_SHVXS = $got_no_SHVXS;
 			$me->install_delegations($shv) if $shv;
 		}
 		return;
 	});
+}
+
+sub make_xs_info {
+	my ($me, $maker, $attrname, $spec) = @_;
+	return if $NO_SHVXS;
+	
+	require Sub::HandlesVia;
+	return unless Sub::HandlesVia::HAS_SHVXS;
+	
+	my $need_to_call_accessor = 0;
+	# These seem too complicated to handle via direct hashref access.
+	++$need_to_call_accessor if $spec->{trigger};
+	++$need_to_call_accessor if $spec->{weak_ref};
+	++$need_to_call_accessor if $spec->{moosify};
+	
+	# Check that the accessor maker isn't doing something crazy.
+	do {
+		my $generated = $maker->_generate_core_set( q{$XXX}, 'yyy', {}, q{"zzz"} );
+		my $expected  = q{$XXX->{"yyy"} = "zzz"};
+		++$need_to_call_accessor if $generated ne $expected;
+	};
+	
+	my %xs_info = $need_to_call_accessor
+		# Tell Sub::HandlesVia::XS that it can find an array to operate on by
+		# treating the invocant as an object, and calling the reader/accessor.
+		? (
+			arr_source         => Sub::HandlesVia::XS->ArraySource( 'CALL_METHOD' ),
+			arr_source_string  => $spec->{reader}
+				|| $spec->{accessor}
+				|| ( $spec->{is} =~ /^(ro|rw|lazy|rwp)$/ ? $attrname : undef ),
+		)
+		# Tell Sub::HandlesVia::XS that it can find an array to operate on by
+		# treating the invocant as a hash, and looking at the $attrname key.
+		: (
+			arr_source         => Sub::HandlesVia::XS->ArraySource( 'DEREF_HASH' ),
+			arr_source_string  => $attrname,
+		);
+	return unless defined $xs_info{arr_source_string};
+	
+	# In the direct hashref case, if the key doesn't exist, try calling the
+	# reader method first because that might have a lazy default or builder!
+	if ( $spec->{lazy} and $xs_info{arr_source} == Sub::HandlesVia::XS->ArraySource( 'DEREF_HASH' ) ) {
+		$xs_info{arr_source_fallback} = $spec->{reader}
+			|| $spec->{accessor}
+			|| ( $spec->{is} =~ /^(ro|rw|lazy|rwp)$/ ? $attrname : undef );
+		return unless defined $xs_info{arr_source_fallback};
+	}
+	
+	# Supported type constraints are of the form ArrayRef[Foo].
+	# Really we should be able to support ANY type constraint for most methods
+	# and only care about all this for mutator handlers.
+	if ( $spec->{isa} ) {
+		return unless is_Object $spec->{isa};
+		return unless $spec->{isa}->isa('Type::Tiny');
+		return if ref $spec->{coerce};
+		my $constraining_type = $spec->{isa}->find_constraining_type;
+		if ( $constraining_type->is_parameterized and $constraining_type->parent == ArrayRef ) {
+			return if $constraining_type != $spec->{isa};
+			return if @{ $constraining_type->parameters } != 1;
+			my $element_type = $constraining_type->type_parameter;
+			my ( $coderef, $flags ) = Sub::HandlesVia::XS->TypeInfo( $element_type );
+			$xs_info{element_type}        = $flags;
+			$xs_info{element_type_cv}     = $coderef;
+			$xs_info{element_type_tiny}   = $element_type;
+			$xs_info{element_coercion_cv} = $element_type->coercion->compiled_coercion if ( $spec->{coerce} and $element_type->has_coercion );
+		}
+		elsif ( $constraining_type != Any ) {
+			return;
+		}
+	}
+	elsif ( $spec->{coerce} ) {
+		return;
+	}
+	
+	return \%xs_info;
 }
 
 sub code_generator_for_attribute {
@@ -132,6 +211,7 @@ sub code_generator_for_attribute {
 		target                => $target,
 		attribute             => $attrname,
 		attribute_spec        => $spec,
+		xs_info               => scalar( $me->make_xs_info($maker, $attrname, $spec) ),
 		env                   => $captures,
 		isa                   => $type,
 		coerce                => !!$coerce,

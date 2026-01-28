@@ -6,7 +6,7 @@ no warnings qw( once void );
 
 our $USES_MITE = "Mite::Class";
 our $MITE_SHIM = "MyTest::Mite";
-our $MITE_VERSION = "0.010008";
+our $MITE_VERSION = "0.013000";
 # Mite keywords
 BEGIN {
     my ( $SHIM, $CALLER ) = ( "MyTest::Mite", "MyTest" );

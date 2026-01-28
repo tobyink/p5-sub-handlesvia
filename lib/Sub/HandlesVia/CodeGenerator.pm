@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::CodeGenerator;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.052000';
+our $VERSION   = '0.053000';
 
 use Sub::HandlesVia::Mite -all;
 
@@ -24,6 +24,11 @@ has attribute => (
 has attribute_spec => (
 	is => ro,
 	isa => 'HashRef',
+);
+
+has xs_info => (
+	is => ro,
+	isa => 'Maybe[HashRef]',
 );
 
 has isa => (
@@ -197,6 +202,11 @@ has get_is_lvalue => (
 );
 
 has set_checks_isa => (
+	is => ro,
+	default => false,
+);
+
+has never_shift_self => (
 	is => ro,
 	default => false,
 );
@@ -492,8 +502,8 @@ sub _handle_shiftself {
 	# off @_, but for other handlers, this will just slow compilation
 	# down (but not much).
 	#
-	return $self
-		unless $handler->curried || $handler->prefer_shift_self;
+	return $self if $self->never_shift_self;
+	return $self if !( $handler->curried || $handler->prefer_shift_self );
 
 	# Shift off the invocant.
 	#

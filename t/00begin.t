@@ -82,6 +82,8 @@ Exporter::Tiny
 Type::Tiny/Type::Tiny::XS
 Scalar::Util/List::Util/Sub::Util
 
+Sub::HandlesVia::XS
+
 Class::Tiny
 Role::Tiny
 Class::Method::Modifiers

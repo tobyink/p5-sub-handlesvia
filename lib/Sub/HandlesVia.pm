@@ -5,9 +5,10 @@ use warnings;
 package Sub::HandlesVia;
 
 use Exporter::Shiny qw( delegations );
+use constant HAS_SHVXS => !!eval q{ use Sub::HandlesVia::XS 0.001000; 1 };
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.052000';
+our $VERSION   = '0.053000';
 
 sub _generate_delegations {
 	my ($me, $name, $args, $globals) = (shift, @_);
@@ -105,6 +106,11 @@ sub _detect_framework {
 	}
 	
 	return 'Plain';
+}
+
+sub is_xs  {
+	require B;
+	!! B::svref_2object( shift )->XSUB;
 }
 
 1;

@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::Handler;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.052000';
+our $VERSION   = '0.053000';
 
 use Sub::HandlesVia::Mite -all;
 
@@ -101,6 +101,12 @@ has documentation => (
 has _examples => (
 	is => ro,
 	isa => 'CodeRef',
+);
+
+has xs_install => (
+	is => 'ro',
+	isa => 'CodeRef',
+	predicate => true,
 );
 
 sub _build_usage {
@@ -234,6 +240,26 @@ sub install_method {
 	my ( $self, %arg ) = @_;
 	my $gen = $arg{code_generator} or die;
 	
+	require Sub::HandlesVia;
+	if ( Sub::HandlesVia::HAS_SHVXS() and $gen->xs_info and $self->has_xs_install ) {
+		my %info = %{ $gen->xs_info };
+		if ( $self->is_chainable ) {
+			$info{method_return_pattern} = Sub::HandlesVia::XS->ReturnPattern('INVOCANT');
+			delete $info{method_return_class};
+			delete $info{method_return_constructor};
+		}
+		if ( $self->no_validation_needed and not $info{element_coercion_cv} ) {
+			delete $info{element_type};
+			delete $info{element_type_cv};
+		}
+		my $fqname = sprintf( q{%s::%s}, $gen->target, $arg{method_name} );
+		
+		return if eval {
+			die if ( defined $self->args and $self->args==0 and $self->curried and @{$self->curried} );
+			$self->xs_install->( $self, %arg, fqname => $fqname, info => \%info );
+		};
+	}
+	
 	$gen->generate_and_install_method( $arg{method_name}, $self );
 	
 	return;
@@ -274,7 +300,7 @@ package Sub::HandlesVia::Handler::Traditional;
 # XXX: can this be replaced by Blessed trait?
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.052000';
+our $VERSION   = '0.053000';
 
 use Sub::HandlesVia::Mite -all;
 extends 'Sub::HandlesVia::Handler';
@@ -295,7 +321,7 @@ sub template {
 package Sub::HandlesVia::Handler::CodeRef;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.052000';
+our $VERSION   = '0.053000';
 
 use Sub::HandlesVia::Mite -all;
 extends 'Sub::HandlesVia::Handler';

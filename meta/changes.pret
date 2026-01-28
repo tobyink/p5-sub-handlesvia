@@ -543,3 +543,20 @@
 			seealso <https://github.com/tobyink/p5-sub-handlesvia/issues/14>;
 		];
 	].
+
+`Sub-HandlesVia 0.053000 cpan:TOBYINK`
+	issued  2026-01-28;
+	changeset [
+		item [
+			a dcs:Change;
+			label "Use Sub::HandlesVia::XS when it is available. Currently only the Moo handler uses it, and Sub::HandlesVia::XS only has implementations for some Array-related methods. You can include no_SHVXS=>1 in an Moo attribute definition if it's causing issues.";
+		];
+		item [
+			a dcs:Addition;
+			label "Array:peek and Array:peekend.";
+		];
+		item [
+			a dcs:Addition;
+			label "Code generators can set a never_shift_self attribute to prevent handlers from trying to shift the invocant off @_, which they sometimes do for efficiency reasons.";
+		];
+	].

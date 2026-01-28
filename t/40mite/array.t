@@ -298,6 +298,30 @@ can_ok( $CLASS, 'my_pairs' );
 
 can_ok( $CLASS, 'my_pairvalues' );
 
+## peek
+
+can_ok( $CLASS, 'my_peek' );
+
+subtest 'Testing my_peek' => sub {
+  my $e = exception {
+    my $object = $CLASS->new( attr => [ 'foo', 'bar', 'baz' ] );
+    is( $object->my_peek, 'foo', q{$object->my_peek is 'foo'} );
+  };
+  is( $e, undef, 'no exception thrown running peek example' );
+};
+
+## peekend
+
+can_ok( $CLASS, 'my_peekend' );
+
+subtest 'Testing my_peekend' => sub {
+  my $e = exception {
+    my $object = $CLASS->new( attr => [ 'foo', 'bar', 'baz' ] );
+    is( $object->my_peekend, 'baz', q{$object->my_peekend is 'baz'} );
+  };
+  is( $e, undef, 'no exception thrown running peekend example' );
+};
+
 ## pick_random
 
 can_ok( $CLASS, 'my_pick_random' );

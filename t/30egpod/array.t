@@ -54,6 +54,8 @@ BEGIN {
       'my_pairmap' => 'pairmap',
       'my_pairs' => 'pairs',
       'my_pairvalues' => 'pairvalues',
+      'my_peek' => 'peek',
+      'my_peekend' => 'peekend',
       'my_pick_random' => 'pick_random',
       'my_pop' => 'pop',
       'my_print' => 'print',
@@ -373,6 +375,30 @@ can_ok( 'My::Class', 'my_pairs' );
 ## pairvalues
 
 can_ok( 'My::Class', 'my_pairvalues' );
+
+## peek
+
+can_ok( 'My::Class', 'my_peek' );
+
+subtest 'Testing my_peek' => sub {
+  my $e = exception {
+    my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+    is( $object->my_peek, 'foo', q{$object->my_peek is 'foo'} );
+  };
+  is( $e, undef, 'no exception thrown running peek example' );
+};
+
+## peekend
+
+can_ok( 'My::Class', 'my_peekend' );
+
+subtest 'Testing my_peekend' => sub {
+  my $e = exception {
+    my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+    is( $object->my_peekend, 'baz', q{$object->my_peekend is 'baz'} );
+  };
+  is( $e, undef, 'no exception thrown running peekend example' );
+};
 
 ## pick_random
 
