@@ -8,7 +8,7 @@ use Exporter::Shiny qw( delegations );
 use constant HAS_SHVXS => !!eval q{ use Sub::HandlesVia::XS 0.001004; 1 };
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.053000';
+our $VERSION   = '0.053001';
 
 sub _generate_delegations {
 	my ($me, $name, $args, $globals) = (shift, @_);

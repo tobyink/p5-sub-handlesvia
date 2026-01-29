@@ -560,3 +560,16 @@
 			label "Code generators can set a never_shift_self attribute to prevent handlers from trying to shift the invocant off @_, which they sometimes do for efficiency reasons.";
 		];
 	].
+
+`Sub-HandlesVia 0.053001 cpan:TOBYINK`
+	issued  2026-01-28;
+	changeset [
+		item [
+			a dcs:Update;
+			label "Don't use Sub::HandlesVia::XS versions older than 0.001004 as they are buggy.";
+		];
+		item [
+			a dcs:Packaging;
+			label "Add Sub::HandlesVia::XS as a runtime recommends dependency.";
+		];
+	].
