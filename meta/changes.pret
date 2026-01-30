@@ -573,3 +573,16 @@
 			label "Add Sub::HandlesVia::XS as a runtime recommends dependency.";
 		];
 	].
+
+`Sub-HandlesVia 0.053002 cpan:TOBYINK`
+	issued  2026-01-30;
+	changeset [
+		item [
+			a dcs:Update;
+			label "Don't use Sub::HandlesVia::XS versions older than 0.002000 as they are buggy.";
+		];
+		item [
+			a dcs:Change;
+			label "Use Sub::HandlesVia::XS for some Enum and String handlers.";
+		];
+	].

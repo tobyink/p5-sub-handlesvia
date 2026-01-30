@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::Toolkit::Moo;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.053001';
+our $VERSION   = '0.053002';
 
 our $NO_SHVXS;
 

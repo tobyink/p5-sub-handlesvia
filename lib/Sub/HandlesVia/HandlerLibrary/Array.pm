@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::HandlerLibrary::Array;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.053001';
+our $VERSION   = '0.053002';
 
 use Exporter::Tiny;
 use Sub::HandlesVia::HandlerLibrary;

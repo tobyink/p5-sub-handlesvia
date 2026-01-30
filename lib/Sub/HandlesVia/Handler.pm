@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::Handler;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.053001';
+our $VERSION   = '0.053002';
 
 use Sub::HandlesVia::Mite -all;
 
@@ -300,7 +300,7 @@ package Sub::HandlesVia::Handler::Traditional;
 # XXX: can this be replaced by Blessed trait?
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.053001';
+our $VERSION   = '0.053002';
 
 use Sub::HandlesVia::Mite -all;
 extends 'Sub::HandlesVia::Handler';
@@ -321,7 +321,7 @@ sub template {
 package Sub::HandlesVia::Handler::CodeRef;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.053001';
+our $VERSION   = '0.053002';
 
 use Sub::HandlesVia::Mite -all;
 extends 'Sub::HandlesVia::Handler';
