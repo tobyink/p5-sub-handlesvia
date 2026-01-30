@@ -311,6 +311,8 @@ sub pop {
 		},
 		xs_install => sub {
 			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			die if ( exists $info{type} and not exists $info{element_type} );
 			Sub::HandlesVia::XS::INSTALL_shvxs_array_pop( $args{fqname}, $args{info} );
 			return 1;
 		},
@@ -338,6 +340,7 @@ sub push {
 			my ( $handler, %args ) = @_;
 			my %info = %{ $args{info} };
 			die if ( $handler->curried and @{$handler->curried} );
+			die if ( exists $info{type} and not exists $info{element_type} );
 			Sub::HandlesVia::XS::INSTALL_shvxs_array_push( $args{fqname}, \%info );
 			return 1;
 		},
@@ -363,6 +366,8 @@ sub shift {
 		},
 		xs_install => sub {
 			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			die if ( exists $info{type} and not exists $info{element_type} );
 			Sub::HandlesVia::XS::INSTALL_shvxs_array_shift( $args{fqname}, $args{info} );
 			return 1;
 		},
@@ -390,6 +395,7 @@ sub unshift {
 			my ( $handler, %args ) = @_;
 			my %info = %{ $args{info} };
 			die if ( $handler->curried and @{$handler->curried} );
+			die if ( exists $info{type} and not exists $info{element_type} );
 			Sub::HandlesVia::XS::INSTALL_shvxs_array_unshift( $args{fqname}, \%info );
 			return 1;
 		},
@@ -414,6 +420,8 @@ sub clear {
 		},
 		xs_install => sub {
 			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			die if ( exists $info{type} and not $info{type}->check( [] ) );
 			Sub::HandlesVia::XS::INSTALL_shvxs_array_clear( $args{fqname}, $args{info} );
 			return 1;
 		},
@@ -541,6 +549,7 @@ sub set {
 			elsif ( $handler->curried and @{$handler->curried} ) {
 				die;
 			}
+			die if ( exists $info{type} and not exists $info{element_type} );
 			Sub::HandlesVia::XS::INSTALL_shvxs_array_set( $args{fqname}, \%info );
 			return 1;
 		},
@@ -616,6 +625,7 @@ sub accessor {
 		elsif ( $handler->curried and @{$handler->curried} ) {
 			die;
 		}
+		die if ( exists $info{type} and not exists $info{element_type} );
 		if ( exists $info{curried_sv} ) {
 			# Silly to use accessor here; set will be faster.
 			Sub::HandlesVia::XS::INSTALL_shvxs_array_set( $args{fqname}, \%info );

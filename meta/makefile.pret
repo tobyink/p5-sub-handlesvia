@@ -11,7 +11,7 @@
 	:runtime-requirement    [ :on "Class::Method::Modifiers"^^:CpanId ];
 	:runtime-requirement    [ :on "List::Util 1.54"^^:CpanId ];
 	:runtime-recommendation [ :on "Sub::Util"^^:CpanId ];
-	:runtime-recommendation [ :on "Sub::HandlesVia::XS"^^:CpanId ];
+	:runtime-recommendation [ :on "Sub::HandlesVia::XS 0.002000"^^:CpanId ];
 	:test-recommendation    [ :on "Moose"^^:CpanId ];
 	:test-recommendation    [ :on "Mouse"^^:CpanId ];
 	:test-recommendation    [ :on "Moo"^^:CpanId ];

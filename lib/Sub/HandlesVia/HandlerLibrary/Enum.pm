@@ -15,7 +15,7 @@ our @ISA = qw(
 );
 
 use Sub::HandlesVia::Handler qw( handler );
-use Types::Standard qw( is_Str Any );
+use Types::Standard qw( is_Str Any assert_Str );
 
 sub HandleIs        () { 1 }
 sub HandleNamedIs   () { 2 }
@@ -97,6 +97,15 @@ sub assign {
 		lvalue_template => '$GET = $ARG',
 		usage     => '$value',
 		documentation => "Sets the enum to a new value.",
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 ) {
+				$info{curried_sv} = assert_Str $handler->curried->[0];
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_string_set( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub set {
@@ -108,6 +117,15 @@ sub set {
 		lvalue_template => '$GET = $ARG',
 		usage     => '$value',
 		documentation => "Sets the enum to a new value.",
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 ) {
+				$info{curried_sv} = assert_Str $handler->curried->[0];
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_string_set( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub is {
@@ -115,8 +133,17 @@ sub is {
 		name      => "Enum:is",
 		args      => 1,
 		signature => [Any],
-		template  => "\$GET eq \$ARG",
-		documentation => "Returns C<< \$object->attr eq \$str >>.",
+		template  => '$GET eq $ARG',
+		documentation => 'Returns C<< $object->attr eq $str >>.',
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 ) {
+				$info{curried_sv} = assert_Str $handler->curried->[0];
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_string_eq( $args{fqname}, \%info );
+			return 1;
+		},
 };
 
 1;

@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia;
 
 use Exporter::Shiny qw( delegations );
-use constant HAS_SHVXS => !!eval q{ use Sub::HandlesVia::XS 0.001004; 1 };
+use constant HAS_SHVXS => !!eval q{ use Sub::HandlesVia::XS 0.002000; 1 };
 
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.053001';

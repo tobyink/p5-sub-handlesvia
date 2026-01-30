@@ -91,27 +91,51 @@ sub make_xs_info {
 			|| ( $spec->{is} =~ /^(ro|rw|lazy|rwp)$/ ? $attrname : undef );
 		return unless defined $xs_info{arr_source_fallback};
 	}
-	
-	# Supported type constraints are of the form ArrayRef[Foo].
-	# Really we should be able to support ANY type constraint for most methods
-	# and only care about all this for mutator handlers.
-	if ( $spec->{isa} ) {
-		return unless is_Object $spec->{isa};
-		return unless $spec->{isa}->isa('Type::Tiny');
-		return if ref $spec->{coerce};
-		my $constraining_type = $spec->{isa}->find_constraining_type;
-		if ( $constraining_type->is_parameterized and $constraining_type->parent == ArrayRef ) {
-			return if $constraining_type != $spec->{isa};
-			return if @{ $constraining_type->parameters } != 1;
-			my $element_type = $constraining_type->type_parameter;
-			my ( $coderef, $flags ) = Sub::HandlesVia::XS->TypeInfo( $element_type );
-			$xs_info{element_type}        = $flags;
-			$xs_info{element_type_cv}     = $coderef;
-			$xs_info{element_type_tiny}   = $element_type;
-			$xs_info{element_coercion_cv} = $element_type->coercion->compiled_coercion if ( $spec->{coerce} and $element_type->has_coercion );
+
+	# Strings are found the same way!
+	for my $key ( sort keys %xs_info ) {
+		my ( $stub ) = ( $key =~ /^arr_(.+)$/ ) or next;
+		
+		if ( exists $xs_info{"arr_$stub"} and not exists $xs_info{"str_$stub"} ) {
+			$xs_info{"str_$stub"} = $xs_info{"arr_$stub"};
 		}
-		elsif ( $constraining_type != Any ) {
-			return;
+	}
+	
+	# Type constraints in a form Sub::HandlesVia::XS can understand.
+	if ( my $type = $spec->{isa} ) {
+		if ( is_Object $type and $type->isa('Type::Tiny') ) {
+			return if ref $spec->{coerce};
+			
+			my ( $coderef, $flags ) = Sub::HandlesVia::XS->TypeInfo( $spec->{isa} );
+			$xs_info{type}        = $flags;
+			$xs_info{type_cv}     = $coderef;
+			$xs_info{type_tiny}   = $type;
+			$xs_info{coercion_cv} = $type->coercion->compiled_coercion if ( $spec->{coerce} and $type->has_coercion );
+			
+			my $constraining_type = $type->find_constraining_type;
+			if ( $constraining_type == ArrayRef ) {
+				$constraining_type = ArrayRef[Any];
+			}
+			
+			if ( $constraining_type == $type
+			and  $constraining_type->is_parameterized
+			and  ( $constraining_type->parent == ArrayRef or $constraining_type->parent == HashRef )
+			and  @{ $constraining_type->parameters } == 1 ) {
+				my $element_type = $constraining_type->type_parameter;
+				my ( $coderef, $flags ) = Sub::HandlesVia::XS->TypeInfo( $element_type );
+				$xs_info{element_type}        = $flags;
+				$xs_info{element_type_cv}     = $coderef;
+				$xs_info{element_type_tiny}   = $element_type;
+				$xs_info{element_coercion_cv} = $element_type->coercion->compiled_coercion if ( $spec->{coerce} and $element_type->has_coercion );
+			}
+		}
+		else {
+			return if $spec->{coerce} && !ref $spec->{coerce};
+			
+			my ( $coderef, $flags ) = Sub::HandlesVia::XS->TypeInfo( $spec->{isa} );
+			$xs_info{type}        = $flags;
+			$xs_info{type_cv}     = $coderef;
+			$xs_info{coercion_cv} = $spec->{coerce} if $spec->{coerce};
 		}
 	}
 	elsif ( $spec->{coerce} ) {

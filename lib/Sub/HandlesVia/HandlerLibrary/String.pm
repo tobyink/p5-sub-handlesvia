@@ -49,6 +49,15 @@ sub set {
 				"  say \$object->$attr; ## ==> 'bar'\n",
 				"\n";
 		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 ) {
+				$info{curried_sv} = assert_Str $handler->curried->[0];
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_string_set( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub get {
@@ -93,6 +102,15 @@ sub append {
 				"  say \$object->$attr; ## ==> 'foobar'\n",
 				"\n";
 		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 ) {
+				$info{curried_sv} = assert_Str $handler->curried->[0];
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_string_append( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub prepend {
@@ -110,6 +128,15 @@ sub prepend {
 				"  \$object->$method( 'bar' );\n",
 				"  say \$object->$attr; ## ==> 'barfoo'\n",
 				"\n";
+		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 ) {
+				$info{curried_sv} = assert_Str $handler->curried->[0];
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_string_prepend( $args{fqname}, \%info );
+			return 1;
 		},
 }
 
@@ -363,6 +390,16 @@ for my $comparison ( qw/ cmp eq ne lt gt le ge / ) {
 			usage     => '$str',
 			template  => "\$GET $comparison \$ARG",
 			documentation => "Returns C<< \$object->attr $comparison \$str >>.",
+			xs_install => sub {
+				my ( $handler, %args ) = @_;
+				my %info = %{ $args{info} };
+				if ( $handler->curried and @{$handler->curried}==1 ) {
+					$info{curried_sv} = assert_Str $handler->curried->[0];
+				}
+				my $installer = Sub::HandlesVia::XS->can("INSTALL_shvxs_string_${comparison}");
+				$installer->( $args{fqname}, \%info );
+				return 1;
+			},
 	};
 
 	*{ $comparison . 'i' } = sub {
@@ -373,6 +410,16 @@ for my $comparison ( qw/ cmp eq ne lt gt le ge / ) {
 			usage     => '$str',
 			template  => "$fold(\$GET) $comparison $fold(\$ARG)",
 			documentation => "Returns C<< fc(\$object->attr) $comparison fc(\$str) >>. Uses C<lc> instead of C<fc> in versions of Perl older than 5.16.",
+			xs_install => sub {
+				my ( $handler, %args ) = @_;
+				my %info = %{ $args{info} };
+				if ( $handler->curried and @{$handler->curried}==1 ) {
+					$info{curried_sv} = assert_Str $handler->curried->[0];
+				}
+				my $installer = Sub::HandlesVia::XS->can("INSTALL_shvxs_string_${comparison}i");
+				$installer->( $args{fqname}, \%info );
+				return 1;
+			},
 	};
 }
 
