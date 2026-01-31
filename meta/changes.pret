@@ -586,3 +586,16 @@
 			label "Use Sub::HandlesVia::XS for some Enum and String handlers.";
 		];
 	].
+
+`Sub-HandlesVia 0.053003 cpan:TOBYINK`
+	issued  2026-01-31;
+	changeset [
+		item [
+			a dcs:Change;
+			label "A lot of the array handlers which accepted a coderef which operated on $_ would also pass $_ to the coderef in @_. There were no test cases for this and it was undocumented (apart from for_each). This feature has been removed (apart from for_each).";
+		];
+		item [
+			a dcs:Addition;
+			label "The new for_each2 array handler only makes the array element available as $_, not in @_.";
+		];
+	].

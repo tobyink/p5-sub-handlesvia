@@ -5,7 +5,7 @@ use warnings;
 package Sub::HandlesVia::HandlerLibrary::Array;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.053002';
+our $VERSION   = '0.053003';
 
 use Exporter::Tiny;
 use Sub::HandlesVia::HandlerLibrary;
@@ -1059,7 +1059,7 @@ sub for_each2 {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => '$ARG->() foreach @{$GET}; $SELF',
-		documentation => 'The same as foreach, but the element will only be available as C<< $_ >>: no parameters are passed to the coderef.',
+		documentation => 'The same as foreach, but the element will only be available as C<< $_ >>: no parameters are passed to the coderef. It may be faster than for_each.',
 		_examples => sub {
 			my ( $class, $attr, $method ) = @_;
 			return CORE::join "",
