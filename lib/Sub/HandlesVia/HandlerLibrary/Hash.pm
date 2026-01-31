@@ -412,7 +412,7 @@ sub for_each_key {
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => 'for (keys %{$GET}) { &{$ARG}($_) }; $SELF',
+		template  => '$ARG->($_) for keys %{$GET}; $SELF',
 		documentation => 'Chainable method which calls the coderef for each key in the hash, passing just the key to the coderef. The key will also be available as C<< $_ >>.',
 }
 
@@ -422,7 +422,7 @@ sub for_each_value {
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => 'for (values %{$GET}) { &{$ARG}($_) }; $SELF',
+		template  => '$ARG->($_) for values %{$GET}; $SELF',
 		documentation => 'Chainable method which calls the coderef for each value in the hash, passing just the value to the coderef. The value will also be available as C<< $_ >>.',
 }
 
