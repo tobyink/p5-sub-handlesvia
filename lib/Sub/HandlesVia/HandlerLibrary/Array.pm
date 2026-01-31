@@ -496,7 +496,7 @@ sub first_index {
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => 'for my $i ( 0 .. $#{$GET} ) { local *_ = \$GET->[$i]; return $i if $ARG->($_) }; return -1;',
+		template  => 'my $i = 0; for ( @{$GET} ) { return $i if $ARG->(); ++$i }; return -1;',
 		documentation => 'Like C<< List::MoreUtils::first_index() >>.',
 		_examples => sub {
 			my ( $class, $attr, $method ) = @_;
@@ -516,7 +516,7 @@ sub reduce {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'my $shv_callback = $ARG; List::Util::reduce { $shv_callback->($a,$b) } @{$GET}',
-		documentation => 'Like C<< List::Util::reduce() >>.',
+		documentation => 'Like C<< List::Util::reduce() >>, except C<< $a >> and C<< $b >> are passed as parameters.',
 }
 
 sub set {
@@ -672,7 +672,7 @@ sub map {
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => 'map($ARG->($_), @{$GET})',
+		template  => 'map($ARG->(), @{$GET})',
 		documentation => 'Like C<map> from L<perlfunc>.',
 		xs_install => sub {
 			my ( $handler, %args ) = @_;
@@ -694,7 +694,7 @@ sub grep {
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => 'grep($ARG->($_), @{$GET})',
+		template  => 'grep($ARG->(), @{$GET})',
 		documentation => 'Like C<grep> from L<perlfunc>.',
 		xs_install => sub {
 			my ( $handler, %args ) = @_;
@@ -718,7 +718,7 @@ sub sort {
 		signature => [Optional[CodeRef]],
 		usage     => '$coderef?',
 		template  => 'my @shv_return = $ARG ? (sort {$ARG->($a,$b)} @{$GET}) : (sort @{$GET})',
-		documentation => 'Like C<sort> from L<perlfunc>.',
+		documentation => 'Like C<sort> from L<perlfunc>, except C<< $a >> and C<< $b >> are passed as parameters.',
 		xs_install => sub {
 			my ( $handler, %args ) = @_;
 			my %info = %{ $args{info} };
@@ -756,7 +756,7 @@ sub sort_in_place {
 		usage     => '$coderef?',
 		template  => 'my @shv_return = $ARG ? (sort {$ARG->($a,$b)} @{$GET}) : (sort @{$GET}); «\@shv_return»',
 		additional_validation => 'no incoming values',
-		documentation => 'Like C<sort> from L<perlfunc>, but changes the attribute to point to the newly sorted array.',
+		documentation => 'Like C<sort> from L<perlfunc>, but changes the attribute to point to the newly sorted array. C<< $a >> and C<< $b >> are passed as parameters.',
 }
 
 sub shuffle {
@@ -1007,7 +1007,7 @@ sub apply {
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => 'my @shv_tmp = @{$GET}; &{$ARG} foreach @shv_tmp; wantarray ? @shv_tmp : $shv_tmp[-1]',
+		template  => 'my @shv_tmp = @{$GET}; $ARG->() foreach @shv_tmp; wantarray ? @shv_tmp : $shv_tmp[-1]',
 		documentation => 'Executes the coderef (which should modify C<< $_ >>) against each element of the array; returns the resulting array in list context.',
 }
 
@@ -1029,7 +1029,7 @@ sub for_each {
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => 'my $shv_tmp = $GET; { local $_; foreach my $shv_index (0 .. $#{$shv_tmp}) { &{$ARG}($_ = $shv_tmp->[$shv_index], $shv_index) }; } $SELF',
+		template  => 'my $shv_tmp = $GET; { local $_; foreach my $shv_index (0 .. $#{$shv_tmp}) { $ARG->($_ = $shv_tmp->[$shv_index], $shv_index) }; } $SELF',
 		documentation => 'Chainable method which executes the coderef on each element of the array. The coderef will be passed two values: the element and its index. The element will also be available as C<< $_ >>.',
 		_examples => sub {
 			my ( $class, $attr, $method ) = @_;
@@ -1058,7 +1058,7 @@ sub for_each_pair {
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => 'for (my $shv_index=0; $shv_index<@{$GET}; $shv_index+=2) { &{$ARG}(($GET)->[$shv_index], ($GET)->[$shv_index+1]) }; $SELF',
+		template  => 'for (my $shv_index=0; $shv_index<@{$GET}; $shv_index+=2) { $ARG->(($GET)->[$shv_index], ($GET)->[$shv_index+1]) }; $SELF',
 		documentation => 'Chainable method which executes the coderef on each pair of elements in the array. The coderef will be passed the two elements.',
 }
 
@@ -1169,7 +1169,7 @@ sub reductions {
 		signature => [CodeRef],
 		usage     => '$coderef',
 		template  => 'my $shv_callback = $ARG; List::Util::reductions { $shv_callback->($a,$b) } @{$GET}',
-		documentation => 'Like C<< List::Util::reductions() >>.',
+		documentation => 'Like C<< List::Util::reductions() >>, except C<< $a >> and C<< $b >> are passed as parameters.',
 }
 
 sub pairs {
@@ -1206,7 +1206,7 @@ sub pairgrep {
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => 'List::Util::pairgrep { $ARG->($_) } @{$GET}',
+		template  => 'List::Util::pairgrep { $ARG->() } @{$GET}',
 		documentation => 'Like C<< List::Util::pairgrep() >>.',
 }
 
@@ -1217,7 +1217,7 @@ sub pairfirst {
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => 'List::Util::pairfirst { $ARG->($_) } @{$GET}',
+		template  => 'List::Util::pairfirst { $ARG->() } @{$GET}',
 		documentation => 'Like C<< List::Util::pairfirst() >>.',
 }
 
@@ -1228,7 +1228,7 @@ sub pairmap {
 		args      => 1,
 		signature => [CodeRef],
 		usage     => '$coderef',
-		template  => 'List::Util::pairmap { $ARG->($_) } @{$GET}',
+		template  => 'List::Util::pairmap { $ARG->() } @{$GET}',
 		documentation => 'Like C<< List::Util::pairmap() >>.',
 }
 
