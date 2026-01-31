@@ -52,7 +52,7 @@ our @METHODS = qw( count is_empty all elements flatten get pop push shift
 	unshift clear first first_index reduce set accessor natatime any
 	shallow_clone map grep sort reverse sort_in_place splice shuffle
 	shuffle_in_place uniq uniq_in_place delete insert flatten flatten_deep
-	join print head tail apply pick_random for_each for_each_pair
+	join print head tail apply pick_random for_each for_each2 for_each_pair
 	all_true not_all_true min minstr max maxstr sum product indexed
 	reductions sample uniqnum uniqnum_in_place uniqstr uniqstr_in_place
 	pairs pairkeys pairvalues pairgrep pairfirst pairmap reset peek peekend );
@@ -1048,6 +1048,36 @@ sub for_each {
 				die;
 			}
 			Sub::HandlesVia::XS::INSTALL_shvxs_array_for_each( $args{fqname}, \%info );
+			return 1;
+		},
+}
+
+sub for_each2 {
+	handler
+		name      => 'Array:for_each2',
+		args      => 1,
+		signature => [CodeRef],
+		usage     => '$coderef',
+		template  => '$ARG->() foreach @{$GET}; $SELF',
+		documentation => 'The same as foreach, but the element will only be available as C<< $_ >>: no parameters are passed to the coderef.',
+		_examples => sub {
+			my ( $class, $attr, $method ) = @_;
+			return CORE::join "",
+				"  my \$object = $class\->new( $attr => [ 'foo', 'bar', 'baz' ] );\n",
+				"  my \$i = 0;\n",
+				"  \$object->$method( sub { say \"Item \$i is \$_.\"; ++\$i } );\n",
+				"\n";
+		},
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 and CodeRef->check($handler->curried->[0]) ) {
+				$info{callback} = $handler->curried->[0];
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_for_each2( $args{fqname}, \%info );
 			return 1;
 		},
 }
