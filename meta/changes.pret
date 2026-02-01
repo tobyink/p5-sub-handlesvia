@@ -599,3 +599,20 @@
 			label "The new for_each2 array handler only makes the array element available as $_, not in @_.";
 		];
 	].
+
+`Sub-HandlesVia 0.053004 cpan:TOBYINK`
+	issued  2026-02-01;
+	changeset [
+		item [
+			a dcs:Documentation;
+			label "Document exactly which methods may be accelerated by installing Sub::HandlesVia::XS.";
+		];
+		item [
+			a dcs:Addition;
+			label "Array:none.";
+		];
+		item [
+			a dcs:Addition;
+			label "XS implemention of Array:not_all_true.";
+		];
+	].
