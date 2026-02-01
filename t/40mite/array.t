@@ -166,6 +166,19 @@ subtest 'Testing my_for_each' => sub {
   is( $e, undef, 'no exception thrown running for_each example' );
 };
 
+## for_each2
+
+can_ok( $CLASS, 'my_for_each2' );
+
+subtest 'Testing my_for_each2' => sub {
+  my $e = exception {
+    my $object = $CLASS->new( attr => [ 'foo', 'bar', 'baz' ] );
+    my $i = 0;
+    $object->my_for_each2( sub { note "Item $i is $_."; ++$i } );
+  };
+  is( $e, undef, 'no exception thrown running for_each2 example' );
+};
+
 ## for_each_pair
 
 can_ok( $CLASS, 'my_for_each_pair' );

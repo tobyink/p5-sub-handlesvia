@@ -27,6 +27,7 @@ native traits, and L<MouseX::NativeTraits>.
                 flatten : SubHV  DataP                
            flatten_deep : SubHV  DataP                
                for_each : SubHV                Mouse  
+              for_each2 : SubHV                       
           for_each_pair : SubHV                Mouse  
                     get : SubHV  DataP  Moose  Mouse  
                    grep : SubHV  DataP  Moose  Mouse  
@@ -41,6 +42,7 @@ native traits, and L<MouseX::NativeTraits>.
                     min : SubHV                       
                  minstr : SubHV                       
                natatime : SubHV  DataP  Moose         
+                   none : SubHV                       
            not_all_true : SubHV                       
               pairfirst : SubHV                       
                pairgrep : SubHV                       

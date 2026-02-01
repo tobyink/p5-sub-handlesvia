@@ -22,6 +22,7 @@ has attr => (
     'my_flatten' => 'flatten',
     'my_flatten_deep' => 'flatten_deep',
     'my_for_each' => 'for_each',
+    'my_for_each2' => 'for_each2',
     'my_for_each_pair' => 'for_each_pair',
     'my_get' => 'get',
     'my_grep' => 'grep',

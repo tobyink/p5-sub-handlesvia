@@ -97,7 +97,7 @@ for my $category ( @categories ) {
 		}
 		
 		if ( $h->has_xs_install ) {
-			print $fh "A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.";
+			print $fh "A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.\n\n";
 		}
 	}
 

@@ -1124,6 +1124,41 @@ sub not_all_true {
 		usage     => '$coderef',
 		template  => '&List::Util::notall($ARG, @{$GET})',
 		documentation => 'Like C<< List::Util::notall() >>.',
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 and CodeRef->check($handler->curried->[0]) ) {
+				$info{callback} = $handler->curried->[0];
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_not_all_true( $args{fqname}, \%info );
+			return 1;
+		},
+}
+
+sub none {
+	require List::Util;
+	handler
+		name      => 'Array:none',
+		args      => 1,
+		signature => [CodeRef],
+		usage     => '$coderef',
+		template  => '&List::Util::none($ARG, @{$GET})',
+		documentation => 'Like C<< List::Util::none() >>.',
+		xs_install => sub {
+			my ( $handler, %args ) = @_;
+			my %info = %{ $args{info} };
+			if ( $handler->curried and @{$handler->curried}==1 and CodeRef->check($handler->curried->[0]) ) {
+				$info{callback} = $handler->curried->[0];
+			}
+			elsif ( $handler->curried and @{$handler->curried} ) {
+				die;
+			}
+			Sub::HandlesVia::XS::INSTALL_shvxs_array_none( $args{fqname}, \%info );
+			return 1;
+		},
 }
 
 sub min {

@@ -72,6 +72,8 @@ Appends another string to the end of the current string and updates the attribut
   $object->my_append( 'bar' );
   say $object->attr; ## ==> 'foobar'
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< chomp() >>
 
 Like C<chomp> from L<perlfunc>.
@@ -94,11 +96,15 @@ Arguments: B<< Str >>.
 
 Returns C<< $object->attr cmp $str >>.
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< cmpi( $str ) >>
 
 Arguments: B<< Str >>.
 
 Returns C<< fc($object->attr) cmp fc($str) >>. Uses C<lc> instead of C<fc> in versions of Perl older than 5.16.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< contains( $str ) >>
 
@@ -130,11 +136,15 @@ Arguments: B<< Str >>.
 
 Returns C<< $object->attr eq $str >>.
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< eqi( $str ) >>
 
 Arguments: B<< Str >>.
 
 Returns C<< fc($object->attr) eq fc($str) >>. Uses C<lc> instead of C<fc> in versions of Perl older than 5.16.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< fc() >>
 
@@ -146,11 +156,15 @@ Arguments: B<< Str >>.
 
 Returns C<< $object->attr ge $str >>.
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< gei( $str ) >>
 
 Arguments: B<< Str >>.
 
 Returns C<< fc($object->attr) ge fc($str) >>. Uses C<lc> instead of C<fc> in versions of Perl older than 5.16.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< get() >>
 
@@ -165,11 +179,15 @@ Arguments: B<< Str >>.
 
 Returns C<< $object->attr gt $str >>.
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< gti( $str ) >>
 
 Arguments: B<< Str >>.
 
 Returns C<< fc($object->attr) gt fc($str) >>. Uses C<lc> instead of C<fc> in versions of Perl older than 5.16.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< inc() >>
 
@@ -185,11 +203,15 @@ Arguments: B<< Str >>.
 
 Returns C<< $object->attr le $str >>.
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< lei( $str ) >>
 
 Arguments: B<< Str >>.
 
 Returns C<< fc($object->attr) le fc($str) >>. Uses C<lc> instead of C<fc> in versions of Perl older than 5.16.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< length() >>
 
@@ -204,11 +226,15 @@ Arguments: B<< Str >>.
 
 Returns C<< $object->attr lt $str >>.
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< lti( $str ) >>
 
 Arguments: B<< Str >>.
 
 Returns C<< fc($object->attr) lt fc($str) >>. Uses C<lc> instead of C<fc> in versions of Perl older than 5.16.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< match( $regexp ) >>
 
@@ -238,11 +264,15 @@ Arguments: B<< Str >>.
 
 Returns C<< $object->attr ne $str >>.
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< nei( $str ) >>
 
 Arguments: B<< Str >>.
 
 Returns C<< fc($object->attr) ne fc($str) >>. Uses C<lc> instead of C<fc> in versions of Perl older than 5.16.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< prepend( $head ) >>
 
@@ -253,6 +283,8 @@ Prepends another string to the start of the current string and updates the attri
   my $object = My::Class->new( attr => 'foo' );
   $object->my_prepend( 'bar' );
   say $object->attr; ## ==> 'barfoo'
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< replace( $regexp, $replacement ) >>
 
@@ -295,6 +327,8 @@ Sets the string to a new value.
   my $object = My::Class->new( attr => 'foo' );
   $object->my_set( 'bar' );
   say $object->attr; ## ==> 'bar'
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< starts_with( $head ) >>
 

@@ -27,6 +27,7 @@ Sub::HandlesVia::HandlerLibrary::Array - library of array-related methods
         'my_flatten' => 'flatten',
         'my_flatten_deep' => 'flatten_deep',
         'my_for_each' => 'for_each',
+        'my_for_each2' => 'for_each2',
         'my_for_each_pair' => 'for_each_pair',
         'my_get' => 'get',
         'my_grep' => 'grep',
@@ -98,6 +99,8 @@ Acts like C<get> if given just an index, or C<set> if given an index and value.
   say Dumper( $object->attr ); ## ==> [ 'foo', 'quux', 'baz' ]
   say $object->my_accessor( 2 ); ## ==> 'baz'
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< all() >>
 
 All elements in the array, in list context.
@@ -106,11 +109,15 @@ All elements in the array, in list context.
   my @list = $object->my_all;
   say Dumper( \@list ); ## ==> [ 'foo', 'bar' ]
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< all_true( $coderef ) >>
 
 Arguments: B<< CodeRef >>.
 
 Like C<< List::Util::all() >>.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< any( $coderef ) >>
 
@@ -121,6 +128,8 @@ Like C<< List::Util::any() >>.
   my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
   my $truth  = $object->my_any( sub { /a/ } );
   say $truth; ## ==> true
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< apply( $coderef ) >>
 
@@ -136,12 +145,16 @@ Empties the array.
   $object->my_clear;
   say Dumper( $object->attr ); ## ==> []
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< count() >>
 
 The number of elements in the referenced array.
 
   my $object = My::Class->new( attr => [ 'foo', 'bar' ] );
   say $object->my_count; ## ==> 2
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< delete( $index ) >>
 
@@ -157,6 +170,8 @@ All elements in the array, in list context. (Essentially the same as C<all>.)
   my @list = $object->my_elements;
   say Dumper( \@list ); ## ==> [ 'foo', 'bar' ]
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< first( $coderef ) >>
 
 Arguments: B<< CodeRef >>.
@@ -166,6 +181,8 @@ Like C<< List::Util::first() >>.
   my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
   my $found  = $object->my_first( sub { /a/ } );
   say $found; ## ==> 'bar'
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< first_index( $coderef ) >>
 
@@ -206,6 +223,20 @@ Chainable method which executes the coderef on each element of the array. The co
   my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
   $object->my_for_each( sub { say "Item $_[1] is $_[0]." } );
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
+=head2 C<< for_each2( $coderef ) >>
+
+Arguments: B<< CodeRef >>.
+
+The same as foreach, but the element will only be available as C<< $_ >>: no parameters are passed to the coderef. It may be faster than for_each.
+
+  my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+  my $i = 0;
+  $object->my_for_each2( sub { say "Item $i is $_."; ++$i } );
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< for_each_pair( $coderef ) >>
 
 Arguments: B<< CodeRef >>.
@@ -223,11 +254,15 @@ Returns a single element from the array by index.
   say $object->my_get(  1 ); ## ==> 'bar'
   say $object->my_get( -1 ); ## ==> 'baz'
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< grep( $coderef ) >>
 
 Arguments: B<< CodeRef >>.
 
 Like C<grep> from L<perlfunc>.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< head( $count ) >>
 
@@ -258,6 +293,8 @@ Boolean indicating if the referenced array is empty.
   $object->_set_attr( [] );
   say $object->my_is_empty; ## ==> true
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< join( $with? ) >>
 
 Arguments: B<< Optional[Str] >>.
@@ -268,11 +305,15 @@ Returns a string joining all the elements in the array; if C<< $with >> is omitt
   say $object->my_join;        ## ==> 'foo,bar,baz'
   say $object->my_join( '|' ); ## ==> 'foo|bar|baz'
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< map( $coderef ) >>
 
 Arguments: B<< CodeRef >>.
 
 Like C<map> from L<perlfunc>.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< max() >>
 
@@ -306,6 +347,8 @@ Given just a number, returns an iterator which reads that many elements from the
 Arguments: B<< CodeRef >>.
 
 Like C<< List::Util::notall() >>.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< pairfirst( $coderef ) >>
 
@@ -344,12 +387,16 @@ Returns the first item on the array.
   my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
   say $object->my_peek; ## ==> 'foo'
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< peekend() >>
 
 Returns the last item on the array.
 
   my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
   say $object->my_peekend; ## ==> 'baz'
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< pick_random( $count ) >>
 
@@ -365,6 +412,8 @@ Removes the last element from the array and returns it.
   say $object->my_pop; ## ==> 'baz'
   say $object->my_pop; ## ==> 'bar'
   say Dumper( $object->attr ); ## ==> [ 'foo' ]
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< print( $fh?, $with? ) >>
 
@@ -384,17 +433,19 @@ Adds elements to the end of the array.
   $object->my_push( 'bar', 'baz' );
   say Dumper( $object->attr ); ## ==> [ 'foo', 'bar', 'baz' ]
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< reduce( $coderef ) >>
 
 Arguments: B<< CodeRef >>.
 
-Like C<< List::Util::reduce() >>.
+Like C<< List::Util::reduce() >>, except C<< $a >> and C<< $b >> are passed as parameters.
 
 =head2 C<< reductions( $coderef ) >>
 
 Arguments: B<< CodeRef >>.
 
-Like C<< List::Util::reductions() >>.
+Like C<< List::Util::reductions() >>, except C<< $a >> and C<< $b >> are passed as parameters.
 
 =head2 C<< reset() >>
 
@@ -407,6 +458,8 @@ Resets the attribute to its default value, or an empty arrayref if it has no def
 =head2 C<< reverse() >>
 
 Returns the reversed array in list context.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< sample( $count ) >>
 
@@ -424,6 +477,8 @@ Sets the element with the given index to the supplied value.
   $object->my_set( 1, 'quux' );
   say Dumper( $object->attr ); ## ==> [ 'foo', 'quux', 'baz' ]
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< shallow_clone() >>
 
 Creates a new arrayref with the same elements as the original.
@@ -437,6 +492,8 @@ Removes an element from the start of the array and returns it.
   say $object->my_shift; ## ==> 'bar'
   say Dumper( $object->attr ); ## ==> [ 'baz' ]
 
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
+
 =head2 C<< shuffle() >>
 
 Returns the array in a random order; can be called in list context or scalar context and will return an arrayref in the latter case.
@@ -449,13 +506,15 @@ Rearranges the array in a random order, and changes the attribute to point to th
 
 Arguments: B<< Optional[CodeRef] >>.
 
-Like C<sort> from L<perlfunc>.
+Like C<sort> from L<perlfunc>, except C<< $a >> and C<< $b >> are passed as parameters.
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head2 C<< sort_in_place( $coderef? ) >>
 
 Arguments: B<< Optional[CodeRef] >>.
 
-Like C<sort> from L<perlfunc>, but changes the attribute to point to the newly sorted array.
+Like C<sort> from L<perlfunc>, but changes the attribute to point to the newly sorted array. C<< $a >> and C<< $b >> are passed as parameters.
 
 =head2 C<< splice( $index, $length, @values ) >>
 
@@ -502,6 +561,8 @@ Adds an element to the start of the array.
   my $object = My::Class->new( attr => [ 'foo' ] );
   $object->my_unshift( 'bar', 'baz' );
   say Dumper( $object->attr ); ## ==> [ 'bar', 'baz', 'foo' ]
+
+A faster XS implementation may be used if L<Sub::HandlesVia::XS> is installed.
 
 =head1 SHORTCUT CONSTANTS
 

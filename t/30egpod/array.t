@@ -33,6 +33,7 @@ BEGIN {
       'my_flatten' => 'flatten',
       'my_flatten_deep' => 'flatten_deep',
       'my_for_each' => 'for_each',
+      'my_for_each2' => 'for_each2',
       'my_for_each_pair' => 'for_each_pair',
       'my_get' => 'get',
       'my_grep' => 'grep',
@@ -242,6 +243,19 @@ subtest 'Testing my_for_each' => sub {
     $object->my_for_each( sub { note "Item $_[1] is $_[0]." } );
   };
   is( $e, undef, 'no exception thrown running for_each example' );
+};
+
+## for_each2
+
+can_ok( 'My::Class', 'my_for_each2' );
+
+subtest 'Testing my_for_each2' => sub {
+  my $e = exception {
+    my $object = My::Class->new( attr => [ 'foo', 'bar', 'baz' ] );
+    my $i = 0;
+    $object->my_for_each2( sub { note "Item $i is $_."; ++$i } );
+  };
+  is( $e, undef, 'no exception thrown running for_each2 example' );
 };
 
 ## for_each_pair
