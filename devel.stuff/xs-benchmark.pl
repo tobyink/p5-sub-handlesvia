@@ -12,7 +12,7 @@ package Local::PP {
 		isa          => ArrayRef[Int],
 		default      => sub { [] },
 		handles_via  => 'Array',
-		handles      => { mypush => 'push', mypop => 'pop', mycount => 'count', myfor => 'for_each' },
+		handles      => { mypush => 'push', mypop => 'pop', mycount => 'count', myfor => 'for_each2' },
 	);
 }
 
@@ -25,7 +25,7 @@ package Local::XS {
 		isa          => ArrayRef[Int],
 		default      => sub { [] },
 		handles_via  => 'Array',
-		handles      => { mypush => 'push', mypop => 'pop', mycount => 'count', myfor => 'for_each' },
+		handles      => { mypush => 'push', mypop => 'pop', mycount => 'count', myfor => 'for_each2' },
 	);
 }
 
@@ -40,7 +40,7 @@ package Local::PPmxtt {
 		isa          => ArrayRef[Int],
 		default      => sub { [] },
 		handles_via  => 'Array',
-		handles      => { mypush => 'push', mypop => 'pop', mycount => 'count', myfor => 'for_each' },
+		handles      => { mypush => 'push', mypop => 'pop', mycount => 'count', myfor => 'for_each2' },
 	);
 }
 
@@ -54,7 +54,7 @@ package Local::XSmxtt {
 		isa          => ArrayRef[Int],
 		default      => sub { [] },
 		handles_via  => 'Array',
-		handles      => { mypush => 'push', mypop => 'pop', mycount => 'count', myfor => 'for_each' },
+		handles      => { mypush => 'push', mypop => 'pop', mycount => 'count', myfor => 'for_each2' },
 	);
 }
 
