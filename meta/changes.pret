@@ -616,3 +616,12 @@
 			label "XS implemention of Array:not_all_true.";
 		];
 	].
+
+`Sub-HandlesVia 0.053005 cpan:TOBYINK`
+	issued  2026-02-04;
+	changeset [
+		item [
+			a dcs:Tests;
+			label "Make t/99shvxs.t into an author-only test. Set the AUTHOR_TESTING environment variable to true if you really want to run it.";
+		];
+	].
