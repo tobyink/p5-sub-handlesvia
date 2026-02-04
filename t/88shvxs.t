@@ -4,6 +4,12 @@ use warnings;
 use Test::More;
 use Test::Fatal;
 
+BEGIN {
+	$ENV{AUTHOR_TESTING}
+		or 'tobyink' eq ( $ENV{GITHUB_REPOSITORY_OWNER} || '' )
+		or plan skip_all => 'AUTHOR_TESTING';
+};
+
 use Test::Requires 'Sub::HandlesVia::XS';
 
 {
